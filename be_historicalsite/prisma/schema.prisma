@@ -1,0 +1,91 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Model Periods
+model Periods {
+  period_id   String   @id @default(uuid())
+  period_name String
+  created_at  DateTime @default(now())
+  updated_at  DateTime @default(now())
+  start_year  BigInt
+  end_year    BigInt
+  articles    Articles[] // Quan hệ 1-nhiều với Articles
+}
+
+// Model Topics
+model Topics {
+  topic_id   String   @id @default(uuid())
+  topic_name String
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+  articles   Articles[] // Quan hệ 1-nhiều với Articles
+}
+
+// Model Articles
+model Articles {
+  article_id     String   @id @default(uuid())
+  article_name   String
+  article_content String
+  article_type   String   @default("Event") // Enum có thể thay thế nếu cần
+  created_at     DateTime @default(now())
+  updated_at     DateTime @default(now())
+  images_list    Json?
+  period_id      String
+  topic_id       String
+  period         Periods  @relation(fields: [period_id], references: [period_id])
+  topic          Topics   @relation(fields: [topic_id], references: [topic_id])
+}
+
+// Model Payments
+model Payments {
+  payment_id   String   @id @default(uuid())
+  email        String
+  quantity     Int      @db.SmallInt
+  status       String   @default("Pending Payment")
+  created_at   DateTime @default(now())
+  updated_at   DateTime @default(now())
+  booking_date DateTime
+  phone_number String
+  total_price  BigInt
+}
+
+// Model Feedbacks
+model Feedbacks {
+  feedback_id String   @id @default(uuid())
+  user_email  String
+  subject     String   @default("Other")
+  message     String
+  status      String   @default("Pending")
+  created_at  DateTime @default(now())
+  updated_at  DateTime @default(now())
+}
+
+enum ArticleType {
+  Person
+  Event
+}
+
+enum PaymentStatus {
+  Pending_Payment
+  Paid
+  Cancelled
+}
+
+enum FeedbackSubject {
+  Ticket_Issue
+  Event_Complaint
+  Website_Suggestion
+  Other
+}
+
+enum FeedbackStatus {
+  Pending
+  In_Progress
+  Resolved
+}
