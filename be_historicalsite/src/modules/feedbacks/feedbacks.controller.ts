@@ -34,7 +34,7 @@ export class FeedbacksController {
   })
   @ApiOkResponse({ 
     description: 'List of all feedbacks',
-    type: [Feedback],
+    type: Feedback,
     isArray: true
   })
   findAll() {

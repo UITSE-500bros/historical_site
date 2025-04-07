@@ -34,7 +34,7 @@ export class ArticlesController {
   })
   @ApiOkResponse({ 
     description: 'List of all articles',
-    type: [Article],
+    type: Article,
     isArray: true
   })
   findAll() {

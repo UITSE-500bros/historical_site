@@ -34,7 +34,7 @@ export class PeriodsController {
   })
   @ApiOkResponse({ 
     description: 'List of all periods',
-    type: [Period],
+    type: Period,
     isArray: true
   })
   findAll() {

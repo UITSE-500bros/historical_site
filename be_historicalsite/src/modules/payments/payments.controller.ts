@@ -34,7 +34,7 @@ export class PaymentsController {
   })
   @ApiOkResponse({ 
     description: 'List of all payments',
-    type: [Payment],
+    type: Payment,
     isArray: true
   })
   findAll() {
