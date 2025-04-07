@@ -1,26 +1,52 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateFeedbackDto } from './dto/create-feedback.dto';
 import { UpdateFeedbackDto } from './dto/update-feedback.dto';
+import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
 export class FeedbacksService {
-  create(createFeedbackDto: CreateFeedbackDto) {
-    return 'This action adds a new feedback';
+  constructor(private prisma: PrismaService) {}
+
+  async create(createFeedbackDto: CreateFeedbackDto) {
+    return this.prisma.feedbacks.create({
+      data: createFeedbackDto,
+    });
   }
 
-  findAll() {
-    return `This action returns all feedbacks`;
+  async findAll() {
+    return this.prisma.feedbacks.findMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} feedback`;
+  async findOne(id: string) {
+    const feedback = await this.prisma.feedbacks.findUnique({
+      where: { feedback_id: id },
+    });
+
+    if (!feedback) {
+      throw new NotFoundException(`Feedback with ID ${id} not found`);
+    }
+
+    return feedback;
   }
 
-  update(id: number, updateFeedbackDto: UpdateFeedbackDto) {
-    return `This action updates a #${id} feedback`;
+  async update(id: string, updateFeedbackDto: UpdateFeedbackDto) {
+    try {
+      return await this.prisma.feedbacks.update({
+        where: { feedback_id: id },
+        data: updateFeedbackDto,
+      });
+    } catch (error) {
+      throw new NotFoundException(`Feedback with ID ${id} not found`);
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} feedback`;
+  async remove(id: string) {
+    try {
+      return await this.prisma.feedbacks.delete({
+        where: { feedback_id: id },
+      });
+    } catch (error) {
+      throw new NotFoundException(`Feedback with ID ${id} not found`);
+    }
   }
 }
