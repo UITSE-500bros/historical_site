@@ -7,9 +7,10 @@ import { PeriodsModule } from './modules/periods/periods.module';
 import { ArticlesModule } from './modules/articles/articles.module';
 import { FeedbacksModule } from './modules/feedbacks/feedbacks.module';
 import { PaymentsModule } from './modules/payments/payments.module';
-
+import { ConfigModule } from '@nestjs/config';
 @Module({
   imports: [
+    ConfigModule.forRoot(),
     PrismaModule,
     TopicsModule,
     PeriodsModule,

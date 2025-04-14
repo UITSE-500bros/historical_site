@@ -1,5 +1,12 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
 generator client {
   provider = "prisma-client-js"
+  output   = "../generated/prisma"
 }
 
 datasource db {
@@ -7,85 +14,166 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Model Periods
-model Periods {
-  period_id   String   @id @default(uuid())
-  period_name String
-  created_at  DateTime @default(now())
-  updated_at  DateTime @default(now())
-  start_year  BigInt
-  end_year    BigInt
-  articles    Articles[] // Quan hệ 1-nhiều với Articles
-}
-
-// Model Topics
-model Topics {
-  topic_id   String   @id @default(uuid())
-  topic_name String
-  created_at DateTime @default(now())
-  updated_at DateTime @default(now())
-  articles   Articles[] // Quan hệ 1-nhiều với Articles
-}
-
-// Model Articles
-model Articles {
-  article_id     String   @id @default(uuid())
-  article_name   String
-  article_content String
-  article_type   String   @default("Event") // Enum có thể thay thế nếu cần
-  created_at     DateTime @default(now())
-  updated_at     DateTime @default(now())
-  images_list    Json?
-  period_id      String
-  topic_id       String
-  period         Periods  @relation(fields: [period_id], references: [period_id])
-  topic          Topics   @relation(fields: [topic_id], references: [topic_id])
-}
-
-// Model Payments
-model Payments {
-  payment_id   String   @id @default(uuid())
-  email        String
-  quantity     Int      @db.SmallInt
-  status       String   @default("Pending Payment")
-  created_at   DateTime @default(now())
-  updated_at   DateTime @default(now())
-  booking_date DateTime
-  phone_number String
-  total_price  BigInt
-}
-
-// Model Feedbacks
-model Feedbacks {
-  feedback_id String   @id @default(uuid())
-  user_email  String
-  subject     String   @default("Other")
-  message     String
-  status      String   @default("Pending")
-  created_at  DateTime @default(now())
-  updated_at  DateTime @default(now())
-}
-
-enum ArticleType {
-  Person
-  Event
-}
-
-enum PaymentStatus {
-  Pending_Payment
-  Paid
-  Cancelled
-}
-
+// Enum definitions for fields with enum type
 enum FeedbackSubject {
-  Ticket_Issue
-  Event_Complaint
-  Website_Suggestion
-  Other
+  BUG
+  FEATURE
+  SUPPORT
+  OTHER
 }
 
 enum FeedbackStatus {
-  Pending
-  In_Progress
-  Resolved
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+// Model definitions
+model ArticleType {
+  articleTypeId String    @id @default(uuid()) @db.Uuid
+  typeName      String
+  createdAt     DateTime
+  updatedAt     DateTime
+  articles      Article[] @relation("ArticleTypeToArticles")
+}
+
+model Period {
+  periodId      String         @id @default(uuid()) @db.Uuid
+  periodName    String
+  startYear     Int
+  endYear       Int
+  createdAt     DateTime
+  updatedAt     DateTime
+  eventArticles EventArticle[] @relation("PeriodToEventArticles")
+}
+
+model Topic {
+  topicId       String         @id @default(uuid()) @db.Uuid
+  topicName     String
+  createdAt     DateTime
+  updatedAt     DateTime
+  eventArticles EventArticle[] @relation("TopicToEventArticles")
+}
+
+model Article {
+  articleId         String          @id @default(uuid()) @db.Uuid
+  articleTypeId     String          @db.Uuid
+  articleName       String
+  articleContentList Json
+  createdAt         DateTime
+  updatedAt         DateTime
+  articleType       ArticleType     @relation("ArticleTypeToArticles", fields: [articleTypeId], references: [articleTypeId])
+  personArticle     PersonArticle?  @relation("ArticleToPersonArticle")
+  eventArticle      EventArticle?   @relation("ArticleToEventArticle")
+  contents          Content[]       @relation("ArticleToContents")
+  comments          Comment[]       @relation("ArticleToComments")
+}
+
+model PersonArticle {
+  articleId   String   @id @db.Uuid
+  birthYear   Int
+  deathYear   Int
+  nationality String
+  createdAt   DateTime
+  updatedAt   DateTime
+  article     Article  @relation("ArticleToPersonArticle", fields: [articleId], references: [articleId])
+}
+
+model EventArticle {
+  articleId   String   @id @db.Uuid
+  periodId    String   @db.Uuid
+  topicId     String   @db.Uuid
+  createdAt   DateTime
+  updatedAt   DateTime
+  article     Article  @relation("ArticleToEventArticle", fields: [articleId], references: [articleId])
+  period      Period   @relation("PeriodToEventArticles", fields: [periodId], references: [periodId])
+  topic       Topic    @relation("TopicToEventArticles", fields: [topicId], references: [topicId])
+}
+
+model Content {
+  contentId   String    @id @default(uuid()) @db.Uuid
+  contentName String
+  articleId   String    @db.Uuid
+  parentId    String?   @db.Uuid
+  content     String
+  imagesId    Json
+  createdAt   DateTime
+  updatedAt   DateTime
+  article     Article   @relation("ArticleToContents", fields: [articleId], references: [articleId])
+  parent      Content?  @relation("ContentToContent", fields: [parentId], references: [contentId])
+  children    Content[] @relation("ContentToContent")
+  images      Image[]   @relation("ContentToImages")
+}
+
+model Image {
+  imageId   String   @id @default(uuid()) @db.Uuid
+  contentId String   @db.Uuid
+  imageName String
+  src       String
+  alt       String
+  href      String
+  caption   String
+  width     String
+  height    String
+  createdAt DateTime
+  updatedAt DateTime
+  content   Content  @relation("ContentToImages", fields: [contentId], references: [contentId])
+}
+
+model User {
+  userId        String      @id @default(uuid()) @db.Uuid
+  userFirstName String
+  userLastName  String
+  userName      String
+  userPassword  String
+  userEmail     String
+  isAdmin       Boolean
+  createdAt     DateTime
+  updatedAt     DateTime
+  phoneNumber   Int
+  feedbacks     Feedback[]  @relation("UserToFeedbacks")
+  comments      Comment[]   @relation("UserToComments")
+  payments      Payment[]   @relation("UserToPayments")
+}
+
+model Comment {
+  commentId      String   @id @default(uuid()) @db.Uuid
+  commentContent String
+  articleId      String   @db.Uuid
+  userId         String   @db.Uuid
+  createdAt      DateTime
+  updatedAt      DateTime
+  article        Article  @relation("ArticleToComments", fields: [articleId], references: [articleId])
+  user           User     @relation("UserToComments", fields: [userId], references: [userId])
+}
+
+model Feedback {
+  feedbackId String         @id @default(uuid()) @db.Uuid
+  userId     String         @db.Uuid
+  subject    FeedbackSubject
+  message    String
+  status     FeedbackStatus
+  createdAt  DateTime
+  updatedAt  DateTime
+  user       User           @relation("UserToFeedbacks", fields: [userId], references: [userId])
+}
+
+model Payment {
+  paymentId   String       @id @default(uuid()) @db.Uuid
+  userId      String       @db.Uuid
+  quantity    Int
+  status      PaymentStatus
+  bookingDate DateTime
+  totalPrice  String
+  createdAt   DateTime
+  updatedAt   DateTime
+  user        User         @relation("UserToPayments", fields: [userId], references: [userId])
 }
