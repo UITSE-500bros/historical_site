@@ -1,22 +1,17 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { PrismaModule } from './prisma/prisma.module';
-import { TopicsModule } from './modules/topics/topics.module';
 import { PeriodsModule } from './modules/periods/periods.module';
+import { TopicsModule } from './modules/topics/topics.module';
 import { ArticlesModule } from './modules/articles/articles.module';
-import { FeedbacksModule } from './modules/feedbacks/feedbacks.module';
-import { PaymentsModule } from './modules/payments/payments.module';
-import { ConfigModule } from '@nestjs/config';
+
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    PrismaModule,
-    TopicsModule,
     PeriodsModule,
-    ArticlesModule,
-    FeedbacksModule,
-    PaymentsModule,
+    TopicsModule,
+    ArticlesModule
   ],
   controllers: [AppController],
   providers: [AppService],

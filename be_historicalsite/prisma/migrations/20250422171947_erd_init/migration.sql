@@ -1,29 +1,26 @@
 -- CreateEnum
-CREATE TYPE "FeedbackSubject" AS ENUM ('BUG', 'FEATURE', 'SUPPORT', 'OTHER');
+CREATE TYPE "ArticleType" AS ENUM ('EVENT', 'PERSON');
 
 -- CreateEnum
-CREATE TYPE "FeedbackStatus" AS ENUM ('OPEN', 'IN_PROGRESS', 'RESOLVED', 'CLOSED');
+CREATE TYPE "FeedbackSubject" AS ENUM ('BUG', 'FEATURE', 'GENERAL');
 
 -- CreateEnum
-CREATE TYPE "PaymentStatus" AS ENUM ('PENDING', 'COMPLETED', 'FAILED', 'REFUNDED');
+CREATE TYPE "FeedbackStatus" AS ENUM ('OPEN', 'IN_PROGRESS', 'CLOSED');
 
--- CreateTable
-CREATE TABLE "ArticleType" (
-    "articleTypeId" UUID NOT NULL,
-    "typeName" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
+-- CreateEnum
+CREATE TYPE "PaymentType" AS ENUM ('DEBIT_CARD', 'DIGITAL_WALLET', 'GOOGLE_PAY');
 
-    CONSTRAINT "ArticleType_pkey" PRIMARY KEY ("articleTypeId")
-);
+-- CreateEnum
+CREATE TYPE "PaymentStatus" AS ENUM ('PENDING', 'COMPLETED', 'FAILED', 'CANCELLED');
 
 -- CreateTable
 CREATE TABLE "Period" (
     "periodId" UUID NOT NULL,
     "periodName" TEXT NOT NULL,
+    "periodImage" TEXT NOT NULL,
     "startYear" INTEGER NOT NULL,
     "endYear" INTEGER NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Period_pkey" PRIMARY KEY ("periodId")
@@ -33,7 +30,8 @@ CREATE TABLE "Period" (
 CREATE TABLE "Topic" (
     "topicId" UUID NOT NULL,
     "topicName" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL,
+    "topicImage" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Topic_pkey" PRIMARY KEY ("topicId")
@@ -42,10 +40,10 @@ CREATE TABLE "Topic" (
 -- CreateTable
 CREATE TABLE "Article" (
     "articleId" UUID NOT NULL,
-    "articleTypeId" UUID NOT NULL,
+    "articleType" "ArticleType" NOT NULL,
     "articleName" TEXT NOT NULL,
     "articleContentList" JSONB NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Article_pkey" PRIMARY KEY ("articleId")
@@ -54,10 +52,12 @@ CREATE TABLE "Article" (
 -- CreateTable
 CREATE TABLE "PersonArticle" (
     "articleId" UUID NOT NULL,
+    "personName" TEXT NOT NULL,
+    "personAvatar" TEXT NOT NULL,
     "birthYear" INTEGER NOT NULL,
     "deathYear" INTEGER NOT NULL,
     "nationality" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "PersonArticle_pkey" PRIMARY KEY ("articleId")
@@ -68,7 +68,7 @@ CREATE TABLE "EventArticle" (
     "articleId" UUID NOT NULL,
     "periodId" UUID NOT NULL,
     "topicId" UUID NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "EventArticle_pkey" PRIMARY KEY ("articleId")
@@ -82,7 +82,7 @@ CREATE TABLE "Content" (
     "parentId" UUID,
     "content" TEXT NOT NULL,
     "imagesId" JSONB NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Content_pkey" PRIMARY KEY ("contentId")
@@ -91,56 +91,40 @@ CREATE TABLE "Content" (
 -- CreateTable
 CREATE TABLE "Image" (
     "imageId" UUID NOT NULL,
-    "contentId" UUID NOT NULL,
-    "imageName" TEXT NOT NULL,
+    "contentId" UUID,
     "src" TEXT NOT NULL,
-    "alt" TEXT NOT NULL,
-    "href" TEXT NOT NULL,
-    "caption" TEXT NOT NULL,
-    "width" TEXT NOT NULL,
-    "height" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL,
+    "alt" TEXT,
+    "caption" TEXT,
+    "width" INTEGER,
+    "height" INTEGER,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Image_pkey" PRIMARY KEY ("imageId")
 );
 
 -- CreateTable
-CREATE TABLE "User" (
-    "userId" UUID NOT NULL,
-    "userFirstName" TEXT NOT NULL,
-    "userLastName" TEXT NOT NULL,
-    "userName" TEXT NOT NULL,
-    "userPassword" TEXT NOT NULL,
-    "userEmail" TEXT NOT NULL,
-    "isAdmin" BOOLEAN NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL,
+CREATE TABLE "Admin" (
+    "adminId" UUID NOT NULL,
+    "adminFisrtName" TEXT NOT NULL,
+    "adminLastName" TEXT NOT NULL,
+    "adminPassword" TEXT NOT NULL,
+    "adminEmail" TEXT NOT NULL,
+    "adminAvatar" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "phoneNumber" INTEGER NOT NULL,
+    "phoneNumber" TEXT NOT NULL,
 
-    CONSTRAINT "User_pkey" PRIMARY KEY ("userId")
-);
-
--- CreateTable
-CREATE TABLE "Comment" (
-    "commentId" UUID NOT NULL,
-    "commentContent" TEXT NOT NULL,
-    "articleId" UUID NOT NULL,
-    "userId" UUID NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "Comment_pkey" PRIMARY KEY ("commentId")
+    CONSTRAINT "Admin_pkey" PRIMARY KEY ("adminId")
 );
 
 -- CreateTable
 CREATE TABLE "Feedback" (
     "feedbackId" UUID NOT NULL,
-    "userId" UUID NOT NULL,
     "subject" "FeedbackSubject" NOT NULL,
     "message" TEXT NOT NULL,
     "status" "FeedbackStatus" NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Feedback_pkey" PRIMARY KEY ("feedbackId")
@@ -149,19 +133,17 @@ CREATE TABLE "Feedback" (
 -- CreateTable
 CREATE TABLE "Payment" (
     "paymentId" UUID NOT NULL,
-    "userId" UUID NOT NULL,
+    "userEmail" TEXT NOT NULL,
     "quantity" INTEGER NOT NULL,
+    "paymentType" "PaymentType" NOT NULL,
     "status" "PaymentStatus" NOT NULL,
     "bookingDate" TIMESTAMP(3) NOT NULL,
     "totalPrice" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Payment_pkey" PRIMARY KEY ("paymentId")
 );
-
--- AddForeignKey
-ALTER TABLE "Article" ADD CONSTRAINT "Article_articleTypeId_fkey" FOREIGN KEY ("articleTypeId") REFERENCES "ArticleType"("articleTypeId") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "PersonArticle" ADD CONSTRAINT "PersonArticle_articleId_fkey" FOREIGN KEY ("articleId") REFERENCES "Article"("articleId") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -182,16 +164,4 @@ ALTER TABLE "Content" ADD CONSTRAINT "Content_articleId_fkey" FOREIGN KEY ("arti
 ALTER TABLE "Content" ADD CONSTRAINT "Content_parentId_fkey" FOREIGN KEY ("parentId") REFERENCES "Content"("contentId") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Image" ADD CONSTRAINT "Image_contentId_fkey" FOREIGN KEY ("contentId") REFERENCES "Content"("contentId") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Comment" ADD CONSTRAINT "Comment_articleId_fkey" FOREIGN KEY ("articleId") REFERENCES "Article"("articleId") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Comment" ADD CONSTRAINT "Comment_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("userId") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Feedback" ADD CONSTRAINT "Feedback_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("userId") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Payment" ADD CONSTRAINT "Payment_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("userId") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Image" ADD CONSTRAINT "Image_contentId_fkey" FOREIGN KEY ("contentId") REFERENCES "Content"("contentId") ON DELETE SET NULL ON UPDATE CASCADE;

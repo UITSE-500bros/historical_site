@@ -117,16 +117,10 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
   Serializable: 'Serializable'
 });
 
-exports.Prisma.ArticleTypeScalarFieldEnum = {
-  articleTypeId: 'articleTypeId',
-  typeName: 'typeName',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
 exports.Prisma.PeriodScalarFieldEnum = {
   periodId: 'periodId',
   periodName: 'periodName',
+  periodImage: 'periodImage',
   startYear: 'startYear',
   endYear: 'endYear',
   createdAt: 'createdAt',
@@ -136,13 +130,14 @@ exports.Prisma.PeriodScalarFieldEnum = {
 exports.Prisma.TopicScalarFieldEnum = {
   topicId: 'topicId',
   topicName: 'topicName',
+  topicImage: 'topicImage',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
 
 exports.Prisma.ArticleScalarFieldEnum = {
   articleId: 'articleId',
-  articleTypeId: 'articleTypeId',
+  articleType: 'articleType',
   articleName: 'articleName',
   articleContentList: 'articleContentList',
   createdAt: 'createdAt',
@@ -151,6 +146,8 @@ exports.Prisma.ArticleScalarFieldEnum = {
 
 exports.Prisma.PersonArticleScalarFieldEnum = {
   articleId: 'articleId',
+  personName: 'personName',
+  personAvatar: 'personAvatar',
   birthYear: 'birthYear',
   deathYear: 'deathYear',
   nationality: 'nationality',
@@ -180,10 +177,8 @@ exports.Prisma.ContentScalarFieldEnum = {
 exports.Prisma.ImageScalarFieldEnum = {
   imageId: 'imageId',
   contentId: 'contentId',
-  imageName: 'imageName',
   src: 'src',
   alt: 'alt',
-  href: 'href',
   caption: 'caption',
   width: 'width',
   height: 'height',
@@ -191,31 +186,20 @@ exports.Prisma.ImageScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
-exports.Prisma.UserScalarFieldEnum = {
-  userId: 'userId',
-  userFirstName: 'userFirstName',
-  userLastName: 'userLastName',
-  userName: 'userName',
-  userPassword: 'userPassword',
-  userEmail: 'userEmail',
-  isAdmin: 'isAdmin',
+exports.Prisma.AdminScalarFieldEnum = {
+  adminId: 'adminId',
+  adminFisrtName: 'adminFisrtName',
+  adminLastName: 'adminLastName',
+  adminPassword: 'adminPassword',
+  adminEmail: 'adminEmail',
+  adminAvatar: 'adminAvatar',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   phoneNumber: 'phoneNumber'
 };
 
-exports.Prisma.CommentScalarFieldEnum = {
-  commentId: 'commentId',
-  commentContent: 'commentContent',
-  articleId: 'articleId',
-  userId: 'userId',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
 exports.Prisma.FeedbackScalarFieldEnum = {
   feedbackId: 'feedbackId',
-  userId: 'userId',
   subject: 'subject',
   message: 'message',
   status: 'status',
@@ -225,8 +209,9 @@ exports.Prisma.FeedbackScalarFieldEnum = {
 
 exports.Prisma.PaymentScalarFieldEnum = {
   paymentId: 'paymentId',
-  userId: 'userId',
+  userEmail: 'userEmail',
   quantity: 'quantity',
+  paymentType: 'paymentType',
   status: 'status',
   bookingDate: 'bookingDate',
   totalPrice: 'totalPrice',
@@ -258,29 +243,37 @@ exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
+exports.ArticleType = exports.$Enums.ArticleType = {
+  EVENT: 'EVENT',
+  PERSON: 'PERSON'
+};
+
 exports.FeedbackSubject = exports.$Enums.FeedbackSubject = {
   BUG: 'BUG',
   FEATURE: 'FEATURE',
-  SUPPORT: 'SUPPORT',
-  OTHER: 'OTHER'
+  GENERAL: 'GENERAL'
 };
 
 exports.FeedbackStatus = exports.$Enums.FeedbackStatus = {
   OPEN: 'OPEN',
   IN_PROGRESS: 'IN_PROGRESS',
-  RESOLVED: 'RESOLVED',
   CLOSED: 'CLOSED'
+};
+
+exports.PaymentType = exports.$Enums.PaymentType = {
+  DEBIT_CARD: 'DEBIT_CARD',
+  DIGITAL_WALLET: 'DIGITAL_WALLET',
+  GOOGLE_PAY: 'GOOGLE_PAY'
 };
 
 exports.PaymentStatus = exports.$Enums.PaymentStatus = {
   PENDING: 'PENDING',
   COMPLETED: 'COMPLETED',
   FAILED: 'FAILED',
-  REFUNDED: 'REFUNDED'
+  CANCELLED: 'CANCELLED'
 };
 
 exports.Prisma.ModelName = {
-  ArticleType: 'ArticleType',
   Period: 'Period',
   Topic: 'Topic',
   Article: 'Article',
@@ -288,8 +281,7 @@ exports.Prisma.ModelName = {
   EventArticle: 'EventArticle',
   Content: 'Content',
   Image: 'Image',
-  User: 'User',
-  Comment: 'Comment',
+  Admin: 'Admin',
   Feedback: 'Feedback',
   Payment: 'Payment'
 };
