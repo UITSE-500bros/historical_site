@@ -71,7 +71,7 @@ export default function Home() {
 
         {/*Explore Section */}
         <TitleSection title="Khám Phá" />
-        <div className="flex-col  flex px-8 justify-center">
+        <div className="flex-col mt-[40px]  flex px-8 justify-center">
           <div className="flex gap-4 flex-wrap justify-center items-center">
             <Link
               href="/explore"
