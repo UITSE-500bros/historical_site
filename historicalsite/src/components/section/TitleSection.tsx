@@ -1,7 +1,12 @@
 import Link from "next/link";
 import React from "react";
 
-export default function TitleSection({ title }: { title: string }) {
+interface TitleSectionProps {
+  title: string;
+  url: string;
+}
+
+export default function TitleSection({ title,url }:TitleSectionProps) {
   return (
     <div className=" px-8 flex justify-between items-center self-stretch h-[200px] ">
       {/* Left Section */}
@@ -13,7 +18,7 @@ export default function TitleSection({ title }: { title: string }) {
 
       {/* Right Section */}
       <div className="flex justify-center items-center w-[200px] h-[50px] shrink-0  rounded-full bg-transparent cursor-pointer">
-        <Link href="/#" className="text-[color:var(--Black,#1F1F1F)] text-center [font-family:Actor] text-[20px] font-normal leading-[24px] tracking-[-1px] uppercase">
+        <Link href={url}  className="text-[color:var(--Black,#1F1F1F)] text-center [font-family:Actor] text-[20px] font-normal leading-[24px] tracking-[-1px] uppercase">
           Tìm Hiểu Thêm
         </Link>
       </div>

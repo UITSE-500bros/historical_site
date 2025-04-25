@@ -43,7 +43,7 @@ export default function Home() {
         </header>
 
         <section>
-          <TitleSection title="Giới thiệu" />
+          <TitleSection title="Giới thiệu" url="" />
           <div className="flex px-8 justify-between items-end self-stretch flex-wrap">
             <article className="w-full md:w-[400px] text-[color:var(--Black,#1F1F1F)] text-left [leading-trim:both] [text-edge:cap] [font-family:Actor] text-[20px] font-normal leading-[28px] tracking-[-0.05em]">
               {INTRO_TEXT}
@@ -66,7 +66,7 @@ export default function Home() {
         </section>
 
         <section>
-          <TitleSection title="Khám Phá" />
+          <TitleSection title="Khám Phá" url="/explore" />
           <div className="flex-col mt-[40px] flex px-8 justify-center">
             <div className="flex gap-4 flex-wrap justify-center items-center">
               <Link
