@@ -1,7 +1,9 @@
 import Image from "next/image";
 import { TitleSection } from "../components/section";
 import { BANNER_TEXT, INTRO_TEXT } from "./content";
-
+import Link from "next/link";
+import ProfileCard from "../components/cards/ProfileCard";
+import { HistoricalFigures } from "./content";
 export default function Home() {
   return (
     <div className="flex flex-col min-h-screen">
@@ -65,6 +67,42 @@ export default function Home() {
             src="/home/pisa.png"
             alt="Leaning Tower of Pisa"
           />
+        </div>
+
+        {/*Explore Section */}
+        <TitleSection title="Khám Phá" />
+        <div className="flex-col  flex px-8 justify-center">
+          <div className="flex gap-4 flex-wrap justify-center items-center">
+            <Link
+              href="/explore"
+              className="text-[color:var(--Black,#1F1F1F)] [leading-trim:both] [text-edge:cap] [font-family:Actor] text-base font-normal leading-[26px] uppercase"
+            >
+              Nhan vat tieu bieu
+            </Link>
+            <Link
+              href="/"
+              className="text-[color:var(--Black,#1F1F1F)] [leading-trim:both] [text-edge:cap] [font-family:Actor] text-base font-normal leading-[26px] uppercase"
+            >
+              Su kien lich su
+            </Link>
+            <Link
+              href="/"
+              className="text-[color:var(--Black,#1F1F1F)] [leading-trim:both] [text-edge:cap] [font-family:Actor] text-base font-normal leading-[26px] uppercase"
+            >
+              Tham quan online
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-3">
+            {HistoricalFigures.map((figure,index)=>(
+              <ProfileCard
+                key={index}
+                name={figure.name}
+                content={figure.content}
+                image={figure.image}
+              />
+            ))}
+            </div>
         </div>
       </main>
     </div>
