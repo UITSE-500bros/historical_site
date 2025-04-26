@@ -1,5 +1,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
 import React from "react";
+import { Peoples } from "./people";
+import ProfileCard from "@/src/components/cards/ProfileCard";
 
 export default function Explore() {
   return (
@@ -13,14 +15,24 @@ export default function Explore() {
         </h1>
       </div>
 
-      <Tabs className="w-full mt-[80px] flex-col px-8 justify-center">
+      <Tabs defaultValue="people" className="w-full mt-[80px] flex-col px-8 justify-center">
         <TabsList className="flex gap-4 flex-wrap justify-center items-center">
           <TabsTrigger value ="people" className="text-[color:var(--Black,#1F1F1F)] [leading-trim:both] [text-edge:cap] [font-family:Actor] text-base font-normal leading-[26px] uppercase"> Nhân vật tiêu biểu</TabsTrigger>
           <TabsTrigger value ="event" className="text-[color:var(--Black,#1F1F1F)] [leading-trim:both] [text-edge:cap] [font-family:Actor] text-base font-normal leading-[26px] uppercase"> Sự kiện lịch sử</TabsTrigger>
 
         </TabsList>
-        <TabsContent value="people">
-          a
+        <TabsContent  value="people">
+          <div className="grid grid-cols-3">
+            {Peoples.map((person,index)=>(
+              <ProfileCard
+                key={index}
+                name={person.name}
+                content={person.content}
+                image={person.image}
+              />
+            ))}
+          
+          </div>
           </TabsContent>
         <TabsContent value="event">
           b
