@@ -44,7 +44,7 @@ enum ArticleType {
 
 model Article {
   articleId          String    @id @db.Uuid
-  articleType       ArticleType
+  articleType       ArticleType 
   articleName        String
   articleContentList Json
   createdAt DateTime @db.Timestamp(3) @default(now())

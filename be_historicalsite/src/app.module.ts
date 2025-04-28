@@ -5,10 +5,12 @@ import { AppService } from './app.service';
 import { PeriodsModule } from './modules/periods/periods.module';
 import { TopicsModule } from './modules/topics/topics.module';
 import { ArticlesModule } from './modules/articles/articles.module';
+import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
+    PrismaModule,
     PeriodsModule,
     TopicsModule,
     ArticlesModule
