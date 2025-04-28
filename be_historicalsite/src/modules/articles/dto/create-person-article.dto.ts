@@ -8,6 +8,8 @@ export class CreatePersonArticleDto {
   @IsNotEmpty()
   personName: string;
 
+  personAvatar: string
+
   @ApiProperty({ description: 'The birth year of the person', example: 100 })
   @IsInt()
   @IsNotEmpty()

@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Content } from './content.entity';
-import { ArticleType } from './article-type.entity';
 import { PersonArticle } from './personArticle.entity';
 import { EventArticle } from './eventArticle.entity';
 
@@ -8,8 +7,8 @@ export class Article {
   @ApiProperty({ description: 'The unique identifier of the article', example: '123e4567-e89b-12d3-a456-426614174000' })
   articleId: string;
 
-  @ApiProperty({ description: 'The type of the article (EVENT or PERSON)', type: () => ArticleType })
-  articleType: ArticleType;
+  @ApiProperty({ description: 'The type of the article (EVENT or PERSON)' })
+  articleType: string;
 
   @ApiProperty({ description: 'The name of the article', example: 'The History of Ancient Rome' })
   articleName: string;

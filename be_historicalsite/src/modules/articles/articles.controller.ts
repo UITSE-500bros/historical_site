@@ -1,208 +1,229 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiParam } from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ArticlesService } from './articles.service';
 import { CreateArticleDto } from './dto/article-dto/create-article.dto';
-
+import { UpdateArticleDto } from './dto/article-dto/update-article.dto';
+import { CreateContentDto } from './dto/content-dto/create-content.dto';
+import { UpdateContentDto } from './dto/content-dto/update-content.dto';
+import { CreateImageDto } from './dto/image-dto/create-image.dto';
+import { UpdateImageDto } from './dto/image-dto/update-image.dto';
 import { CreatePersonArticleDto } from './dto/create-person-article.dto';
 import { UpdatePersonArticleDto } from './dto/update-person-article.dto';
 import { CreateEventArticleDto } from './dto/create-event-article.dto';
 import { UpdateEventArticleDto } from './dto/update-event-article.dto';
-import { CreateContentDto } from './dto/content-dto/create-content.dto';
 
-import { CreateImageDto } from './dto/image-dto/create-image.dto';
-import { UpdateArticleDto } from './dto/article-dto/update-article.dto';
-import { UpdateContentDto } from './dto/content-dto/update-content.dto';
-import { UpdateImageDto } from './dto/image-dto/update-image.dto';
-
-
-@ApiTags('Articles')
+@ApiTags('articles')
 @Controller('articles')
 export class ArticlesController {
   constructor(private readonly articlesService: ArticlesService) {}
 
-  // Base Article Routes
-  @ApiOperation({ summary: 'Create a new article' })
+  // Article endpoints
   @Post()
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Create a new article' })
+  @ApiResponse({ status: 201, description: 'The article has been successfully created.' })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
   create(@Body() createArticleDto: CreateArticleDto) {
     return this.articlesService.create(createArticleDto);
   }
 
-  @ApiOperation({ summary: 'Get all articles' })
   @Get()
+  @ApiOperation({ summary: 'Get all articles' })
+  @ApiResponse({ status: 200, description: 'Return all articles.' })
   findAll() {
     return this.articlesService.findAll();
   }
 
-  @ApiOperation({ summary: 'Get a specific article by ID' })
-  @ApiParam({ name: 'id', description: 'Article ID' })
   @Get(':id')
+  @ApiOperation({ summary: 'Get an article by id' })
+  @ApiResponse({ status: 200, description: 'Return the article.' })
+  @ApiResponse({ status: 404, description: 'Article not found.' })
   findOne(@Param('id') id: string) {
     return this.articlesService.findOne(id);
   }
 
-  @ApiOperation({ summary: 'Update a specific article' })
-  @ApiParam({ name: 'id', description: 'Article ID' })
   @Patch(':id')
+  @ApiOperation({ summary: 'Update an article' })
+  @ApiResponse({ status: 200, description: 'The article has been successfully updated.' })
+  @ApiResponse({ status: 404, description: 'Article not found.' })
   update(@Param('id') id: string, @Body() updateArticleDto: UpdateArticleDto) {
     return this.articlesService.update(id, updateArticleDto);
   }
 
-  @ApiOperation({ summary: 'Delete a specific article' })
-  @ApiParam({ name: 'id', description: 'Article ID' })
   @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Delete an article' })
+  @ApiResponse({ status: 204, description: 'The article has been successfully deleted.' })
+  @ApiResponse({ status: 404, description: 'Article not found.' })
   remove(@Param('id') id: string) {
     return this.articlesService.remove(id);
   }
 
-  // Person Article Routes
-  @ApiOperation({ summary: 'Create a new person article' })
-  @Post('person')
-  createPersonArticle(@Body() createPersonArticleDto: CreatePersonArticleDto) {
-    return this.articlesService.createPersonArticle(createPersonArticleDto);
-  }
-
-  @ApiOperation({ summary: 'Get all person articles' })
-  @Get('person')
-  findAllPersonArticles() {
-    return this.articlesService.findAllPersonArticles();
-  }
-
-  @ApiOperation({ summary: 'Get a specific person article by ID' })
-  @ApiParam({ name: 'id', description: 'Person Article ID' })
-  @Get('person/:id')
-  findOnePersonArticle(@Param('id') id: string) {
-    return this.articlesService.findOnePersonArticle(id);
-  }
-
-  @ApiOperation({ summary: 'Update a specific person article' })
-  @ApiParam({ name: 'id', description: 'Person Article ID' })
-  @Patch('person/:id')
-  updatePersonArticle(@Param('id') id: string, @Body() updatePersonArticleDto: UpdatePersonArticleDto) {
-    return this.articlesService.updatePersonArticle(id, updatePersonArticleDto);
-  }
-
-  @ApiOperation({ summary: 'Delete a specific person article' })
-  @ApiParam({ name: 'id', description: 'Person Article ID' })
-  @Delete('person/:id')
-  removePersonArticle(@Param('id') id: string) {
-    return this.articlesService.removePersonArticle(id);
-  }
-
-  // Event Article Routes
-  @ApiOperation({ summary: 'Create a new event article' })
-  @Post('event')
-  createEventArticle(@Body() createEventArticleDto: CreateEventArticleDto) {
-    return this.articlesService.createEventArticle(createEventArticleDto);
-  }
-
-  @ApiOperation({ summary: 'Get all event articles' })
-  @Get('event')
-  findAllEventArticles() {
-    return this.articlesService.findAllEventArticles();
-  }
-
-  @ApiOperation({ summary: 'Get a specific event article by ID' })
-  @ApiParam({ name: 'id', description: 'Event Article ID' })
-  @Get('event/:id')
-  findOneEventArticle(@Param('id') id: string) {
-    return this.articlesService.findOneEventArticle(id);
-  }
-
-  @ApiOperation({ summary: 'Update a specific event article' })
-  @ApiParam({ name: 'id', description: 'Event Article ID' })
-  @Patch('event/:id')
-  updateEventArticle(@Param('id') id: string, @Body() updateEventArticleDto: UpdateEventArticleDto) {
-    return this.articlesService.updateEventArticle(id, updateEventArticleDto);
-  }
-
-  @ApiOperation({ summary: 'Delete a specific event article' })
-  @ApiParam({ name: 'id', description: 'Event Article ID' })
-  @Delete('event/:id')
-  removeEventArticle(@Param('id') id: string) {
-    return this.articlesService.removeEventArticle(id);
-  }
-
-  // Content Routes
-  @ApiOperation({ summary: 'Create a new content' })
+  // Content endpoints
   @Post('content')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Create a new content' })
+  @ApiResponse({ status: 201, description: 'The content has been successfully created.' })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
   createContent(@Body() createContentDto: CreateContentDto) {
     return this.articlesService.createContent(createContentDto);
   }
 
-  @ApiOperation({ summary: 'Get all contents' })
   @Get('content')
+  @ApiOperation({ summary: 'Get all contents' })
+  @ApiResponse({ status: 200, description: 'Return all contents.' })
   findAllContents() {
     return this.articlesService.findAllContents();
   }
 
-  @ApiOperation({ summary: 'Get contents by article ID' })
-  @ApiParam({ name: 'articleId', description: 'Article ID' })
-  @Get('content/article/:articleId')
-  findContentsByArticle(@Param('articleId') articleId: string) {
-    // This would need implementation in the service
-    return `This action returns all contents for article #${articleId}`;
-  }
-
-  @ApiOperation({ summary: 'Get a specific content by ID' })
-  @ApiParam({ name: 'id', description: 'Content ID' })
   @Get('content/:id')
+  @ApiOperation({ summary: 'Get a content by id' })
+  @ApiResponse({ status: 200, description: 'Return the content.' })
+  @ApiResponse({ status: 404, description: 'Content not found.' })
   findOneContent(@Param('id') id: string) {
     return this.articlesService.findOneContent(id);
   }
 
-  @ApiOperation({ summary: 'Update a specific content' })
-  @ApiParam({ name: 'id', description: 'Content ID' })
   @Patch('content/:id')
+  @ApiOperation({ summary: 'Update a content' })
+  @ApiResponse({ status: 200, description: 'The content has been successfully updated.' })
+  @ApiResponse({ status: 404, description: 'Content not found.' })
   updateContent(@Param('id') id: string, @Body() updateContentDto: UpdateContentDto) {
     return this.articlesService.updateContent(id, updateContentDto);
   }
 
-  @ApiOperation({ summary: 'Delete a specific content' })
-  @ApiParam({ name: 'id', description: 'Content ID' })
   @Delete('content/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Delete a content' })
+  @ApiResponse({ status: 204, description: 'The content has been successfully deleted.' })
+  @ApiResponse({ status: 404, description: 'Content not found.' })
   removeContent(@Param('id') id: string) {
     return this.articlesService.removeContent(id);
   }
 
-  // Image Routes
-  @ApiOperation({ summary: 'Create a new image' })
+  // Image endpoints
   @Post('image')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Create a new image' })
+  @ApiResponse({ status: 201, description: 'The image has been successfully created.' })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
   createImage(@Body() createImageDto: CreateImageDto) {
     return this.articlesService.createImage(createImageDto);
   }
 
-  @ApiOperation({ summary: 'Get all images' })
   @Get('image')
+  @ApiOperation({ summary: 'Get all images' })
+  @ApiResponse({ status: 200, description: 'Return all images.' })
   findAllImages() {
     return this.articlesService.findAllImages();
   }
 
-  @ApiOperation({ summary: 'Get images by content ID' })
-  @ApiParam({ name: 'contentId', description: 'Content ID' })
-  @Get('image/content/:contentId')
-  findImagesByContent(@Param('contentId') contentId: string) {
-    // This would need implementation in the service
-    return `This action returns all images for content #${contentId}`;
-  }
-
-  @ApiOperation({ summary: 'Get a specific image by ID' })
-  @ApiParam({ name: 'id', description: 'Image ID' })
   @Get('image/:id')
+  @ApiOperation({ summary: 'Get an image by id' })
+  @ApiResponse({ status: 200, description: 'Return the image.' })
+  @ApiResponse({ status: 404, description: 'Image not found.' })
   findOneImage(@Param('id') id: string) {
     return this.articlesService.findOneImage(id);
   }
 
-  @ApiOperation({ summary: 'Update a specific image' })
-  @ApiParam({ name: 'id', description: 'Image ID' })
   @Patch('image/:id')
+  @ApiOperation({ summary: 'Update an image' })
+  @ApiResponse({ status: 200, description: 'The image has been successfully updated.' })
+  @ApiResponse({ status: 404, description: 'Image not found.' })
   updateImage(@Param('id') id: string, @Body() updateImageDto: UpdateImageDto) {
     return this.articlesService.updateImage(id, updateImageDto);
   }
 
-  @ApiOperation({ summary: 'Delete a specific image' })
-  @ApiParam({ name: 'id', description: 'Image ID' })
   @Delete('image/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Delete an image' })
+  @ApiResponse({ status: 204, description: 'The image has been successfully deleted.' })
+  @ApiResponse({ status: 404, description: 'Image not found.' })
   removeImage(@Param('id') id: string) {
     return this.articlesService.removeImage(id);
+  }
+
+  // Person Article endpoints
+  @Post('person')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Create a new person article' })
+  @ApiResponse({ status: 201, description: 'The person article has been successfully created.' })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  createPersonArticle(@Body() createPersonArticleDto: CreatePersonArticleDto) {
+    return this.articlesService.createPersonArticle(createPersonArticleDto);
+  }
+
+  @Get('person')
+  @ApiOperation({ summary: 'Get all person articles' })
+  @ApiResponse({ status: 200, description: 'Return all person articles.' })
+  findAllPersonArticles() {
+    return this.articlesService.findAllPersonArticles();
+  }
+
+  @Get('person/:id')
+  @ApiOperation({ summary: 'Get a person article by id' })
+  @ApiResponse({ status: 200, description: 'Return the person article.' })
+  @ApiResponse({ status: 404, description: 'Person article not found.' })
+  findOnePersonArticle(@Param('id') id: string) {
+    return this.articlesService.findOnePersonArticle(id);
+  }
+
+  @Patch('person/:id')
+  @ApiOperation({ summary: 'Update a person article' })
+  @ApiResponse({ status: 200, description: 'The person article has been successfully updated.' })
+  @ApiResponse({ status: 404, description: 'Person article not found.' })
+  updatePersonArticle(@Param('id') id: string, @Body() updatePersonArticleDto: UpdatePersonArticleDto) {
+    return this.articlesService.updatePersonArticle(id, updatePersonArticleDto);
+  }
+
+  @Delete('person/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Delete a person article' })
+  @ApiResponse({ status: 204, description: 'The person article has been successfully deleted.' })
+  @ApiResponse({ status: 404, description: 'Person article not found.' })
+  removePersonArticle(@Param('id') id: string) {
+    return this.articlesService.removePersonArticle(id);
+  }
+
+  // Event Article endpoints
+  @Post('event')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Create a new event article' })
+  @ApiResponse({ status: 201, description: 'The event article has been successfully created.' })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  createEventArticle(@Body() createEventArticleDto: CreateEventArticleDto) {
+    return this.articlesService.createEventArticle(createEventArticleDto);
+  }
+
+  @Get('event')
+  @ApiOperation({ summary: 'Get all event articles' })
+  @ApiResponse({ status: 200, description: 'Return all event articles.' })
+  findAllEventArticles() {
+    return this.articlesService.findAllEventArticles();
+  }
+
+  @Get('event/:id')
+  @ApiOperation({ summary: 'Get an event article by id' })
+  @ApiResponse({ status: 200, description: 'Return the event article.' })
+  @ApiResponse({ status: 404, description: 'Event article not found.' })
+  findOneEventArticle(@Param('id') id: string) {
+    return this.articlesService.findOneEventArticle(id);
+  }
+
+  @Patch('event/:id')
+  @ApiOperation({ summary: 'Update an event article' })
+  @ApiResponse({ status: 200, description: 'The event article has been successfully updated.' })
+  @ApiResponse({ status: 404, description: 'Event article not found.' })
+  updateEventArticle(@Param('id') id: string, @Body() updateEventArticleDto: UpdateEventArticleDto) {
+    return this.articlesService.updateEventArticle(id, updateEventArticleDto);
+  }
+
+  @Delete('event/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Delete an event article' })
+  @ApiResponse({ status: 204, description: 'The event article has been successfully deleted.' })
+  @ApiResponse({ status: 404, description: 'Event article not found.' })
+  removeEventArticle(@Param('id') id: string) {
+    return this.articlesService.removeEventArticle(id);
   }
 }
