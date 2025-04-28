@@ -2,15 +2,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
 import React from "react";
 import { Peoples } from "./people";
 import ProfileCard from "@/src/components/cards/ProfileCard";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
 import { MyPagination } from "@/src/components/section/MyPagination";
 
 export default function Explore() {
