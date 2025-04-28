@@ -1,11 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TopicsService } from './topics.service';
+import { PrismaService } from '../../prisma/prisma.service';
 import { NotFoundException } from '@nestjs/common';
-import { prismaClient } from '../../prisma/prisma.service';
+import { v4 as uuidv4 } from 'uuid';
 
-// Mock the Prisma client
-jest.mock('../../prisma/prisma.service', () => ({
-  prismaClient: {
+describe('TopicsService', () => {
+  let service: TopicsService;
+  let prisma: PrismaService;
+
+  const mockPrismaService = {
     topic: {
       create: jest.fn(),
       findMany: jest.fn(),
@@ -13,21 +16,21 @@ jest.mock('../../prisma/prisma.service', () => ({
       update: jest.fn(),
       delete: jest.fn(),
     },
-  },
-}));
-
-describe('TopicsService', () => {
-  let service: TopicsService;
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [TopicsService],
+      providers: [
+        TopicsService,
+        {
+          provide: PrismaService,
+          useValue: mockPrismaService,
+        },
+      ],
     }).compile();
 
     service = module.get<TopicsService>(TopicsService);
-    
-    // Clear all mocks before each test
-    jest.clearAllMocks();
+    prisma = module.get<PrismaService>(PrismaService);
   });
 
   it('should be defined', () => {
@@ -35,180 +38,143 @@ describe('TopicsService', () => {
   });
 
   describe('create', () => {
-    it('should create a new topic', async () => {
+    it('should create a topic', async () => {
       const createTopicDto = {
-        topicName: 'Art History',
+        topicName: 'Test Topic',
+        topicImage: 'test.jpg',
       };
-      
+
       const expectedTopic = {
-        topicId: '123e4567-e89b-12d3-a456-426614174000',
-        topicName: 'Art History',
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        topicId: expect.any(String),
+        ...createTopicDto,
+        createdAt: expect.any(Date),
+        updatedAt: expect.any(Date),
       };
-      
-      jest.spyOn(prismaClient.topic, 'create').mockResolvedValue(expectedTopic);
-      
+
+      mockPrismaService.topic.create.mockResolvedValue(expectedTopic);
+
       const result = await service.create(createTopicDto);
-      
-      expect(prismaClient.topic.create).toHaveBeenCalledWith({
-        data: {
-          topicName: createTopicDto.topicName,
-          createdAt: expect.any(Date),
-          updatedAt: expect.any(Date),
-        },
-      });
-      
+
       expect(result).toEqual(expectedTopic);
+      expect(mockPrismaService.topic.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          topicId: expect.any(String),
+          ...createTopicDto,
+        }),
+      });
     });
   });
 
   describe('findAll', () => {
-    it('should return an array of topics', async () => {
+    it('should return all topics', async () => {
       const expectedTopics = [
         {
-          topicId: '123e4567-e89b-12d3-a456-426614174000',
-          topicName: 'Art History',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-        {
-          topicId: '987fcdeb-51a2-43d7-9b56-254415f67890',
-          topicName: 'World War II',
+          topicId: uuidv4(),
+          topicName: 'Test Topic',
+          topicImage: 'test.jpg',
           createdAt: new Date(),
           updatedAt: new Date(),
         },
       ];
-      
-      jest.spyOn(prismaClient.topic, 'findMany').mockResolvedValue(expectedTopics);
-      
+
+      mockPrismaService.topic.findMany.mockResolvedValue(expectedTopics);
+
       const result = await service.findAll();
-      
-      expect(prismaClient.topic.findMany).toHaveBeenCalled();
+
       expect(result).toEqual(expectedTopics);
+      expect(mockPrismaService.topic.findMany).toHaveBeenCalled();
     });
   });
 
   describe('findOne', () => {
-    it('should return a topic by id', async () => {
-      const topicId = '123e4567-e89b-12d3-a456-426614174000';
+    it('should return a topic if found', async () => {
+      const topicId = uuidv4();
       const expectedTopic = {
         topicId,
-        topicName: 'Art History',
+        topicName: 'Test Topic',
+        topicImage: 'test.jpg',
         createdAt: new Date(),
         updatedAt: new Date(),
       };
-      
-      jest.spyOn(prismaClient.topic, 'findUnique').mockResolvedValue(expectedTopic);
-      
+
+      mockPrismaService.topic.findUnique.mockResolvedValue(expectedTopic);
+
       const result = await service.findOne(topicId);
-      
-      expect(prismaClient.topic.findUnique).toHaveBeenCalledWith({
+
+      expect(result).toEqual(expectedTopic);
+      expect(mockPrismaService.topic.findUnique).toHaveBeenCalledWith({
         where: { topicId },
       });
-      expect(result).toEqual(expectedTopic);
     });
 
-    it('should throw NotFoundException when topic is not found', async () => {
-      const topicId = '123e4567-e89b-12d3-a456-426614174000';
-      
-      jest.spyOn(prismaClient.topic, 'findUnique').mockResolvedValue(null);
-      
+    it('should throw NotFoundException if topic not found', async () => {
+      const topicId = uuidv4();
+      mockPrismaService.topic.findUnique.mockResolvedValue(null);
+
       await expect(service.findOne(topicId)).rejects.toThrow(NotFoundException);
-      expect(prismaClient.topic.findUnique).toHaveBeenCalledWith({
-        where: { topicId },
-      });
     });
   });
 
   describe('update', () => {
-    it('should update a topic', async () => {
-      const topicId = '123e4567-e89b-12d3-a456-426614174000';
+    it('should update a topic if found', async () => {
+      const topicId = uuidv4();
       const updateTopicDto = {
-        topicName: 'Updated Art History',
+        topicName: 'Updated Topic',
       };
-      
-      const existingTopic = {
+
+      const expectedTopic = {
         topicId,
-        topicName: 'Art History',
+        topicName: 'Updated Topic',
+        topicImage: 'test.jpg',
         createdAt: new Date(),
         updatedAt: new Date(),
       };
-      
-      const expectedUpdatedTopic = {
-        ...existingTopic,
-        topicName: 'Updated Art History',
-        updatedAt: new Date(),
-      };
-      
-      jest.spyOn(prismaClient.topic, 'findUnique').mockResolvedValue(existingTopic);
-      jest.spyOn(prismaClient.topic, 'update').mockResolvedValue(expectedUpdatedTopic);
-      
+
+      mockPrismaService.topic.update.mockResolvedValue(expectedTopic);
+
       const result = await service.update(topicId, updateTopicDto);
-      
-      expect(prismaClient.topic.findUnique).toHaveBeenCalledWith({
+
+      expect(result).toEqual(expectedTopic);
+      expect(mockPrismaService.topic.update).toHaveBeenCalledWith({
         where: { topicId },
+        data: updateTopicDto,
       });
-      expect(prismaClient.topic.update).toHaveBeenCalledWith({
-        where: { topicId },
-        data: {
-          topicName: updateTopicDto.topicName,
-          updatedAt: expect.any(Date),
-        },
-      });
-      expect(result).toEqual(expectedUpdatedTopic);
     });
 
-    it('should throw NotFoundException when topic to update is not found', async () => {
-      const topicId = '123e4567-e89b-12d3-a456-426614174000';
-      const updateTopicDto = {
-        topicName: 'Updated Art History',
-      };
-      
-      jest.spyOn(prismaClient.topic, 'findUnique').mockResolvedValue(null);
-      
-      await expect(service.update(topicId, updateTopicDto)).rejects.toThrow(NotFoundException);
-      expect(prismaClient.topic.findUnique).toHaveBeenCalledWith({
-        where: { topicId },
-      });
-      expect(prismaClient.topic.update).not.toHaveBeenCalled();
+    it('should throw NotFoundException if topic not found', async () => {
+      const topicId = uuidv4();
+      mockPrismaService.topic.update.mockRejectedValue(new Error());
+
+      await expect(service.update(topicId, {})).rejects.toThrow(NotFoundException);
     });
   });
 
   describe('remove', () => {
-    it('should remove a topic', async () => {
-      const topicId = '123e4567-e89b-12d3-a456-426614174000';
+    it('should remove a topic if found', async () => {
+      const topicId = uuidv4();
       const expectedTopic = {
         topicId,
-        topicName: 'Art History',
+        topicName: 'Test Topic',
+        topicImage: 'test.jpg',
         createdAt: new Date(),
         updatedAt: new Date(),
       };
-      
-      jest.spyOn(prismaClient.topic, 'findUnique').mockResolvedValue(expectedTopic);
-      jest.spyOn(prismaClient.topic, 'delete').mockResolvedValue(expectedTopic);
-      
+
+      mockPrismaService.topic.delete.mockResolvedValue(expectedTopic);
+
       const result = await service.remove(topicId);
-      
-      expect(prismaClient.topic.findUnique).toHaveBeenCalledWith({
-        where: { topicId },
-      });
-      expect(prismaClient.topic.delete).toHaveBeenCalledWith({
-        where: { topicId },
-      });
+
       expect(result).toEqual(expectedTopic);
+      expect(mockPrismaService.topic.delete).toHaveBeenCalledWith({
+        where: { topicId },
+      });
     });
 
-    it('should throw NotFoundException when topic to remove is not found', async () => {
-      const topicId = '123e4567-e89b-12d3-a456-426614174000';
-      
-      jest.spyOn(prismaClient.topic, 'findUnique').mockResolvedValue(null);
-      
+    it('should throw NotFoundException if topic not found', async () => {
+      const topicId = uuidv4();
+      mockPrismaService.topic.delete.mockRejectedValue(new Error());
+
       await expect(service.remove(topicId)).rejects.toThrow(NotFoundException);
-      expect(prismaClient.topic.findUnique).toHaveBeenCalledWith({
-        where: { topicId },
-      });
-      expect(prismaClient.topic.delete).not.toHaveBeenCalled();
     });
   });
 });

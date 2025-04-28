@@ -1,11 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PeriodsService } from './periods.service';
+import { PrismaService } from '../../prisma/prisma.service';
 import { NotFoundException } from '@nestjs/common';
-import { prismaClient } from '../../prisma/prisma.service';
+import { v4 as uuidv4 } from 'uuid';
 
-// Mock the Prisma client
-jest.mock('../../prisma/prisma.service', () => ({
-  prismaClient: {
+describe('PeriodsService', () => {
+  let service: PeriodsService;
+  let prisma: PrismaService;
+
+  const mockPrismaService = {
     period: {
       create: jest.fn(),
       findMany: jest.fn(),
@@ -13,21 +16,21 @@ jest.mock('../../prisma/prisma.service', () => ({
       update: jest.fn(),
       delete: jest.fn(),
     },
-  },
-}));
-
-describe('PeriodsService', () => {
-  let service: PeriodsService;
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [PeriodsService],
+      providers: [
+        PeriodsService,
+        {
+          provide: PrismaService,
+          useValue: mockPrismaService,
+        },
+      ],
     }).compile();
 
     service = module.get<PeriodsService>(PeriodsService);
-    
-    // Clear all mocks before each test
-    jest.clearAllMocks();
+    prisma = module.get<PrismaService>(PrismaService);
   });
 
   it('should be defined', () => {
@@ -35,199 +38,153 @@ describe('PeriodsService', () => {
   });
 
   describe('create', () => {
-    it('should create a new period', async () => {
+    it('should create a period', async () => {
       const createPeriodDto = {
-        periodName: 'Renaissance',
-        startYear: 1300,
-        endYear: 1600,
+        periodName: 'Test Period',
+        periodImage: 'test.jpg',
+        startYear: 1900,
+        endYear: 2000,
       };
-      
+
       const expectedPeriod = {
-        periodId: '123e4567-e89b-12d3-a456-426614174000',
-        periodName: 'Renaissance',
-        startYear: 1300,
-        endYear: 1600,
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        periodId: expect.any(String),
+        ...createPeriodDto,
+        createdAt: expect.any(Date),
+        updatedAt: expect.any(Date),
       };
-      
-      jest.spyOn(prismaClient.period, 'create').mockResolvedValue(expectedPeriod);
-      
+
+      mockPrismaService.period.create.mockResolvedValue(expectedPeriod);
+
       const result = await service.create(createPeriodDto);
-      
-      expect(prismaClient.period.create).toHaveBeenCalledWith({
-        data: {
-          periodName: createPeriodDto.periodName,
-          startYear: createPeriodDto.startYear,
-          endYear: createPeriodDto.endYear,
-          createdAt: expect.any(Date),
-          updatedAt: expect.any(Date),
-        },
-      });
-      
+
       expect(result).toEqual(expectedPeriod);
+      expect(mockPrismaService.period.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          periodId: expect.any(String),
+          ...createPeriodDto,
+        }),
+      });
     });
   });
 
   describe('findAll', () => {
-    it('should return an array of periods', async () => {
+    it('should return all periods', async () => {
       const expectedPeriods = [
         {
-          periodId: '123e4567-e89b-12d3-a456-426614174000',
-          periodName: 'Renaissance',
-          startYear: 1300,
-          endYear: 1600,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-        {
-          periodId: '987fcdeb-51a2-43d7-9b56-254415f67890',
-          periodName: 'Medieval',
-          startYear: 500,
-          endYear: 1500,
+          periodId: uuidv4(),
+          periodName: 'Test Period',
+          periodImage: 'test.jpg',
+          startYear: 1900,
+          endYear: 2000,
           createdAt: new Date(),
           updatedAt: new Date(),
         },
       ];
-      
-      jest.spyOn(prismaClient.period, 'findMany').mockResolvedValue(expectedPeriods);
-      
+
+      mockPrismaService.period.findMany.mockResolvedValue(expectedPeriods);
+
       const result = await service.findAll();
-      
-      expect(prismaClient.period.findMany).toHaveBeenCalled();
+
       expect(result).toEqual(expectedPeriods);
+      expect(mockPrismaService.period.findMany).toHaveBeenCalled();
     });
   });
 
   describe('findOne', () => {
-    it('should return a period by id', async () => {
-      const periodId = '123e4567-e89b-12d3-a456-426614174000';
+    it('should return a period if found', async () => {
+      const periodId = uuidv4();
       const expectedPeriod = {
         periodId,
-        periodName: 'Renaissance',
-        startYear: 1300,
-        endYear: 1600,
+        periodName: 'Test Period',
+        periodImage: 'test.jpg',
+        startYear: 1900,
+        endYear: 2000,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
-      
-      jest.spyOn(prismaClient.period, 'findUnique').mockResolvedValue(expectedPeriod);
-      
+
+      mockPrismaService.period.findUnique.mockResolvedValue(expectedPeriod);
+
       const result = await service.findOne(periodId);
-      
-      expect(prismaClient.period.findUnique).toHaveBeenCalledWith({
+
+      expect(result).toEqual(expectedPeriod);
+      expect(mockPrismaService.period.findUnique).toHaveBeenCalledWith({
         where: { periodId },
       });
-      expect(result).toEqual(expectedPeriod);
     });
 
-    it('should throw NotFoundException when period is not found', async () => {
-      const periodId = '123e4567-e89b-12d3-a456-426614174000';
-      
-      jest.spyOn(prismaClient.period, 'findUnique').mockResolvedValue(null);
-      
+    it('should throw NotFoundException if period not found', async () => {
+      const periodId = uuidv4();
+      mockPrismaService.period.findUnique.mockResolvedValue(null);
+
       await expect(service.findOne(periodId)).rejects.toThrow(NotFoundException);
-      expect(prismaClient.period.findUnique).toHaveBeenCalledWith({
-        where: { periodId },
-      });
     });
   });
 
   describe('update', () => {
-    it('should update a period', async () => {
-      const periodId = '123e4567-e89b-12d3-a456-426614174000';
+    it('should update a period if found', async () => {
+      const periodId = uuidv4();
       const updatePeriodDto = {
-        periodName: 'Updated Renaissance',
-        startYear: 1350,
+        periodName: 'Updated Period',
       };
-      
-      const existingPeriod = {
+
+      const expectedPeriod = {
         periodId,
-        periodName: 'Renaissance',
-        startYear: 1300,
-        endYear: 1600,
+        periodName: 'Updated Period',
+        periodImage: 'test.jpg',
+        startYear: 1900,
+        endYear: 2000,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
-      
-      const expectedUpdatedPeriod = {
-        ...existingPeriod,
-        periodName: 'Updated Renaissance',
-        startYear: 1350,
-        updatedAt: new Date(),
-      };
-      
-      jest.spyOn(prismaClient.period, 'findUnique').mockResolvedValue(existingPeriod);
-      jest.spyOn(prismaClient.period, 'update').mockResolvedValue(expectedUpdatedPeriod);
-      
+
+      mockPrismaService.period.update.mockResolvedValue(expectedPeriod);
+
       const result = await service.update(periodId, updatePeriodDto);
-      
-      expect(prismaClient.period.findUnique).toHaveBeenCalledWith({
+
+      expect(result).toEqual(expectedPeriod);
+      expect(mockPrismaService.period.update).toHaveBeenCalledWith({
         where: { periodId },
+        data: updatePeriodDto,
       });
-      expect(prismaClient.period.update).toHaveBeenCalledWith({
-        where: { periodId },
-        data: {
-          periodName: updatePeriodDto.periodName,
-          startYear: updatePeriodDto.startYear,
-          updatedAt: expect.any(Date),
-        },
-      });
-      expect(result).toEqual(expectedUpdatedPeriod);
     });
 
-    it('should throw NotFoundException when period to update is not found', async () => {
-      const periodId = '123e4567-e89b-12d3-a456-426614174000';
-      const updatePeriodDto = {
-        periodName: 'Updated Renaissance',
-      };
-      
-      jest.spyOn(prismaClient.period, 'findUnique').mockResolvedValue(null);
-      
-      await expect(service.update(periodId, updatePeriodDto)).rejects.toThrow(NotFoundException);
-      expect(prismaClient.period.findUnique).toHaveBeenCalledWith({
-        where: { periodId },
-      });
-      expect(prismaClient.period.update).not.toHaveBeenCalled();
+    it('should throw NotFoundException if period not found', async () => {
+      const periodId = uuidv4();
+      mockPrismaService.period.update.mockRejectedValue(new Error());
+
+      await expect(service.update(periodId, {})).rejects.toThrow(NotFoundException);
     });
   });
 
   describe('remove', () => {
-    it('should remove a period', async () => {
-      const periodId = '123e4567-e89b-12d3-a456-426614174000';
+    it('should remove a period if found', async () => {
+      const periodId = uuidv4();
       const expectedPeriod = {
         periodId,
-        periodName: 'Renaissance',
-        startYear: 1300,
-        endYear: 1600,
+        periodName: 'Test Period',
+        periodImage: 'test.jpg',
+        startYear: 1900,
+        endYear: 2000,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
-      
-      jest.spyOn(prismaClient.period, 'findUnique').mockResolvedValue(expectedPeriod);
-      jest.spyOn(prismaClient.period, 'delete').mockResolvedValue(expectedPeriod);
-      
+
+      mockPrismaService.period.delete.mockResolvedValue(expectedPeriod);
+
       const result = await service.remove(periodId);
-      
-      expect(prismaClient.period.findUnique).toHaveBeenCalledWith({
-        where: { periodId },
-      });
-      expect(prismaClient.period.delete).toHaveBeenCalledWith({
-        where: { periodId },
-      });
+
       expect(result).toEqual(expectedPeriod);
+      expect(mockPrismaService.period.delete).toHaveBeenCalledWith({
+        where: { periodId },
+      });
     });
 
-    it('should throw NotFoundException when period to remove is not found', async () => {
-      const periodId = '123e4567-e89b-12d3-a456-426614174000';
-      
-      jest.spyOn(prismaClient.period, 'findUnique').mockResolvedValue(null);
-      
+    it('should throw NotFoundException if period not found', async () => {
+      const periodId = uuidv4();
+      mockPrismaService.period.delete.mockRejectedValue(new Error());
+
       await expect(service.remove(periodId)).rejects.toThrow(NotFoundException);
-      expect(prismaClient.period.findUnique).toHaveBeenCalledWith({
-        where: { periodId },
-      });
-      expect(prismaClient.period.delete).not.toHaveBeenCalled();
     });
   });
 });

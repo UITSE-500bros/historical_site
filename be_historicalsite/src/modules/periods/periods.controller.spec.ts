@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { PeriodsController } from './periods.controller';
 import { PeriodsService } from './periods.service';
 import { NotFoundException } from '@nestjs/common';
+import { v4 as uuidv4 } from 'uuid';
 
 describe('PeriodsController', () => {
   let controller: PeriodsController;
@@ -60,40 +61,70 @@ describe('PeriodsController', () => {
   describe('create', () => {
     it('should create a period', async () => {
       const createPeriodDto = {
-        periodName: 'Renaissance',
-        startYear: 1300,
-        endYear: 1600,
+        periodName: 'Test Period',
+        periodImage: 'test.jpg',
+        startYear: 1900,
+        endYear: 2000,
       };
 
-      mockPeriodsService.create.mockResolvedValue(mockPeriod);
+      const expectedPeriod = {
+        periodId: uuidv4(),
+        ...createPeriodDto,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      mockPeriodsService.create.mockResolvedValue(expectedPeriod);
 
       const result = await controller.create(createPeriodDto);
 
-      expect(service.create).toHaveBeenCalledWith(createPeriodDto);
-      expect(result).toEqual(mockPeriod);
+      expect(result).toEqual(expectedPeriod);
+      expect(mockPeriodsService.create).toHaveBeenCalledWith(createPeriodDto);
     });
   });
 
   describe('findAll', () => {
-    it('should return an array of periods', async () => {
-      mockPeriodsService.findAll.mockResolvedValue(mockPeriods);
+    it('should return all periods', async () => {
+      const expectedPeriods = [
+        {
+          periodId: uuidv4(),
+          periodName: 'Test Period',
+          periodImage: 'test.jpg',
+          startYear: 1900,
+          endYear: 2000,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      ];
+
+      mockPeriodsService.findAll.mockResolvedValue(expectedPeriods);
 
       const result = await controller.findAll();
 
-      expect(service.findAll).toHaveBeenCalled();
-      expect(result).toEqual(mockPeriods);
+      expect(result).toEqual(expectedPeriods);
+      expect(mockPeriodsService.findAll).toHaveBeenCalled();
     });
   });
 
   describe('findOne', () => {
     it('should return a period by id', async () => {
-      const id = '123e4567-e89b-12d3-a456-426614174000';
-      mockPeriodsService.findOne.mockResolvedValue(mockPeriod);
+      const periodId = uuidv4();
+      const expectedPeriod = {
+        periodId,
+        periodName: 'Test Period',
+        periodImage: 'test.jpg',
+        startYear: 1900,
+        endYear: 2000,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
 
-      const result = await controller.findOne(id);
+      mockPeriodsService.findOne.mockResolvedValue(expectedPeriod);
 
-      expect(service.findOne).toHaveBeenCalledWith(id);
-      expect(result).toEqual(mockPeriod);
+      const result = await controller.findOne(periodId);
+
+      expect(result).toEqual(expectedPeriod);
+      expect(mockPeriodsService.findOne).toHaveBeenCalledWith(periodId);
     });
 
     it('should throw NotFoundException when period is not found', async () => {
@@ -107,25 +138,27 @@ describe('PeriodsController', () => {
 
   describe('update', () => {
     it('should update a period', async () => {
-      const id = '123e4567-e89b-12d3-a456-426614174000';
+      const periodId = uuidv4();
       const updatePeriodDto = {
-        periodName: 'Updated Renaissance',
-        startYear: 1350,
+        periodName: 'Updated Period',
       };
 
-      const updatedPeriod = {
-        ...mockPeriod,
-        periodName: 'Updated Renaissance',
-        startYear: 1350,
+      const expectedPeriod = {
+        periodId,
+        periodName: 'Updated Period',
+        periodImage: 'test.jpg',
+        startYear: 1900,
+        endYear: 2000,
+        createdAt: new Date(),
         updatedAt: new Date(),
       };
 
-      mockPeriodsService.update.mockResolvedValue(updatedPeriod);
+      mockPeriodsService.update.mockResolvedValue(expectedPeriod);
 
-      const result = await controller.update(id, updatePeriodDto);
+      const result = await controller.update(periodId, updatePeriodDto);
 
-      expect(service.update).toHaveBeenCalledWith(id, updatePeriodDto);
-      expect(result).toEqual(updatedPeriod);
+      expect(result).toEqual(expectedPeriod);
+      expect(mockPeriodsService.update).toHaveBeenCalledWith(periodId, updatePeriodDto);
     });
 
     it('should throw NotFoundException when period to update is not found', async () => {
@@ -143,13 +176,23 @@ describe('PeriodsController', () => {
 
   describe('remove', () => {
     it('should remove a period', async () => {
-      const id = '123e4567-e89b-12d3-a456-426614174000';
-      mockPeriodsService.remove.mockResolvedValue(mockPeriod);
+      const periodId = uuidv4();
+      const expectedPeriod = {
+        periodId,
+        periodName: 'Test Period',
+        periodImage: 'test.jpg',
+        startYear: 1900,
+        endYear: 2000,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
 
-      const result = await controller.remove(id);
+      mockPeriodsService.remove.mockResolvedValue(expectedPeriod);
 
-      expect(service.remove).toHaveBeenCalledWith(id);
-      expect(result).toEqual(mockPeriod);
+      const result = await controller.remove(periodId);
+
+      expect(result).toEqual(expectedPeriod);
+      expect(mockPeriodsService.remove).toHaveBeenCalledWith(periodId);
     });
 
     it('should throw NotFoundException when period to remove is not found', async () => {

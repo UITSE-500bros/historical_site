@@ -1,81 +1,74 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { PrismaService } from '../../prisma/prisma.service';
 import { CreatePeriodDto } from './dto/create-period.dto';
 import { UpdatePeriodDto } from './dto/update-period.dto';
-import { prismaClient } from '../../prisma/prisma.service';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class PeriodsService {
+  constructor(private prisma: PrismaService) {}
+
   async create(createPeriodDto: CreatePeriodDto) {
-    return prismaClient.period.create({
+    return this.prisma.period.create({
       data: {
-        periodName: createPeriodDto.periodName,
-        startYear: createPeriodDto.startYear,
-        endYear: createPeriodDto.endYear,
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        periodId: uuidv4(),
+        ...createPeriodDto,
       },
     });
   }
 
   async findAll() {
-    return prismaClient.period.findMany();
+    return this.prisma.period.findMany({
+      orderBy: {
+        startYear: 'asc',
+      },
+      include: {
+        eventArticles: {
+          include: {
+            article: true,
+          },
+        },
+      },
+    });
   }
 
   async findOne(id: string) {
-    const period = await prismaClient.period.findUnique({
+    const period = await this.prisma.period.findUnique({
       where: { periodId: id },
+      include: {
+        eventArticles: {
+          include: {
+            article: true,
+          },
+        },
+      },
     });
-    
+
     if (!period) {
       throw new NotFoundException(`Period with ID ${id} not found`);
     }
-    
+
     return period;
   }
 
   async update(id: string, updatePeriodDto: UpdatePeriodDto) {
-    // Check if period exists
-    const existingPeriod = await prismaClient.period.findUnique({
-      where: { periodId: id },
-    });
-    
-    if (!existingPeriod) {
+    try {
+      return await this.prisma.period.update({
+        where: { periodId: id },
+        data: updatePeriodDto,
+      });
+    } catch (error) {
       throw new NotFoundException(`Period with ID ${id} not found`);
     }
-    
-    // Update only the fields that are provided
-    const updateData: any = { updatedAt: new Date() };
-    
-    if (updatePeriodDto.periodName !== undefined) {
-      updateData.periodName = updatePeriodDto.periodName;
-    }
-    
-    if (updatePeriodDto.startYear !== undefined) {
-      updateData.startYear = updatePeriodDto.startYear;
-    }
-    
-    if (updatePeriodDto.endYear !== undefined) {
-      updateData.endYear = updatePeriodDto.endYear;
-    }
-    
-    return prismaClient.period.update({
-      where: { periodId: id },
-      data: updateData,
-    });
   }
 
   async remove(id: string) {
-    // Check if period exists
-    const existingPeriod = await prismaClient.period.findUnique({
-      where: { periodId: id },
-    });
-    
-    if (!existingPeriod) {
+    try {
+      return await this.prisma.period.delete({
+        where: { periodId: id },
+      });
+    } catch (error) {
       throw new NotFoundException(`Period with ID ${id} not found`);
     }
-    
-    return prismaClient.period.delete({
-      where: { periodId: id },
-    });
   }
 }

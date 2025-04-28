@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TopicsController } from './topics.controller';
 import { TopicsService } from './topics.service';
 import { NotFoundException } from '@nestjs/common';
+import { v4 as uuidv4 } from 'uuid';
 
 describe('TopicsController', () => {
   let controller: TopicsController;
@@ -56,38 +57,64 @@ describe('TopicsController', () => {
   describe('create', () => {
     it('should create a topic', async () => {
       const createTopicDto = {
-        topicName: 'Art History',
+        topicName: 'Test Topic',
+        topicImage: 'test.jpg',
       };
 
-      mockTopicsService.create.mockResolvedValue(mockTopic);
+      const expectedTopic = {
+        topicId: uuidv4(),
+        ...createTopicDto,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      mockTopicsService.create.mockResolvedValue(expectedTopic);
 
       const result = await controller.create(createTopicDto);
 
-      expect(service.create).toHaveBeenCalledWith(createTopicDto);
-      expect(result).toEqual(mockTopic);
+      expect(result).toEqual(expectedTopic);
+      expect(mockTopicsService.create).toHaveBeenCalledWith(createTopicDto);
     });
   });
 
   describe('findAll', () => {
-    it('should return an array of topics', async () => {
-      mockTopicsService.findAll.mockResolvedValue(mockTopics);
+    it('should return all topics', async () => {
+      const expectedTopics = [
+        {
+          topicId: uuidv4(),
+          topicName: 'Test Topic',
+          topicImage: 'test.jpg',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      ];
+
+      mockTopicsService.findAll.mockResolvedValue(expectedTopics);
 
       const result = await controller.findAll();
 
-      expect(service.findAll).toHaveBeenCalled();
-      expect(result).toEqual(mockTopics);
+      expect(result).toEqual(expectedTopics);
+      expect(mockTopicsService.findAll).toHaveBeenCalled();
     });
   });
 
   describe('findOne', () => {
     it('should return a topic by id', async () => {
-      const id = '123e4567-e89b-12d3-a456-426614174000';
-      mockTopicsService.findOne.mockResolvedValue(mockTopic);
+      const topicId = uuidv4();
+      const expectedTopic = {
+        topicId,
+        topicName: 'Test Topic',
+        topicImage: 'test.jpg',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
 
-      const result = await controller.findOne(id);
+      mockTopicsService.findOne.mockResolvedValue(expectedTopic);
 
-      expect(service.findOne).toHaveBeenCalledWith(id);
-      expect(result).toEqual(mockTopic);
+      const result = await controller.findOne(topicId);
+
+      expect(result).toEqual(expectedTopic);
+      expect(mockTopicsService.findOne).toHaveBeenCalledWith(topicId);
     });
 
     it('should throw NotFoundException when topic is not found', async () => {
@@ -101,23 +128,25 @@ describe('TopicsController', () => {
 
   describe('update', () => {
     it('should update a topic', async () => {
-      const id = '123e4567-e89b-12d3-a456-426614174000';
+      const topicId = uuidv4();
       const updateTopicDto = {
-        topicName: 'Updated Art History',
+        topicName: 'Updated Topic',
       };
 
-      const updatedTopic = {
-        ...mockTopic,
-        topicName: 'Updated Art History',
+      const expectedTopic = {
+        topicId,
+        topicName: 'Updated Topic',
+        topicImage: 'test.jpg',
+        createdAt: new Date(),
         updatedAt: new Date(),
       };
 
-      mockTopicsService.update.mockResolvedValue(updatedTopic);
+      mockTopicsService.update.mockResolvedValue(expectedTopic);
 
-      const result = await controller.update(id, updateTopicDto);
+      const result = await controller.update(topicId, updateTopicDto);
 
-      expect(service.update).toHaveBeenCalledWith(id, updateTopicDto);
-      expect(result).toEqual(updatedTopic);
+      expect(result).toEqual(expectedTopic);
+      expect(mockTopicsService.update).toHaveBeenCalledWith(topicId, updateTopicDto);
     });
 
     it('should throw NotFoundException when topic to update is not found', async () => {
@@ -135,13 +164,21 @@ describe('TopicsController', () => {
 
   describe('remove', () => {
     it('should remove a topic', async () => {
-      const id = '123e4567-e89b-12d3-a456-426614174000';
-      mockTopicsService.remove.mockResolvedValue(mockTopic);
+      const topicId = uuidv4();
+      const expectedTopic = {
+        topicId,
+        topicName: 'Test Topic',
+        topicImage: 'test.jpg',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
 
-      const result = await controller.remove(id);
+      mockTopicsService.remove.mockResolvedValue(expectedTopic);
 
-      expect(service.remove).toHaveBeenCalledWith(id);
-      expect(result).toEqual(mockTopic);
+      const result = await controller.remove(topicId);
+
+      expect(result).toEqual(expectedTopic);
+      expect(mockTopicsService.remove).toHaveBeenCalledWith(topicId);
     });
 
     it('should throw NotFoundException when topic to remove is not found', async () => {
