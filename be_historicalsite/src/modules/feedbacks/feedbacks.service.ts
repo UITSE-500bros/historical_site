@@ -1,26 +1,64 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { PrismaService } from '../../prisma/prisma.service';
 import { CreateFeedbackDto } from './dto/create-feedback.dto';
 import { UpdateFeedbackDto } from './dto/update-feedback.dto';
+import { FeedbackStatus } from '../../../prisma/generated/prisma';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class FeedbacksService {
-  create(createFeedbackDto: CreateFeedbackDto) {
-    return 'This action adds a new feedback';
+  constructor(private prisma: PrismaService) {}
+
+  async create(createFeedbackDto: CreateFeedbackDto) {
+    return this.prisma.feedback.create({
+      data: {
+        feedbackId: uuidv4(),
+        ...createFeedbackDto,
+        status: createFeedbackDto.status || FeedbackStatus.OPEN,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }
+    });
   }
 
-  findAll() {
-    return `This action returns all feedbacks`;
+  async findAll() {
+    return this.prisma.feedback.findMany({
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} feedback`;
+  async findOne(id: string) {
+    const feedback = await this.prisma.feedback.findUnique({
+      where: { feedbackId: id },
+    });
+
+    if (!feedback) {
+      throw new NotFoundException(`Feedback with ID ${id} not found`);
+    }
+
+    return feedback;
   }
 
-  update(id: number, updateFeedbackDto: UpdateFeedbackDto) {
-    return `This action updates a #${id} feedback`;
+  async update(id: string, updateFeedbackDto: UpdateFeedbackDto) {
+    try {
+      return await this.prisma.feedback.update({
+        where: { feedbackId: id },
+        data: updateFeedbackDto,
+      });
+    } catch (error) {
+      throw new NotFoundException(`Feedback with ID ${id} not found`);
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} feedback`;
+  async remove(id: string) {
+    try {
+      return await this.prisma.feedback.delete({
+        where: { feedbackId: id },
+      });
+    } catch (error) {
+      throw new NotFoundException(`Feedback with ID ${id} not found`);
+    }
   }
 }

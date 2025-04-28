@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus } from '@nestjs/common';
 import { FeedbacksService } from './feedbacks.service';
 import { CreateFeedbackDto } from './dto/create-feedback.dto';
 import { UpdateFeedbackDto } from './dto/update-feedback.dto';
@@ -8,6 +8,7 @@ export class FeedbacksController {
   constructor(private readonly feedbacksService: FeedbacksService) {}
 
   @Post()
+  @HttpCode(HttpStatus.CREATED)
   create(@Body() createFeedbackDto: CreateFeedbackDto) {
     return this.feedbacksService.create(createFeedbackDto);
   }
@@ -19,16 +20,17 @@ export class FeedbacksController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.feedbacksService.findOne(+id);
+    return this.feedbacksService.findOne(id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateFeedbackDto: UpdateFeedbackDto) {
-    return this.feedbacksService.update(+id, updateFeedbackDto);
+    return this.feedbacksService.update(id, updateFeedbackDto);
   }
 
   @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
   remove(@Param('id') id: string) {
-    return this.feedbacksService.remove(+id);
+    return this.feedbacksService.remove(id);
   }
 }
