@@ -1,5 +1,5 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus, Query } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
 import { ArticlesService } from './articles.service';
 import { CreateArticleDto } from './dto/article-dto/create-article.dto';
 import { UpdateArticleDto } from './dto/article-dto/update-article.dto';
@@ -11,6 +11,7 @@ import { CreatePersonArticleDto } from './dto/create-person-article.dto';
 import { UpdatePersonArticleDto } from './dto/update-person-article.dto';
 import { CreateEventArticleDto } from './dto/create-event-article.dto';
 import { UpdateEventArticleDto } from './dto/update-event-article.dto';
+import { PaginationDto } from './dto/article-dto/pagination.dto';
 
 @ApiTags('articles')
 @Controller('articles')
@@ -28,10 +29,32 @@ export class ArticlesController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all articles' })
-  @ApiResponse({ status: 200, description: 'Return all articles.' })
-  findAll() {
-    return this.articlesService.findAll();
+  @ApiOperation({ summary: 'Get all articles with pagination' })
+  @ApiQuery({ name: 'page', required: false, type: Number, description: 'Page number (1-based)' })
+  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Number of items per page' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Return paginated articles with metadata.',
+    schema: {
+      properties: {
+        data: {
+          type: 'array',
+          items: { $ref: '#/components/schemas/Article' }
+        },
+        meta: {
+          type: 'object',
+          properties: {
+            total: { type: 'number' },
+            page: { type: 'number' },
+            limit: { type: 'number' },
+            totalPages: { type: 'number' }
+          }
+        }
+      }
+    }
+  })
+  findAll(@Query() paginationDto: PaginationDto) {
+    return this.articlesService.findAll(paginationDto);
   }
 
   @Get(':id')

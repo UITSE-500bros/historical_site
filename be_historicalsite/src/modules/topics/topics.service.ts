@@ -21,27 +21,13 @@ export class TopicsService {
     return this.prisma.topic.findMany({
       orderBy: {
         topicName: 'asc',
-      },
-      include: {
-        eventArticles: {
-          include: {
-            article: true,
-          },
-        },
-      },
+      }
     });
   }
 
   async findOne(id: string) {
     const topic = await this.prisma.topic.findUnique({
-      where: { topicId: id },
-      include: {
-        eventArticles: {
-          include: {
-            article: true,
-          },
-        },
-      },
+      where: { topicId: id }
     });
 
     if (!topic) {

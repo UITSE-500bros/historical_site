@@ -21,27 +21,13 @@ export class PeriodsService {
     return this.prisma.period.findMany({
       orderBy: {
         startYear: 'asc',
-      },
-      include: {
-        eventArticles: {
-          include: {
-            article: true,
-          },
-        },
-      },
+      }
     });
   }
 
   async findOne(id: string) {
     const period = await this.prisma.period.findUnique({
-      where: { periodId: id },
-      include: {
-        eventArticles: {
-          include: {
-            article: true,
-          },
-        },
-      },
+      where: { periodId: id }
     });
 
     if (!period) {

@@ -12,6 +12,7 @@ import { UpdateEventArticleDto } from './dto/update-event-article.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { PrismaService } from '../../prisma/prisma.service';
 import { ArticleType } from '../../../prisma/generated/prisma';
+import { PaginationDto } from './dto/article-dto/pagination.dto';
 
 @Injectable()
 export class ArticlesService {
@@ -31,23 +32,44 @@ export class ArticlesService {
     });
   }
 
-  async findAll() {
-    return this.prisma.article.findMany({
-      include: {
-        personArticle: true,
-        eventArticle: {
-          include: {
-            period: true,
-            topic: true,
+  async findAll(paginationDto: PaginationDto) {
+    const { page = 1, limit = 10 } = paginationDto;
+    const skip = (page - 1) * limit;
+
+    const [articles, total] = await Promise.all([
+      this.prisma.article.findMany({
+        skip,
+        take: limit,
+        include: {
+          personArticle: true,
+          eventArticle: {
+            include: {
+              period: true,
+              topic: true,
+            },
+          },
+          contents: {
+            include: {
+              images: true,
+            },
           },
         },
-        contents: {
-          include: {
-            images: true,
-          },
+        orderBy: {
+          createdAt: 'desc',
         },
+      }),
+      this.prisma.article.count(),
+    ]);
+
+    return {
+      data: articles,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
       },
-    });
+    };
   }
 
   async findOne(id: string) {
