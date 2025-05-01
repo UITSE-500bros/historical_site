@@ -24,11 +24,6 @@ async function bootstrap() {
     .setTitle('History site SE109.P21')
     .setDescription('API for Historical Site - A comprehensive platform for exploring historical periods, topics, and articles')
     .setVersion('1.0')
-    .addTag('Topics', 'Operations related to historical topics')
-    .addTag('Periods', 'Operations related to historical periods')
-    .addTag('Articles', 'Operations related to historical articles')
-    .addTag('Feedbacks', 'Operations related to user feedback')
-    .addTag('Payments', 'Operations related to ticket payments')
     .addBearerAuth(
       {
         type: 'http',
@@ -40,9 +35,15 @@ async function bootstrap() {
       },
       'JWT-auth',
     )
+    .addTag('periods', 'Endpoints for managing historical periods')
+    .addTag('topics', 'Endpoints for managing historical topics')
+    .addTag('articles', 'Endpoints for managing historical articles')
+    .addTag('payments', 'Endpoints for managing payments')
     .build();
 
-  const document = SwaggerModule.createDocument(app, config);
+  const document = SwaggerModule.createDocument(app, config, {
+    ignoreGlobalPrefix: true,
+  });
   SwaggerModule.setup('api-docs', app, document, {
     swaggerOptions: {
       persistAuthorization: true,
