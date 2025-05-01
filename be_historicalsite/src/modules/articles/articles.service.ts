@@ -11,7 +11,7 @@ import { CreateEventArticleDto } from './dto/create-event-article.dto';
 import { UpdateEventArticleDto } from './dto/update-event-article.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { PrismaService } from '../../prisma/prisma.service';
-import { ArticleType } from '../../../prisma/generated/prisma';
+import { ArticleType } from '../../../generated/prisma/client';
 import { PaginationDto } from './dto/article-dto/pagination.dto';
 
 @Injectable()

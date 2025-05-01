@@ -1,4 +1,4 @@
-import { FeedbackSubject, FeedbackStatus } from 'prisma/generated/prisma';
+import { FeedbackSubject, FeedbackStatus } from 'generated/prisma/client';
 
 export class CreateFeedbackDto {
   subject: FeedbackSubject;

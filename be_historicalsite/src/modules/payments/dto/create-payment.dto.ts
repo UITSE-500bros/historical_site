@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString, IsNumber, IsEnum, IsDateString } from 'class-validator';
-import { PaymentType, PaymentStatus } from 'prisma/generated/prisma';
+import { PaymentType, PaymentStatus } from 'generated/prisma/client';
 
 export class CreatePaymentDto {
   @ApiProperty({
