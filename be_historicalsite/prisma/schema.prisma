@@ -57,9 +57,9 @@ model Article {
 model PersonArticle {
   articleId   String  @id @db.Uuid
   personName  String
-  personAvatar String
+  personAvatar String?
   birthYear   Int
-  deathYear   Int
+  deathYear   Int?
   nationality String
   createdAt DateTime @db.Timestamp(3) @default(now())
   updatedAt DateTime @db.Timestamp(3) @updatedAt 

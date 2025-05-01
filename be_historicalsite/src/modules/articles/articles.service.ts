@@ -54,13 +54,6 @@ export class ArticlesService {
     const article = await this.prisma.article.findUnique({
       where: { articleId: id },
       include: {
-        personArticle: true,
-        eventArticle: {
-          include: {
-            period: true,
-            topic: true,
-          },
-        },
         contents: {
           include: {
             images: true,
@@ -71,6 +64,23 @@ export class ArticlesService {
 
     if (!article) {
       throw new NotFoundException(`Article with ID ${id} not found`);
+    }
+
+    // Get additional data based on article type
+    if (article.articleType === 'EVENT') {
+      const eventArticle = await this.prisma.eventArticle.findUnique({
+        where: { articleId: id },
+        include: {
+          period: true,
+          topic: true,
+        },
+      });
+      return { ...article, eventArticle };
+    } else if (article.articleType === 'PERSON') {
+      const personArticle = await this.prisma.personArticle.findUnique({
+        where: { articleId: id },
+      });
+      return { ...article, personArticle };
     }
 
     return article;
