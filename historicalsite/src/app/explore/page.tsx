@@ -3,6 +3,7 @@ import React from "react";
 import { Peoples } from "./people";
 import ProfileCard from "@/src/components/cards/ProfileCard";
 import { MyPagination } from "@/src/components/section/MyPagination";
+import Link from "next/link";
 
 export default function Explore() {
   return (
@@ -38,20 +39,21 @@ export default function Explore() {
         </TabsList>
         <TabsContent value="people">
           <div className="grid grid-cols-3">
-            {Peoples.slice(0,9).map((person, index) => (
-              <ProfileCard
-                key={index}
-                name={person.name}
-                content={person.content}
-                image={person.image}
-              />
+            {Peoples.slice(0, 9).map((person, index) => (
+              <Link href={`/explore/${person.name}`} key={index}>
+                <ProfileCard
+                  name={person.name}
+                  content={person.content}
+                  image={person.image}
+                />
+              </Link>
             ))}
           </div>
         </TabsContent>
         <TabsContent value="event">b</TabsContent>
       </Tabs>
 
-      <MyPagination      />
+      <MyPagination />
     </div>
   );
 }
