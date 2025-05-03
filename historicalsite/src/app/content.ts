@@ -1,4 +1,4 @@
-import { LocaleRouteNormalizer } from "next/dist/server/normalizers/locale-route-normalizer";
+
 
 export const INTRO_TEXT = `
   Trang web của chúng tôi là cánh cửa mở ra thế giới lịch sử phương Tây, cung cấp những kiến thức sâu sắc, sự kiện quan trọng và bối cảnh lịch sử đầy đủ. 
