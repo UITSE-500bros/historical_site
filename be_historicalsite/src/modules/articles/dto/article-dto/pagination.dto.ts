@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsInt, IsOptional, Min } from 'class-validator';
+import { IsEnum, IsInt, IsOptional, Min } from 'class-validator';
+import { ArticleType } from '../../entities/article-type.entity';
 
 export class PaginationDto {
   @ApiProperty({
@@ -23,4 +24,13 @@ export class PaginationDto {
   @IsInt()
   @Min(1)
   limit?: number = 10;
+  
+  @ApiProperty({
+    description: 'Filter by article type (EVENT or PERSON)',
+    enum: ArticleType,
+    required: false,
+  })
+  @IsOptional()
+  @IsEnum(ArticleType)
+  articleType?: ArticleType;
 } 

@@ -33,34 +33,51 @@ export class ArticlesService {
   }
 
   async findAll(paginationDto: PaginationDto) {
-    const { page = 1, limit = 10 } = paginationDto;
+    const { page = 1, limit = 10, articleType } = paginationDto;
     const pageNum = Number(page);
     const limitNum = Number(limit);
     const skip = (pageNum - 1) * limitNum;
 
+    // Build where clause for filtering
+    const where = articleType ? { articleType } : {};
+    
+    // Conditionally build include object based on articleType
+    let include: any = {
+      contents: {
+        include: {
+          images: true,
+        },
+      }
+    };
+    
+    // Only include the relevant article type data
+    if (!articleType || articleType === 'EVENT') {
+      include.eventArticle = {
+        include: {
+          article: true,
+        },
+      };
+    }
+    
+    if (!articleType || articleType === 'PERSON') {
+      include.personArticle = {
+        include: {
+          article: true,
+        },
+      };
+    }
+
     const [articles, total] = await Promise.all([
       this.prisma.article.findMany({
+        where,
         skip,
         take: limitNum,
-        include: {
-          personArticle: true,
-          eventArticle: {
-            include: {
-              period: true,
-              topic: true,
-            },
-          },
-          contents: {
-            include: {
-              images: true,
-            },
-          },
-        },
+        include,
         orderBy: {
           createdAt: 'desc',
         },
       }),
-      this.prisma.article.count(),
+      this.prisma.article.count({ where }),
     ]);
 
     return {

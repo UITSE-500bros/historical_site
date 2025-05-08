@@ -29,9 +29,10 @@ export class ArticlesController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all articles with pagination' })
+  @ApiOperation({ summary: 'Get all articles with pagination and optional filtering' })
   @ApiQuery({ name: 'page', required: false, type: Number, description: 'Page number (1-based)' })
   @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Number of items per page' })
+  @ApiQuery({ name: 'articleType', required: false, enum: ['EVENT', 'PERSON'], description: 'Filter by article type (EVENT or PERSON)' })
   @ApiResponse({ 
     status: 200, 
     description: 'Return paginated articles with metadata.',
