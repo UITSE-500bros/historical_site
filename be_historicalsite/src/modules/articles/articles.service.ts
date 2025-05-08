@@ -34,12 +34,14 @@ export class ArticlesService {
 
   async findAll(paginationDto: PaginationDto) {
     const { page = 1, limit = 10 } = paginationDto;
-    const skip = (page - 1) * limit;
+    const pageNum = Number(page);
+    const limitNum = Number(limit);
+    const skip = (pageNum - 1) * limitNum;
 
     const [articles, total] = await Promise.all([
       this.prisma.article.findMany({
         skip,
-        take: limit,
+        take: limitNum,
         include: {
           personArticle: true,
           eventArticle: {
@@ -65,9 +67,9 @@ export class ArticlesService {
       data: articles,
       meta: {
         total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
+        page: pageNum,
+        limit: limitNum,
+        totalPages: Math.ceil(total / limitNum),
       },
     };
   }
