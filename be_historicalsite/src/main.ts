@@ -43,6 +43,7 @@ async function bootstrap() {
     .addTag('topics', 'Endpoints for managing historical topics')
     .addTag('articles', 'Endpoints for managing historical articles')
     .addTag('payments', 'Endpoints for managing payments')
+    .addTag('feedbacks', 'Endpoints for managing feedbacks')
     .build();
 
   const document = SwaggerModule.createDocument(app, config, {
