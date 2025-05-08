@@ -2,8 +2,13 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateFeedbackDto } from './dto/create-feedback.dto';
 import { UpdateFeedbackDto } from './dto/update-feedback.dto';
-import { FeedbackStatus } from '../../../generated/prisma/client';
 import { v4 as uuidv4 } from 'uuid';
+
+enum FeedbackStatus {
+  OPEN = 'OPEN',
+  IN_PROGRESS = 'IN_PROGRESS',
+  CLOSED = 'CLOSED'
+}
 
 @Injectable()
 export class FeedbacksService {
