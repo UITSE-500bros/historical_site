@@ -7,6 +7,7 @@ import { TopicsModule } from './modules/topics/topics.module';
 import { ArticlesModule } from './modules/articles/articles.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { FeedbacksModule } from './modules/feedbacks/feedbacks.module';
 
 @Module({
   imports: [
@@ -15,7 +16,8 @@ import { AuthModule } from './modules/auth/auth.module';
     PeriodsModule,
     TopicsModule,
     ArticlesModule,
-    AuthModule
+    AuthModule,
+    FeedbacksModule
   ],
   controllers: [AppController],
   providers: [AppService],
