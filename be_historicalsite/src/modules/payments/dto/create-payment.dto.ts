@@ -1,6 +1,19 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString, IsNumber, IsEnum, IsDateString } from 'class-validator';
-import { PaymentType, PaymentStatus } from 'generated/prisma/client';
+
+// Define enums locally to avoid import issues in tests
+export enum PaymentType {
+  DEBIT_CARD = 'DEBIT_CARD',
+  DIGITAL_WALLET = 'DIGITAL_WALLET',
+  GOOGLE_PAY = 'GOOGLE_PAY'
+}
+
+export enum PaymentStatus {
+  PENDING = 'PENDING',
+  COMPLETED = 'COMPLETED',
+  FAILED = 'FAILED',
+  CANCELLED = 'CANCELLED'
+}
 
 export class CreatePaymentDto {
   @ApiProperty({

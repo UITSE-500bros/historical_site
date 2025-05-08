@@ -2,8 +2,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ArticlesService } from './articles.service';
 import { PrismaService } from '../../prisma/prisma.service';
 import { NotFoundException } from '@nestjs/common';
-import { ArticleType } from '@prisma/client';
+import { ArticleType } from '../../../generated/prisma/client';
 import { v4 as uuidv4 } from 'uuid';
+import { PaginationDto } from './dto/article-dto/pagination.dto';
+import { UpdateArticleDto } from './dto/article-dto/update-article.dto';
 
 describe('ArticlesService', () => {
   let service: ArticlesService;
@@ -16,6 +18,7 @@ describe('ArticlesService', () => {
       findUnique: jest.fn(),
       update: jest.fn(),
       delete: jest.fn(),
+      count: jest.fn(),
     },
     content: {
       create: jest.fn(),
@@ -108,11 +111,17 @@ describe('ArticlesService', () => {
         },
       ];
 
+      const paginationDto: PaginationDto = {
+        page: 1,
+        limit: 10
+      };
+      
       mockPrismaService.article.findMany.mockResolvedValue(expectedArticles);
+      mockPrismaService.article.count.mockResolvedValue(expectedArticles.length);
 
-      const result = await service.findAll();
+      const result = await service.findAll(paginationDto);
 
-      expect(result).toEqual(expectedArticles);
+      expect(result.data).toEqual(expectedArticles);
       expect(mockPrismaService.article.findMany).toHaveBeenCalled();
     });
   });
@@ -180,7 +189,13 @@ describe('ArticlesService', () => {
       const articleId = uuidv4();
       mockPrismaService.article.update.mockRejectedValue(new Error());
 
-      await expect(service.update(articleId, {})).rejects.toThrow(NotFoundException);
+      const updateArticleDto: UpdateArticleDto = {
+        article: {
+          articleName: 'Test Article'
+        }
+      };
+
+      await expect(service.update(articleId, updateArticleDto)).rejects.toThrow(NotFoundException);
     });
   });
 

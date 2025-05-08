@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { PaymentStatus, PaymentType } from 'generated/prisma/client';
+import { PaymentStatus, PaymentType } from '../dto/create-payment.dto';
 
 export class Payment {
   @ApiProperty({

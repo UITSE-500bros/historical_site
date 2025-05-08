@@ -3,6 +3,9 @@ import { TopicsController } from './topics.controller';
 import { TopicsService } from './topics.service';
 import { NotFoundException } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { JwtService } from '@nestjs/jwt';
+import { AuthService } from '../auth/auth.service';
 
 describe('TopicsController', () => {
   let controller: TopicsController;
@@ -26,13 +29,24 @@ describe('TopicsController', () => {
     },
   ];
 
-  // Mock service
+  // Mock services
   const mockTopicsService = {
     create: jest.fn(),
     findAll: jest.fn(),
     findOne: jest.fn(),
     update: jest.fn(),
     remove: jest.fn(),
+  };
+
+  // Mock JWT service
+  const mockJwtService = {
+    sign: jest.fn(),
+    verify: jest.fn(),
+  };
+
+  // Mock Auth service
+  const mockAuthService = {
+    validateAdmin: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -43,6 +57,15 @@ describe('TopicsController', () => {
           provide: TopicsService,
           useValue: mockTopicsService,
         },
+        {
+          provide: JwtService,
+          useValue: mockJwtService,
+        },
+        {
+          provide: AuthService,
+          useValue: mockAuthService,
+        },
+        JwtAuthGuard,
       ],
     }).compile();
 

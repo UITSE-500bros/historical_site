@@ -3,6 +3,9 @@ import { PeriodsController } from './periods.controller';
 import { PeriodsService } from './periods.service';
 import { NotFoundException } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { JwtService } from '@nestjs/jwt';
+import { AuthService } from '../auth/auth.service';
 
 describe('PeriodsController', () => {
   let controller: PeriodsController;
@@ -30,13 +33,24 @@ describe('PeriodsController', () => {
     },
   ];
 
-  // Mock service
+  // Mock services
   const mockPeriodsService = {
     create: jest.fn(),
     findAll: jest.fn(),
     findOne: jest.fn(),
     update: jest.fn(),
     remove: jest.fn(),
+  };
+
+  // Mock JWT service
+  const mockJwtService = {
+    sign: jest.fn(),
+    verify: jest.fn(),
+  };
+
+  // Mock Auth service
+  const mockAuthService = {
+    validateAdmin: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -47,6 +61,15 @@ describe('PeriodsController', () => {
           provide: PeriodsService,
           useValue: mockPeriodsService,
         },
+        {
+          provide: JwtService,
+          useValue: mockJwtService,
+        },
+        {
+          provide: AuthService,
+          useValue: mockAuthService,
+        },
+        JwtAuthGuard,
       ],
     }).compile();
 
