@@ -3,8 +3,11 @@ import { ContentDisplay } from "@/src/components/ContentDisplay";
 import ContentTree from "@/src/components/ContentTree";
 import { notFound } from "next/navigation";
 
-
-export default async function ArticleDetail({ params }: { params: { articleId: string } }) {
+export default async function ArticleDetail({
+  params,
+}: {
+  params: { articleId: string };
+}) {
   const res = await fetch(`http://localhost:8888/articles/${params.articleId}`);
   if (!res.ok) return notFound();
 
@@ -13,8 +16,8 @@ export default async function ArticleDetail({ params }: { params: { articleId: s
   return (
     <div className="flex h-full px-6 py-4">
       {/* Sidebar cây mục lục */}
-      <aside className="w-1/4 pr-4 border-r overflow-y-auto">
-        <h2 className="text-xl font-bold mb-4">{article.articleName}</h2>
+      <aside className="w-1/4 h-screen overflow-y-auto sticky top-0  pr-4 border-r ">
+        <h2 className="text-xl  font-bold mb-4">{article.articleName}</h2>
         <ContentTree contents={article.contents} />
       </aside>
 
