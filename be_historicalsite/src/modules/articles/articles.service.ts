@@ -40,16 +40,16 @@ export class ArticlesService {
 
     // Build where clause for filtering
     const where = articleType ? { articleType } : {};
-    
+
     // Conditionally build include object based on articleType
     let include: any = {
       contents: {
         include: {
           images: true,
         },
-      }
+      },
     };
-    
+
     // Only include the relevant article type data
     if (!articleType || articleType === 'EVENT') {
       include.eventArticle = {
@@ -58,7 +58,7 @@ export class ArticlesService {
         },
       };
     }
-    
+
     if (!articleType || articleType === 'PERSON') {
       include.personArticle = {
         include: {
@@ -130,19 +130,21 @@ export class ArticlesService {
   async update(id: string, updateArticleDto: UpdateArticleDto) {
     try {
       const updateData: any = {};
-      
+
       if (updateArticleDto.article?.articleType) {
-        updateData.articleType = updateArticleDto.article.articleType as ArticleType;
+        updateData.articleType = updateArticleDto.article
+          .articleType as ArticleType;
       }
-      
+
       if (updateArticleDto.article?.articleName) {
         updateData.articleName = updateArticleDto.article.articleName;
       }
-      
+
       if (updateArticleDto.article?.articleContentList) {
-        updateData.articleContentList = updateArticleDto.article.articleContentList;
+        updateData.articleContentList =
+          updateArticleDto.article.articleContentList;
       }
-      
+
       return await this.prisma.article.update({
         where: { articleId: id },
         data: updateData,
@@ -160,6 +162,14 @@ export class ArticlesService {
     } catch (error) {
       throw new NotFoundException(`Article with ID ${id} not found`);
     }
+  }
+
+  async getAllArticleNames() {
+    const articles = await this.prisma.article.findMany({
+      select: { articleId: true, articleName: true },
+      orderBy: { createdAt: 'desc' },
+    });
+    return articles;
   }
 
   // Content CRUD
@@ -260,31 +270,31 @@ export class ArticlesService {
   async updateImage(id: string, updateImageDto: UpdateImageDto) {
     try {
       const updateData: any = {};
-      
+
       if (updateImageDto.contentId !== undefined) {
         updateData.contentId = updateImageDto.contentId || null;
       }
-      
+
       if (updateImageDto.src) {
         updateData.src = updateImageDto.src;
       }
-      
+
       if (updateImageDto.alt !== undefined) {
         updateData.alt = updateImageDto.alt;
       }
-      
+
       if (updateImageDto.caption !== undefined) {
         updateData.caption = updateImageDto.caption;
       }
-      
+
       if (updateImageDto.width !== undefined) {
         updateData.width = updateImageDto.width;
       }
-      
+
       if (updateImageDto.height !== undefined) {
         updateData.height = updateImageDto.height;
       }
-      
+
       return await this.prisma.image.update({
         where: { imageId: id },
         data: updateData,
@@ -307,10 +317,10 @@ export class ArticlesService {
   // Person Article CRUD
   async createPersonArticle(createPersonArticleDto: CreatePersonArticleDto) {
     const { article, ...personData } = createPersonArticleDto;
-    
+
     // Create the base article first
     const createdArticle = await this.create(article);
-    
+
     // Then create the person article
     return this.prisma.personArticle.create({
       data: {
@@ -357,34 +367,37 @@ export class ArticlesService {
     return personArticle;
   }
 
-  async updatePersonArticle(id: string, updatePersonArticleDto: UpdatePersonArticleDto) {
+  async updatePersonArticle(
+    id: string,
+    updatePersonArticleDto: UpdatePersonArticleDto,
+  ) {
     const { article, ...personData } = updatePersonArticleDto;
-    
+
     try {
       // Update the base article if provided
       if (article) {
         await this.update(id, article);
       }
-      
+
       // Update the person article
       const updateData: any = {};
-      
+
       if (personData.personName !== undefined) {
         updateData.personName = personData.personName;
       }
-      
+
       if (personData.birthYear !== undefined) {
         updateData.birthYear = personData.birthYear;
       }
-      
+
       if (personData.deathYear !== undefined) {
         updateData.deathYear = personData.deathYear;
       }
-      
+
       if (personData.nationality !== undefined) {
         updateData.nationality = personData.nationality;
       }
-      
+
       return await this.prisma.personArticle.update({
         where: { articleId: id },
         data: updateData,
@@ -400,7 +413,7 @@ export class ArticlesService {
       await this.prisma.personArticle.delete({
         where: { articleId: id },
       });
-      
+
       // Then delete the base article
       return await this.remove(id);
     } catch (error) {
@@ -411,10 +424,10 @@ export class ArticlesService {
   // Event Article CRUD
   async createEventArticle(createEventArticleDto: CreateEventArticleDto) {
     const { article, ...eventData } = createEventArticleDto;
-    
+
     // Create the base article first
     const createdArticle = await this.create(article);
-    
+
     // Then create the event article
     return this.prisma.eventArticle.create({
       data: {
@@ -462,26 +475,29 @@ export class ArticlesService {
     return eventArticle;
   }
 
-  async updateEventArticle(id: string, updateEventArticleDto: UpdateEventArticleDto) {
+  async updateEventArticle(
+    id: string,
+    updateEventArticleDto: UpdateEventArticleDto,
+  ) {
     const { article, ...eventData } = updateEventArticleDto;
-    
+
     try {
       // Update the base article if provided
       if (article) {
         await this.update(id, article);
       }
-      
+
       // Update the event article
       const updateData: any = {};
-      
+
       if (eventData.periodId) {
         updateData.periodId = eventData.periodId;
       }
-      
+
       if (eventData.topicId) {
         updateData.topicId = eventData.topicId;
       }
-      
+
       return await this.prisma.eventArticle.update({
         where: { articleId: id },
         data: updateData,
@@ -497,7 +513,7 @@ export class ArticlesService {
       await this.prisma.eventArticle.delete({
         where: { articleId: id },
       });
-      
+
       // Then delete the base article
       return await this.remove(id);
     } catch (error) {

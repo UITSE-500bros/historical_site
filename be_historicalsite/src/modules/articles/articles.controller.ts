@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  HttpCode,
+  HttpStatus,
+  Query,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
 import { ArticlesService } from './articles.service';
 import { CreateArticleDto } from './dto/article-dto/create-article.dto';
@@ -22,25 +33,45 @@ export class ArticlesController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Create a new article' })
-  @ApiResponse({ status: 201, description: 'The article has been successfully created.' })
+  @ApiResponse({
+    status: 201,
+    description: 'The article has been successfully created.',
+  })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   create(@Body() createArticleDto: CreateArticleDto) {
     return this.articlesService.create(createArticleDto);
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all articles with pagination and optional filtering' })
-  @ApiQuery({ name: 'page', required: false, type: Number, description: 'Page number (1-based)' })
-  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Number of items per page' })
-  @ApiQuery({ name: 'articleType', required: false, enum: ['EVENT', 'PERSON'], description: 'Filter by article type (EVENT or PERSON)' })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiOperation({
+    summary: 'Get all articles with pagination and optional filtering',
+  })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    description: 'Page number (1-based)',
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    type: Number,
+    description: 'Number of items per page',
+  })
+  @ApiQuery({
+    name: 'articleType',
+    required: false,
+    enum: ['EVENT', 'PERSON'],
+    description: 'Filter by article type (EVENT or PERSON)',
+  })
+  @ApiResponse({
+    status: 200,
     description: 'Return paginated articles with metadata.',
     schema: {
       properties: {
         data: {
           type: 'array',
-          items: { $ref: '#/components/schemas/Article' }
+          items: { $ref: '#/components/schemas/Article' },
         },
         meta: {
           type: 'object',
@@ -48,14 +79,24 @@ export class ArticlesController {
             total: { type: 'number' },
             page: { type: 'number' },
             limit: { type: 'number' },
-            totalPages: { type: 'number' }
-          }
-        }
-      }
-    }
+            totalPages: { type: 'number' },
+          },
+        },
+      },
+    },
   })
   findAll(@Query() paginationDto: PaginationDto) {
     return this.articlesService.findAll(paginationDto);
+  }
+
+  @Get('names')
+  @ApiOperation({ summary: 'Get all article names' })
+  @ApiResponse({
+    status: 200,
+    description: 'Return a list of all article names.',
+  })
+  async getAllArticleNames() {
+    return this.articlesService.getAllArticleNames();
   }
 
   @Get(':id')
@@ -68,7 +109,10 @@ export class ArticlesController {
 
   @Patch(':id')
   @ApiOperation({ summary: 'Update an article' })
-  @ApiResponse({ status: 200, description: 'The article has been successfully updated.' })
+  @ApiResponse({
+    status: 200,
+    description: 'The article has been successfully updated.',
+  })
   @ApiResponse({ status: 404, description: 'Article not found.' })
   update(@Param('id') id: string, @Body() updateArticleDto: UpdateArticleDto) {
     return this.articlesService.update(id, updateArticleDto);
@@ -77,7 +121,10 @@ export class ArticlesController {
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Delete an article' })
-  @ApiResponse({ status: 204, description: 'The article has been successfully deleted.' })
+  @ApiResponse({
+    status: 204,
+    description: 'The article has been successfully deleted.',
+  })
   @ApiResponse({ status: 404, description: 'Article not found.' })
   remove(@Param('id') id: string) {
     return this.articlesService.remove(id);
@@ -87,7 +134,10 @@ export class ArticlesController {
   @Post('content')
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Create a new content' })
-  @ApiResponse({ status: 201, description: 'The content has been successfully created.' })
+  @ApiResponse({
+    status: 201,
+    description: 'The content has been successfully created.',
+  })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   createContent(@Body() createContentDto: CreateContentDto) {
     return this.articlesService.createContent(createContentDto);
@@ -110,16 +160,25 @@ export class ArticlesController {
 
   @Patch('content/:id')
   @ApiOperation({ summary: 'Update a content' })
-  @ApiResponse({ status: 200, description: 'The content has been successfully updated.' })
+  @ApiResponse({
+    status: 200,
+    description: 'The content has been successfully updated.',
+  })
   @ApiResponse({ status: 404, description: 'Content not found.' })
-  updateContent(@Param('id') id: string, @Body() updateContentDto: UpdateContentDto) {
+  updateContent(
+    @Param('id') id: string,
+    @Body() updateContentDto: UpdateContentDto,
+  ) {
     return this.articlesService.updateContent(id, updateContentDto);
   }
 
   @Delete('content/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Delete a content' })
-  @ApiResponse({ status: 204, description: 'The content has been successfully deleted.' })
+  @ApiResponse({
+    status: 204,
+    description: 'The content has been successfully deleted.',
+  })
   @ApiResponse({ status: 404, description: 'Content not found.' })
   removeContent(@Param('id') id: string) {
     return this.articlesService.removeContent(id);
@@ -129,7 +188,10 @@ export class ArticlesController {
   @Post('image')
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Create a new image' })
-  @ApiResponse({ status: 201, description: 'The image has been successfully created.' })
+  @ApiResponse({
+    status: 201,
+    description: 'The image has been successfully created.',
+  })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   createImage(@Body() createImageDto: CreateImageDto) {
     return this.articlesService.createImage(createImageDto);
@@ -152,7 +214,10 @@ export class ArticlesController {
 
   @Patch('image/:id')
   @ApiOperation({ summary: 'Update an image' })
-  @ApiResponse({ status: 200, description: 'The image has been successfully updated.' })
+  @ApiResponse({
+    status: 200,
+    description: 'The image has been successfully updated.',
+  })
   @ApiResponse({ status: 404, description: 'Image not found.' })
   updateImage(@Param('id') id: string, @Body() updateImageDto: UpdateImageDto) {
     return this.articlesService.updateImage(id, updateImageDto);
@@ -161,7 +226,10 @@ export class ArticlesController {
   @Delete('image/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Delete an image' })
-  @ApiResponse({ status: 204, description: 'The image has been successfully deleted.' })
+  @ApiResponse({
+    status: 204,
+    description: 'The image has been successfully deleted.',
+  })
   @ApiResponse({ status: 404, description: 'Image not found.' })
   removeImage(@Param('id') id: string) {
     return this.articlesService.removeImage(id);
@@ -171,7 +239,10 @@ export class ArticlesController {
   @Post('person')
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Create a new person article' })
-  @ApiResponse({ status: 201, description: 'The person article has been successfully created.' })
+  @ApiResponse({
+    status: 201,
+    description: 'The person article has been successfully created.',
+  })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   createPersonArticle(@Body() createPersonArticleDto: CreatePersonArticleDto) {
     return this.articlesService.createPersonArticle(createPersonArticleDto);
@@ -194,16 +265,25 @@ export class ArticlesController {
 
   @Patch('person/:id')
   @ApiOperation({ summary: 'Update a person article' })
-  @ApiResponse({ status: 200, description: 'The person article has been successfully updated.' })
+  @ApiResponse({
+    status: 200,
+    description: 'The person article has been successfully updated.',
+  })
   @ApiResponse({ status: 404, description: 'Person article not found.' })
-  updatePersonArticle(@Param('id') id: string, @Body() updatePersonArticleDto: UpdatePersonArticleDto) {
+  updatePersonArticle(
+    @Param('id') id: string,
+    @Body() updatePersonArticleDto: UpdatePersonArticleDto,
+  ) {
     return this.articlesService.updatePersonArticle(id, updatePersonArticleDto);
   }
 
   @Delete('person/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Delete a person article' })
-  @ApiResponse({ status: 204, description: 'The person article has been successfully deleted.' })
+  @ApiResponse({
+    status: 204,
+    description: 'The person article has been successfully deleted.',
+  })
   @ApiResponse({ status: 404, description: 'Person article not found.' })
   removePersonArticle(@Param('id') id: string) {
     return this.articlesService.removePersonArticle(id);
@@ -213,7 +293,10 @@ export class ArticlesController {
   @Post('event')
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Create a new event article' })
-  @ApiResponse({ status: 201, description: 'The event article has been successfully created.' })
+  @ApiResponse({
+    status: 201,
+    description: 'The event article has been successfully created.',
+  })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   createEventArticle(@Body() createEventArticleDto: CreateEventArticleDto) {
     return this.articlesService.createEventArticle(createEventArticleDto);
@@ -236,16 +319,25 @@ export class ArticlesController {
 
   @Patch('event/:id')
   @ApiOperation({ summary: 'Update an event article' })
-  @ApiResponse({ status: 200, description: 'The event article has been successfully updated.' })
+  @ApiResponse({
+    status: 200,
+    description: 'The event article has been successfully updated.',
+  })
   @ApiResponse({ status: 404, description: 'Event article not found.' })
-  updateEventArticle(@Param('id') id: string, @Body() updateEventArticleDto: UpdateEventArticleDto) {
+  updateEventArticle(
+    @Param('id') id: string,
+    @Body() updateEventArticleDto: UpdateEventArticleDto,
+  ) {
     return this.articlesService.updateEventArticle(id, updateEventArticleDto);
   }
 
   @Delete('event/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Delete an event article' })
-  @ApiResponse({ status: 204, description: 'The event article has been successfully deleted.' })
+  @ApiResponse({
+    status: 204,
+    description: 'The event article has been successfully deleted.',
+  })
   @ApiResponse({ status: 404, description: 'Event article not found.' })
   removeEventArticle(@Param('id') id: string) {
     return this.articlesService.removeEventArticle(id);
