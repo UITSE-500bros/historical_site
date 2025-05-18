@@ -14,6 +14,7 @@ export class PaymentsController {
   @ApiOperation({ summary: 'Create a new payment' })
   @ApiResponse({ status: 201, description: 'The payment has been successfully created.' })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
+  
   create(@Body() createPaymentDto: CreatePaymentDto) {
     return this.paymentsService.create(createPaymentDto);
   }
