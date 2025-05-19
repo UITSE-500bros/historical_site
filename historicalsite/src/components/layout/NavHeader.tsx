@@ -10,8 +10,6 @@ export default function NavHeader() {
   const handleLoginClick = () => {
     router.push("/login");
   }
-
-
   return (
     <header className="px-16 text-base leading-loose uppercase max-md:px-5">
       <nav className="flex flex-wrap justify-between items-center py-5 w-full max-md:max-w-full">
