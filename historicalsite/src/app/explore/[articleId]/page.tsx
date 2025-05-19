@@ -1,7 +1,8 @@
 // app/explore/[articleId]/page.tsx
 
-import ContentDisplay from "@/src/components/ContentDisplay";
-import ContentTree from "@/src/components/ContentTree";
+
+import { ContentDisplay } from "@/src/app/explore/components/ContentDisplay";
+import ContentTree from "@/src/app/explore/components/ContentTree";
 
 export default async function ArticleDetail({
   params,
@@ -43,7 +44,7 @@ export default async function ArticleDetail({
           <div className="text-red-500">Không thể tải nội dung bài viết.</div>
         ) : (
         
-            <ContentDisplay contents={articleContentList} />
+            <ContentDisplay contents={article.contents} />
          
         )}
       </main>
