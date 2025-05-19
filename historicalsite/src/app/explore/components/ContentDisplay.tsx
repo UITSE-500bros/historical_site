@@ -9,7 +9,7 @@ export function ContentDisplay({ contents }: { contents: any[] }) {
           ) : null
         )}
       {contents
-        .filter((c) => c.content && c.content.trim().length > 0)
+        // .filter((c) => c.content && c.content.trim().length > 0)
         .map((item) => (
 
           <section key={item.contentId} id={item.contentId}>
