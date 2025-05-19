@@ -70,5 +70,5 @@ export class CreatePaymentDto {
   })
   @IsNotEmpty()
   @IsString()
-  totalPrice: string;
+  totalPrice: number;
 }

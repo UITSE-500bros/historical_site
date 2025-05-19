@@ -150,7 +150,7 @@ model Payment {
   paymentType PaymentType
   status      PaymentStatus
   bookingDate DateTime       @db.Timestamp(3)
-  totalPrice  String
+  totalPrice  Int
   createdAt DateTime @db.Timestamp(3) @default(now())
   updatedAt DateTime @db.Timestamp(3) @updatedAt 
 }
