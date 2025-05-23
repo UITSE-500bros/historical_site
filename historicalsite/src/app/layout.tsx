@@ -1,9 +1,6 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
-import NavHeader from "../components/layout/NavHeader";
 import Footer from "../components/layout/Footer";
-
+import NavHeader from "../components/layout/NavHeader";
+import "./globals.css";
 
 export default function RootLayout({
   children,
@@ -12,9 +9,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body      >
+      <body>
         <NavHeader />
-        {children}
+        <div className="flex flex-1">{children}</div>
         <Footer />
       </body>
     </html>

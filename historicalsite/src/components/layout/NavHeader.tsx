@@ -11,7 +11,7 @@ export default function NavHeader() {
     router.push("/login");
   }
   return (
-    <header className="px-16 text-base leading-loose uppercase max-md:px-5">
+    <header className="px-16  z-50 text-base leading-loose uppercase max-md:px-5">
       <nav className="flex flex-wrap justify-between items-center py-5 w-full max-md:max-w-full">
         <NavLogo />
         <div className="flex flex-wrap gap-6 justify-end self-stretch pl-44 my-auto min-w-60 w-[1220px] max-md:max-w-full">

@@ -7,7 +7,7 @@ export default function Admin() {
   return (
     <div className="flex h-screen font-sans overflow-hidden">
       {/* Sidebar */}
-      <aside className="w-64 bg-[#FAF9F6] p-6 text-sm border-r border-gray-200 overflow-y-auto">
+      {/* <aside className="w-64 bg-[#FAF9F6] p-6 text-sm border-r border-gray-200 overflow-y-auto">
         <h1 className="text-xl font-bold mb-8">History Admin</h1>
         <nav className="space-y-5 text-gray-700">
           <a href="#" className="flex items-center">🏠 <span className="ml-2">Dashboard</span></a>
@@ -16,7 +16,7 @@ export default function Admin() {
           <a href="#" className="flex items-center">🎟️ <span className="ml-2">Tickets</span></a>
           <a href="#" className="flex items-center">💬 <span className="ml-2">Feedback</span></a>
         </nav>
-      </aside>
+      </aside> */}
 
       {/* Main content */}
       <main className="flex-1 h-full overflow-y-auto bg-white p-8">
