@@ -1,15 +1,18 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { CreatePaymentDto } from './dto/create-payment.dto';
+import { CreatePaymentDto, PaymentStatus } from './dto/create-payment.dto';
 import { UpdatePaymentDto } from './dto/update-payment.dto';
 import { v4 as uuidv4 } from 'uuid';
 import Stripe from "stripe";
+import * as QRCode from 'qrcode';
+import { MailerService } from '@nestjs-modules/mailer';
 
 @Injectable()
 export class PaymentsService {
   private stripe =  new Stripe(process.env.STRIPE_SECRET_KEY as string, { apiVersion: '2025-04-30.basil' });
-  constructor(private prisma: PrismaService) {
+  constructor(private prisma: PrismaService, private mailerService: MailerService) {
     this.prisma = prisma;
+    this.mailerService = mailerService;
   }
 
   async create(createPaymentDto: CreatePaymentDto) {
@@ -63,6 +66,76 @@ export class PaymentsService {
     }
 
     return payment;
+  }
+  async updatePaymentStatus(sessionId: string, status: string) {
+    const payment = await this.findOne(sessionId);
+    if (!payment) {
+      throw new NotFoundException(`Payment with ID ${sessionId} not found`);
+    }
+
+    if (payment.status === PaymentStatus.COMPLETED) {
+      // 1. Generate QR code as base64
+      const qrData = JSON.stringify({
+        bookingId: payment.paymentId,
+        email: payment.userEmail,
+      });
+
+      const qrCodeBase64 = await QRCode.toDataURL(qrData);
+
+      await this.mailerService.sendMail({
+        to: payment.userEmail,
+        subject: 'Your Ticket Booking Confirmation',
+        html: `
+          <div style="max-width:600px;margin:auto;padding:24px;font-family:Arial,sans-serif;background:#f9f9f9;border-radius:12px;border:1px solid #eee;">
+            <div style="text-align:center;">
+              <img src="https://your-company-logo-url.com/logo.png" alt="Company Logo" style="max-width:120px;margin-bottom:18px;">
+            </div>
+            <h2 style="color:#2b2e4a;">Booking Confirmed!</h2>
+            <p style="font-size:16px;color:#333;">
+              Hello <b>${payment.userEmail}</b>,
+            </p>
+            <p style="font-size:16px;color:#333;">
+              Thank you for your purchase. Your booking has been successfully completed. Please find your ticket details below. Present the QR code at the entrance for fast check-in.
+            </p>
+            <table style="width:100%;background:#fff;border-radius:8px;padding:16px 8px;margin:20px 0;font-size:15px;">
+              <tr>
+                <td style="font-weight:bold;width:150px;">Booking ID:</td>
+                <td>${payment.paymentId}</td>
+              </tr>
+              <tr>
+                <td style="font-weight:bold;">Date:</td>
+                <td>${payment.bookingDate || 'N/A'}</td>
+              </tr>
+              <tr>
+                <td style="font-weight:bold;">Email:</td>
+                <td>${payment.userEmail}</td>
+              </tr>
+            </table>
+            <div style="text-align:center;margin:24px 0;">
+              <img src="${qrCodeBase64}" alt="QR Code" style="width:160px;height:160px;border:8px solid #fff;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.08);"/>
+              <p style="margin-top:10px;color:#777;">Scan this QR code to check in</p>
+            </div>
+            <div style="font-size:14px;color:#666;">
+              <p>
+                If you have any questions, please contact our support team at <a href="mailto:support@yourcompany.com" style="color:#3867d6;">support@yourcompany.com</a>.
+              </p>
+              <p>
+                We look forward to seeing you at the event!
+              </p>
+              <p style="margin-top:32px;font-size:13px;color:#aaa;text-align:center;">
+                &copy; ${new Date().getFullYear()} Your Company Name. All rights reserved.
+              </p>
+            </div>
+          </div>
+        `,
+      });
+      
+      payment.status = PaymentStatus.COMPLETED
+      throw new BadRequestException('Payment already completed');
+    }
+    
+    return this.update(sessionId, { status: status as PaymentStatus });
+
   }
 
   async update(id: string, updatePaymentDto: UpdatePaymentDto) {
