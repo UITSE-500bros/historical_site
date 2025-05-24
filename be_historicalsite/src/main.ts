@@ -5,7 +5,7 @@ import { Article } from './modules/articles/entities/article.entity';
 import { Content } from './modules/articles/entities/content.entity';
 import { PersonArticle } from './modules/articles/entities/personArticle.entity';
 import { EventArticle } from './modules/articles/entities/eventArticle.entity';
-declare const module: any;
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
@@ -63,9 +63,5 @@ async function bootstrap() {
   });
 
   await app.listen(process.env.PORT ?? 8888);
-  if (module.hot) {
-    module.hot.accept();
-    module.hot.dispose(() => app.close());
-  }
 }
 bootstrap();

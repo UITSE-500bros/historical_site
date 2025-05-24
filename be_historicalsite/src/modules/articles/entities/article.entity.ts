@@ -19,11 +19,6 @@ export class Article {
   })
   articleContentList: any;
 
-  @ApiProperty({ description: 'The creation timestamp of the article' })
-  createdAt: Date;
-
-  @ApiProperty({ description: 'The last update timestamp of the article' })
-  updatedAt: Date;
 
   @ApiProperty({ description: 'The person article data (if article type is PERSON)', type: () => PersonArticle, required: false })
   personArticle?: PersonArticle;

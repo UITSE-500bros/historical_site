@@ -16,9 +16,4 @@ export class PersonArticle {
   @ApiProperty({ description: 'The nationality of the person', example: 'Roman' })
   nationality: string;
 
-  @ApiProperty({ description: 'The creation timestamp of the person article' })
-  createdAt: Date;
-
-  @ApiProperty({ description: 'The last update timestamp of the person article' })
-  updatedAt: Date;
 }
