@@ -25,11 +25,7 @@ const items = [
     url: "/admin",
     icon: Home,
   },
-  {
-    title: "Users",
-    url: "/admin/users",
-    icon: Users,
-  },
+
   {
     title: "Posts",
     url: "/admin/posts",
