@@ -32,16 +32,16 @@ export class ArticlesService {
 
     // Build where clause for filtering
     const where = articleType ? { articleType } : {};
-    
+
     // Conditionally build include object based on articleType
     let include: any = {
       contents: {
         include: {
           images: true,
         },
-      }
+      },
     };
-    
+
     // Only include the relevant article type data
     if (!articleType || articleType === 'EVENT') {
       include.eventArticle = {
@@ -50,7 +50,7 @@ export class ArticlesService {
         },
       };
     }
-    
+
     if (!articleType || articleType === 'PERSON') {
       include.personArticle = {
         include: {
@@ -178,19 +178,21 @@ export class ArticlesService {
   async update(id: string, updateArticleDto: UpdateArticleDto) {
     try {
       const updateData: any = {};
-      
+
       if (updateArticleDto.article?.articleType) {
-        updateData.articleType = updateArticleDto.article.articleType as ArticleType;
+        updateData.articleType = updateArticleDto.article
+          .articleType as ArticleType;
       }
-      
+
       if (updateArticleDto.article?.articleName) {
         updateData.articleName = updateArticleDto.article.articleName;
       }
-      
+
       if (updateArticleDto.article?.articleContentList) {
-        updateData.articleContentList = updateArticleDto.article.articleContentList;
+        updateData.articleContentList =
+          updateArticleDto.article.articleContentList;
       }
-      
+
       return await this.prisma.article.update({
         where: { articleId: id },
         data: updateData,
@@ -208,6 +210,14 @@ export class ArticlesService {
     } catch (error) {
       throw new NotFoundException(`Article with ID ${id} not found`);
     }
+  }
+
+  async getAllArticleNames() {
+    const articles = await this.prisma.article.findMany({
+      select: { articleId: true, articleName: true },
+      orderBy: { createdAt: 'desc' },
+    });
+    return articles;
   }
 
   // Content CRUD
