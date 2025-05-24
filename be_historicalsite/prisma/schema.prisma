@@ -1,0 +1,167 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma/client"
+  binaryTargets = ["native", "windows"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+
+model Period {
+  periodId   String   @id @db.Uuid
+  periodName String
+  periodImage String
+  startYear  Int
+  endYear    Int
+  createdAt DateTime @db.Timestamp(3) @default(now())
+  updatedAt DateTime @db.Timestamp(3) @updatedAt 
+
+  eventArticles EventArticle[]
+}
+
+model Topic {
+  topicId   String   @id @db.Uuid
+  topicName String
+  topicImage String
+  createdAt DateTime @db.Timestamp(3) @default(now())
+  updatedAt DateTime @db.Timestamp(3) @updatedAt 
+  eventArticles EventArticle[]
+}
+
+enum ArticleType {
+  EVENT
+  PERSON
+}
+
+model Article {
+  articleId          String    @id @db.Uuid
+  articleType       ArticleType 
+  articleName        String
+  articleContentList Json
+  createdAt DateTime @db.Timestamp(3) @default(now())
+  updatedAt DateTime @db.Timestamp(3) @updatedAt 
+  personArticle      PersonArticle?
+  eventArticle       EventArticle?
+  contents           Content[]
+}
+
+model PersonArticle {
+  articleId   String  @id @db.Uuid
+  personName  String
+  personAvatar String?
+  birthYear   Int
+  deathYear   Int?
+  nationality String
+  createdAt DateTime @db.Timestamp(3) @default(now())
+  updatedAt DateTime @db.Timestamp(3) @updatedAt 
+
+  article     Article @relation(fields: [articleId], references: [articleId])
+}
+model EventArticle {
+  articleId  String   @id @db.Uuid
+  periodId   String   @db.Uuid
+  topicId    String   @db.Uuid
+  createdAt DateTime @db.Timestamp(3) @default(now())
+  updatedAt DateTime @db.Timestamp(3) @updatedAt
+
+  article    Article @relation(fields: [articleId], references: [articleId])
+  period     Period  @relation(fields: [periodId], references: [periodId])
+  topic      Topic   @relation(fields: [topicId], references: [topicId])
+}
+
+model Content {
+  contentId   String   @id @db.Uuid
+  contentName String
+  articleId   String  @db.Uuid
+  parentId    String? @db.Uuid
+  content     String
+  imagesId    Json
+  createdAt DateTime @db.Timestamp(3) @default(now())
+  updatedAt DateTime @db.Timestamp(3) @updatedAt 
+
+  article     Article  @relation(fields: [articleId], references: [articleId])
+  parent      Content? @relation("ContentToParent", fields: [parentId], references: [contentId])
+  children    Content[] @relation("ContentToParent")
+  images      Image[]
+}
+
+model Image {
+  imageId   String   @id @db.Uuid
+  contentId String? @db.Uuid
+  src       String
+  alt       String?
+  caption   String?
+  width     Int?
+  height    Int?
+  createdAt DateTime @db.Timestamp(3) @default(now())
+  updatedAt DateTime @db.Timestamp(3) @updatedAt 
+
+  content   Content? @relation(fields: [contentId], references: [contentId]) // Made optional
+}
+
+model Admin {
+  adminId        String   @id @db.Uuid
+  adminFisrtName String
+  adminLastName  String
+  adminPassword  String
+  adminEmail     String
+  adminAvatar    String
+  createdAt DateTime @db.Timestamp(3) @default(now())
+  updatedAt DateTime @db.Timestamp(3) @updatedAt 
+  phoneNumber   String
+}
+
+
+model Feedback {
+  feedbackId String         @id @db.Uuid
+  subject    FeedbackSubject
+  message    String
+  status     FeedbackStatus
+  createdAt DateTime @db.Timestamp(3) @default(now())
+  updatedAt DateTime @db.Timestamp(3) @updatedAt 
+}
+
+enum FeedbackSubject {
+  BUG
+  FEATURE
+  GENERAL
+}
+
+enum FeedbackStatus {
+  OPEN
+  IN_PROGRESS
+  CLOSED
+}
+
+model Payment {
+  paymentId   String         @id @db.Uuid
+  userEmail      String
+  quantity    Int
+  paymentType PaymentType
+  status      PaymentStatus
+  bookingDate DateTime       @db.Timestamp(3)
+  totalPrice  Int
+  createdAt DateTime @db.Timestamp(3) @default(now())
+  updatedAt DateTime @db.Timestamp(3) @updatedAt 
+}
+enum PaymentType {
+  DEBIT_CARD
+  DIGITAL_WALLET
+  GOOGLE_PAY
+}
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
