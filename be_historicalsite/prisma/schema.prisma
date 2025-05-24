@@ -23,8 +23,6 @@ model Period {
   periodImage String
   startYear  Int
   endYear    Int
-  createdAt DateTime @db.Timestamp(3) @default(now())
-  updatedAt DateTime @db.Timestamp(3) @updatedAt 
 
   eventArticles EventArticle[]
 }
@@ -33,8 +31,6 @@ model Topic {
   topicId   String   @id @db.Uuid
   topicName String
   topicImage String
-  createdAt DateTime @db.Timestamp(3) @default(now())
-  updatedAt DateTime @db.Timestamp(3) @updatedAt 
   eventArticles EventArticle[]
 }
 
@@ -48,8 +44,6 @@ model Article {
   articleType       ArticleType 
   articleName        String
   articleContentList Json
-  createdAt DateTime @db.Timestamp(3) @default(now())
-  updatedAt DateTime @db.Timestamp(3) @updatedAt 
   personArticle      PersonArticle?
   eventArticle       EventArticle?
   contents           Content[]
@@ -63,7 +57,6 @@ model PersonArticle {
   deathYear   Int?
   nationality String
   createdAt DateTime @db.Timestamp(3) @default(now())
-  updatedAt DateTime @db.Timestamp(3) @updatedAt 
 
   article     Article @relation(fields: [articleId], references: [articleId])
 }
@@ -71,8 +64,6 @@ model EventArticle {
   articleId  String   @id @db.Uuid
   periodId   String   @db.Uuid
   topicId    String   @db.Uuid
-  createdAt DateTime @db.Timestamp(3) @default(now())
-  updatedAt DateTime @db.Timestamp(3) @updatedAt
 
   article    Article @relation(fields: [articleId], references: [articleId])
   period     Period  @relation(fields: [periodId], references: [periodId])
@@ -86,12 +77,9 @@ model Content {
   parentId    String? @db.Uuid
   content     String
   imagesId    Json
-  createdAt DateTime @db.Timestamp(3) @default(now())
-  updatedAt DateTime @db.Timestamp(3) @updatedAt 
+  children    Json[]
 
   article     Article  @relation(fields: [articleId], references: [articleId])
-  parent      Content? @relation("ContentToParent", fields: [parentId], references: [contentId])
-  children    Content[] @relation("ContentToParent")
   images      Image[]
 }
 
@@ -103,8 +91,6 @@ model Image {
   caption   String?
   width     Int?
   height    Int?
-  createdAt DateTime @db.Timestamp(3) @default(now())
-  updatedAt DateTime @db.Timestamp(3) @updatedAt 
 
   content   Content? @relation(fields: [contentId], references: [contentId]) // Made optional
 }

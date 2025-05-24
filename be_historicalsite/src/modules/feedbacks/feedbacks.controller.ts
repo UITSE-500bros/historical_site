@@ -2,7 +2,9 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus
 import { FeedbacksService } from './feedbacks.service';
 import { CreateFeedbackDto } from './dto/create-feedback.dto';
 import { UpdateFeedbackDto } from './dto/update-feedback.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('feedbacks')
 @Controller('feedbacks')
 export class FeedbacksController {
   constructor(private readonly feedbacksService: FeedbacksService) {}

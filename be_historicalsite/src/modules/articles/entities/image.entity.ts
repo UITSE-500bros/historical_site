@@ -22,9 +22,4 @@ export class Image {
   @ApiProperty({ description: 'The height of the image in pixels', example: 600, required: false })
   height?: number;
 
-  @ApiProperty({ description: 'The creation timestamp of the image' })
-  createdAt: Date;
-
-  @ApiProperty({ description: 'The last update timestamp of the image' })
-  updatedAt: Date;
 }

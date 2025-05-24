@@ -1,18 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { v4 as uuidv4 } from 'uuid';
+import { ArticleType } from '../../../generated/prisma/client';
+import { PrismaService } from '../../prisma/prisma.service';
 import { CreateArticleDto } from './dto/article-dto/create-article.dto';
+import { PaginationDto } from './dto/article-dto/pagination.dto';
 import { UpdateArticleDto } from './dto/article-dto/update-article.dto';
 import { CreateContentDto } from './dto/content-dto/create-content.dto';
 import { UpdateContentDto } from './dto/content-dto/update-content.dto';
-import { CreateImageDto } from './dto/image-dto/create-image.dto';
-import { UpdateImageDto } from './dto/image-dto/update-image.dto';
-import { CreatePersonArticleDto } from './dto/create-person-article.dto';
-import { UpdatePersonArticleDto } from './dto/update-person-article.dto';
-import { CreateEventArticleDto } from './dto/create-event-article.dto';
-import { UpdateEventArticleDto } from './dto/update-event-article.dto';
-import { v4 as uuidv4 } from 'uuid';
-import { PrismaService } from '../../prisma/prisma.service';
-import { ArticleType } from '../../../generated/prisma/client';
-import { PaginationDto } from './dto/article-dto/pagination.dto';
 
 @Injectable()
 export class ArticlesService {
@@ -25,9 +19,7 @@ export class ArticlesService {
         articleId: uuidv4(),
         articleType: createArticleDto.articleType,
         articleName: createArticleDto.articleName,
-        articleContentList: createArticleDto.articleContentList || {},
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        articleContentList: createArticleDto.articleContentList || {}
       },
     });
   }
@@ -66,19 +58,15 @@ export class ArticlesService {
         },
       };
     }
-
     const [articles, total] = await Promise.all([
       this.prisma.article.findMany({
         where,
         skip,
-        take: limitNum,
-        include,
-        orderBy: {
-          createdAt: 'desc',
-        },
+        take: limitNum
       }),
       this.prisma.article.count({ where }),
     ]);
+    
 
     return {
       data: articles,
@@ -92,10 +80,12 @@ export class ArticlesService {
   }
 
   async findOne(id: string) {
+    // First, fetch the article with its top-level contents
     const article = await this.prisma.article.findUnique({
       where: { articleId: id },
       include: {
         contents: {
+          where: { parentId: null }, // Only get top-level contents
           include: {
             images: true,
           },
@@ -106,7 +96,65 @@ export class ArticlesService {
     if (!article) {
       throw new NotFoundException(`Article with ID ${id} not found`);
     }
-
+    
+    // Get all contents for this article to build the hierarchy
+    const allContents = await this.prisma.content.findMany({
+      where: { articleId: id },
+      include: {
+        images: true,
+      },
+    });
+    
+    // Build content hierarchy
+    const contentMap = new Map();
+    allContents.forEach(content => {
+      contentMap.set(content.contentId, {
+        ...content,
+        children: [],
+      });
+    });
+    
+    // Organize contents into parent-child relationships
+    allContents.forEach(content => {
+      if (content.parentId && contentMap.has(content.parentId)) {
+        const parent = contentMap.get(content.parentId);
+        parent.children.push(contentMap.get(content.contentId));
+      }
+    });
+    
+    // Replace the flat contents with the hierarchical structure
+    article.contents = article.contents.map(content => {
+      return contentMap.get(content.contentId);
+    });
+    
+    // Helper function to clean empty arrays and null values
+    const cleanEmptyValues = (obj) => {
+      if (obj === null || typeof obj !== 'object') return obj;
+      
+      // Handle arrays
+      if (Array.isArray(obj)) {
+        // Clean each item in the array
+        const cleanedArray = obj.map(item => cleanEmptyValues(item)).filter(Boolean);
+        return cleanedArray.length ? cleanedArray : undefined;
+      }
+      
+      // Handle objects
+      const result = {};
+      for (const key in obj) {
+        const value = cleanEmptyValues(obj[key]);
+        // Only include non-null, non-undefined values and non-empty arrays
+        if (value !== null && value !== undefined) {
+          if (!Array.isArray(value) || value.length > 0) {
+            result[key] = value;
+          }
+        }
+      }
+      return Object.keys(result).length ? result : undefined;
+    };
+    
+    // Clean the article object
+    const cleanedArticle = cleanEmptyValues(article);
+    
     // Get additional data based on article type
     if (article.articleType === 'EVENT') {
       const eventArticle = await this.prisma.eventArticle.findUnique({
@@ -116,15 +164,15 @@ export class ArticlesService {
           topic: true,
         },
       });
-      return { ...article, eventArticle };
+      return cleanEmptyValues({ ...cleanedArticle, eventArticle });
     } else if (article.articleType === 'PERSON') {
       const personArticle = await this.prisma.personArticle.findUnique({
         where: { articleId: id },
       });
-      return { ...article, personArticle };
+      return cleanEmptyValues({ ...cleanedArticle, personArticle });
     }
 
-    return article;
+    return cleanedArticle;
   }
 
   async update(id: string, updateArticleDto: UpdateArticleDto) {
@@ -181,37 +229,11 @@ export class ArticlesService {
         articleId: createContentDto.articleId,
         parentId: createContentDto.parentId,
         content: createContentDto.content,
-        imagesId: createContentDto.imagesId || {},
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        imagesId: createContentDto.imagesId || {}
       },
     });
   }
 
-  async findAllContents() {
-    return this.prisma.content.findMany({
-      include: {
-        images: true,
-        children: true,
-      },
-    });
-  }
-
-  async findOneContent(id: string) {
-    const content = await this.prisma.content.findUnique({
-      where: { contentId: id },
-      include: {
-        images: true,
-        children: true,
-      },
-    });
-
-    if (!content) {
-      throw new NotFoundException(`Content with ID ${id} not found`);
-    }
-
-    return content;
-  }
 
   async updateContent(id: string, updateContentDto: UpdateContentDto) {
     try {
@@ -234,290 +256,4 @@ export class ArticlesService {
     }
   }
 
-  // Image CRUD
-  async createImage(createImageDto: CreateImageDto) {
-    return this.prisma.image.create({
-      data: {
-        imageId: uuidv4(),
-        contentId: createImageDto.contentId,
-        src: createImageDto.src,
-        alt: createImageDto.alt,
-        caption: createImageDto.caption,
-        width: createImageDto.width,
-        height: createImageDto.height,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-    });
-  }
-
-  async findAllImages() {
-    return this.prisma.image.findMany();
-  }
-
-  async findOneImage(id: string) {
-    const image = await this.prisma.image.findUnique({
-      where: { imageId: id },
-    });
-
-    if (!image) {
-      throw new NotFoundException(`Image with ID ${id} not found`);
-    }
-
-    return image;
-  }
-
-  async updateImage(id: string, updateImageDto: UpdateImageDto) {
-    try {
-      const updateData: any = {};
-
-      if (updateImageDto.contentId !== undefined) {
-        updateData.contentId = updateImageDto.contentId || null;
-      }
-
-      if (updateImageDto.src) {
-        updateData.src = updateImageDto.src;
-      }
-
-      if (updateImageDto.alt !== undefined) {
-        updateData.alt = updateImageDto.alt;
-      }
-
-      if (updateImageDto.caption !== undefined) {
-        updateData.caption = updateImageDto.caption;
-      }
-
-      if (updateImageDto.width !== undefined) {
-        updateData.width = updateImageDto.width;
-      }
-
-      if (updateImageDto.height !== undefined) {
-        updateData.height = updateImageDto.height;
-      }
-
-      return await this.prisma.image.update({
-        where: { imageId: id },
-        data: updateData,
-      });
-    } catch (error) {
-      throw new NotFoundException(`Image with ID ${id} not found`);
-    }
-  }
-
-  async removeImage(id: string) {
-    try {
-      return await this.prisma.image.delete({
-        where: { imageId: id },
-      });
-    } catch (error) {
-      throw new NotFoundException(`Image with ID ${id} not found`);
-    }
-  }
-
-  // Person Article CRUD
-  async createPersonArticle(createPersonArticleDto: CreatePersonArticleDto) {
-    const { article, ...personData } = createPersonArticleDto;
-
-    // Create the base article first
-    const createdArticle = await this.create(article);
-
-    // Then create the person article
-    return this.prisma.personArticle.create({
-      data: {
-        articleId: createdArticle.articleId,
-        personName: personData.personName,
-        personAvatar: personData.personAvatar || '',
-        birthYear: personData.birthYear,
-        deathYear: personData.deathYear,
-        nationality: personData.nationality,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-    });
-  }
-
-  async findAllPersonArticles() {
-    return this.prisma.personArticle.findMany({
-      include: {
-        article: true,
-      },
-    });
-  }
-
-  async findOnePersonArticle(id: string) {
-    const personArticle = await this.prisma.personArticle.findUnique({
-      where: { articleId: id },
-      include: {
-        article: {
-          include: {
-            contents: {
-              include: {
-                images: true,
-              },
-            },
-          },
-        },
-      },
-    });
-
-    if (!personArticle) {
-      throw new NotFoundException(`Person Article with ID ${id} not found`);
-    }
-
-    return personArticle;
-  }
-
-  async updatePersonArticle(
-    id: string,
-    updatePersonArticleDto: UpdatePersonArticleDto,
-  ) {
-    const { article, ...personData } = updatePersonArticleDto;
-
-    try {
-      // Update the base article if provided
-      if (article) {
-        await this.update(id, article);
-      }
-
-      // Update the person article
-      const updateData: any = {};
-
-      if (personData.personName !== undefined) {
-        updateData.personName = personData.personName;
-      }
-
-      if (personData.birthYear !== undefined) {
-        updateData.birthYear = personData.birthYear;
-      }
-
-      if (personData.deathYear !== undefined) {
-        updateData.deathYear = personData.deathYear;
-      }
-
-      if (personData.nationality !== undefined) {
-        updateData.nationality = personData.nationality;
-      }
-
-      return await this.prisma.personArticle.update({
-        where: { articleId: id },
-        data: updateData,
-      });
-    } catch (error) {
-      throw new NotFoundException(`Person Article with ID ${id} not found`);
-    }
-  }
-
-  async removePersonArticle(id: string) {
-    try {
-      // Delete the person article first
-      await this.prisma.personArticle.delete({
-        where: { articleId: id },
-      });
-
-      // Then delete the base article
-      return await this.remove(id);
-    } catch (error) {
-      throw new NotFoundException(`Person Article with ID ${id} not found`);
-    }
-  }
-
-  // Event Article CRUD
-  async createEventArticle(createEventArticleDto: CreateEventArticleDto) {
-    const { article, ...eventData } = createEventArticleDto;
-
-    // Create the base article first
-    const createdArticle = await this.create(article);
-
-    // Then create the event article
-    return this.prisma.eventArticle.create({
-      data: {
-        articleId: createdArticle.articleId,
-        periodId: eventData.periodId,
-        topicId: eventData.topicId,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-    });
-  }
-
-  async findAllEventArticles() {
-    return this.prisma.eventArticle.findMany({
-      include: {
-        article: true,
-        period: true,
-        topic: true,
-      },
-    });
-  }
-
-  async findOneEventArticle(id: string) {
-    const eventArticle = await this.prisma.eventArticle.findUnique({
-      where: { articleId: id },
-      include: {
-        article: {
-          include: {
-            contents: {
-              include: {
-                images: true,
-              },
-            },
-          },
-        },
-        period: true,
-        topic: true,
-      },
-    });
-
-    if (!eventArticle) {
-      throw new NotFoundException(`Event Article with ID ${id} not found`);
-    }
-
-    return eventArticle;
-  }
-
-  async updateEventArticle(
-    id: string,
-    updateEventArticleDto: UpdateEventArticleDto,
-  ) {
-    const { article, ...eventData } = updateEventArticleDto;
-
-    try {
-      // Update the base article if provided
-      if (article) {
-        await this.update(id, article);
-      }
-
-      // Update the event article
-      const updateData: any = {};
-
-      if (eventData.periodId) {
-        updateData.periodId = eventData.periodId;
-      }
-
-      if (eventData.topicId) {
-        updateData.topicId = eventData.topicId;
-      }
-
-      return await this.prisma.eventArticle.update({
-        where: { articleId: id },
-        data: updateData,
-      });
-    } catch (error) {
-      throw new NotFoundException(`Event Article with ID ${id} not found`);
-    }
-  }
-
-  async removeEventArticle(id: string) {
-    try {
-      // Delete the event article first
-      await this.prisma.eventArticle.delete({
-        where: { articleId: id },
-      });
-
-      // Then delete the base article
-      return await this.remove(id);
-    } catch (error) {
-      throw new NotFoundException(`Event Article with ID ${id} not found`);
-    }
-  }
 }

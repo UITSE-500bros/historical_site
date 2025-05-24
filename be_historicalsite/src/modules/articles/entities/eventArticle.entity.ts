@@ -10,9 +10,4 @@ export class EventArticle {
   @ApiProperty({ description: 'The topic ID this event belongs to', example: '123e4567-e89b-12d3-a456-426614174000' })
   topicId: string;
 
-  @ApiProperty({ description: 'The creation timestamp of the event article' })
-  createdAt: Date;
-
-  @ApiProperty({ description: 'The last update timestamp of the event article' })
-  updatedAt: Date;
 }

@@ -9,6 +9,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { FeedbacksModule } from './modules/feedbacks/feedbacks.module';
 import { PaymentsModule } from './modules/payments/payments.module';
+import { MailerModule } from '@nestjs-modules/mailer';
 
 @Module({
   imports: [
@@ -19,7 +20,19 @@ import { PaymentsModule } from './modules/payments/payments.module';
     ArticlesModule,
     AuthModule,
     FeedbacksModule,
-    PaymentsModule
+    PaymentsModule,
+    MailerModule.forRoot({
+      transport: {
+        service: 'gmail',
+        auth: {
+          user: process.env.SMTP_USER,
+          pass: process.env.SMTP_PASSWORD,
+        },
+      },
+      defaults: {
+        from: process.env.SMTP_FROM,
+      },
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],

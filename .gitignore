@@ -1,0 +1,75 @@
+# ====================
+# Node/TypeScript
+# ====================
+node_modules/
+dist/
+build/
+lib/
+.tmp/
+.temp/
+*.tsbuildinfo
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Env
+.env
+.env.*
+!.env.example
+
+# Output of npm pack
+*.tgz
+
+# Jest
+coverage/
+.jest/
+
+# TypeScript
+*.tsbuildinfo
+
+# PM2 logs
+pids
+logs
+
+# ====================
+# Editor/IDE
+# ====================
+
+# VSCode
+.vscode/
+.history/
+
+# Cursor IDE
+.cursor/
+
+# Windsurf (Cloud IDE, also sometimes stores temp files in .wsurf or .cloudide)
+.wsurf/
+.cloudide/
+
+# JetBrains (WebStorm, IntelliJ, etc.)
+.idea/
+
+# Mac system files
+.DS_Store
+
+# Windows system files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Others
+*.swp
+*.swo
+
+
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/dictionaries

@@ -20,11 +20,7 @@ export class Content {
   @ApiProperty({ description: 'List of image IDs associated with this content', example: '["123e4567-e89b-12d3-a456-426614174000"]' })
   imagesId: any;
 
-  @ApiProperty({ description: 'The creation timestamp of the content' })
-  createdAt: Date;
 
-  @ApiProperty({ description: 'The last update timestamp of the content' })
-  updatedAt: Date;
 
   @ApiProperty({ description: 'The parent content (if any)', type: () => Content, required: false })
   parent?: Content;
