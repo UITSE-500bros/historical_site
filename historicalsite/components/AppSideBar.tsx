@@ -1,4 +1,11 @@
-import { Calendar, Home, Inbox, Search, Settings } from "lucide-react";
+import {
+  Home,
+  FileText,
+  Landmark,
+  Ticket,
+  MessageCircle,
+  Users,
+} from "lucide-react";
 
 import {
   Sidebar,
@@ -14,35 +21,40 @@ import {
 // Menu items.
 const items = [
   {
-    title: "Home",
-    url: "#",
+    title: "Dashboard",
+    url: "/admin",
     icon: Home,
   },
   {
+    title: "Users",
+    url: "/admin/users",
+    icon: Users,
+  },
+  {
     title: "Posts",
-    url: "#",
-    icon: Inbox,
+    url: "/admin/posts",
+    icon: FileText,
   },
   {
     title: "Museums",
-    url: "#",
-    icon: Calendar,
+    url: "/admin/museums",
+    icon: Landmark,
   },
   {
     title: "Tickets",
-    url: "#",
-    icon: Search,
+    url: "/admin/tickets",
+    icon: Ticket,
   },
   {
-    title: "Feedback",
-    url: "#",
-    icon: Settings,
+    title: "Feedbacks",
+    url: "/admin/feedbacks",
+    icon: MessageCircle,
   },
 ];
 
 export default function AppSidebar() {
   return (
-    <Sidebar className="bg-transparent ">
+    <Sidebar variant="floating" className="bg-transparent  ">
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Application</SidebarGroupLabel>

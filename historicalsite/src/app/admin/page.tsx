@@ -19,10 +19,10 @@ export default function Admin() {
       </aside> */}
 
       {/* Main content */}
-      <main className="flex-1 h-full overflow-y-auto bg-white p-8">
+      <main className="flex-1 h-full overflow-y-auto  p-8">
         {/* Header */}
-        <div className="flex justify-between items-center mb-8">
-          <h2 className="text-2xl font-bold">Dashboard Overview</h2>
+        <div className="flex bg-white p-3 rounded-xl shadow-xl  justify-between items-center mb-8">
+          <h2 className="text-2xl  font-bold">Dashboard Overview</h2>
           <div className="space-x-2">
             <button className="border px-3 py-1 rounded bg-blue-600 text-white">7 Days</button>
             <button className="border px-3 py-1 rounded">30 Days</button>
