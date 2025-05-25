@@ -215,7 +215,7 @@ export class ArticlesService {
   async getAllArticleNames() {
     const articles = await this.prisma.article.findMany({
       select: { articleId: true, articleName: true },
-      orderBy: { createdAt: 'desc' },
+      
     });
     return articles;
   }
