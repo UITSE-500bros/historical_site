@@ -3,11 +3,10 @@ import { MenuItem } from "./MenuItem";
 
 export const NavMenu: React.FC = () => {
   const menuItems = [
-    { label: "TRANG CHỦ", url: "/" },
-    { label: "GIỚI THIỆU", url: "/about" },
-    { label: "KHÁM PHÁ", url: "/explore" },
-    // { label: "SỰ KIỆN", url: "/events" },
-    { label: "admin", url: "/admin" },
+    { label: "HOME", url: "/" },
+    { label: "ABOUT", url: "/about" },
+    { label: "EXPLORE", url: "/explore" },
+    { label: "ADMIN", url: "/admin" },
   ];
   return (
     <div className="flex gap-6 items-center self-stretch my-auto min-w-60 text-stone-900">
