@@ -1,16 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
-import { ArticleType } from '../../../../../generated/prisma/client';
+import { $Enums } from '@prisma/client';
 
 export class CreateArticleDto {
   @ApiProperty({ 
     description: 'The type of the article', 
-    enum: ArticleType,
-    example: ArticleType.EVENT
+    enum: $Enums.ArticleType,
+    example: $Enums.ArticleType.EVENT
   })
   @IsNotEmpty()
-  @IsEnum(ArticleType)
-  articleType: ArticleType;
+  @IsEnum($Enums.ArticleType)
+  articleType: $Enums.ArticleType;
 
   @ApiProperty({ description: 'The name of the article', example: 'World War II' })
   @IsString()

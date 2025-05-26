@@ -29,6 +29,8 @@
     "@nestjs/platform-express": "^11.0.1",
     "@nestjs/swagger": "^11.2.0",
     "@prisma/client": "^6.6.0",
+    "@sentry/nestjs": "^9.22.0",
+    "@sentry/webpack-plugin": "^3.5.0",
     "@supabase/supabase-js": "^2.49.8",
     "@types/uuid": "^10.0.0",
     "bcrypt": "^5.1.1",

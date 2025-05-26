@@ -10,9 +10,11 @@ import { AuthModule } from './modules/auth/auth.module';
 import { FeedbacksModule } from './modules/feedbacks/feedbacks.module';
 import { PaymentsModule } from './modules/payments/payments.module';
 import { MailerModule } from '@nestjs-modules/mailer';
+import { SentryModule } from '@sentry/nestjs/setup';
 
 @Module({
   imports: [
+    SentryModule.forRoot(),
     ConfigModule.forRoot(),
     PrismaModule,
     PeriodsModule,
@@ -34,7 +36,9 @@ import { MailerModule } from '@nestjs-modules/mailer';
       },
     }),
   ],
+  providers: [
+    AppService
+  ],
   controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {}

@@ -1,4 +1,4 @@
-
+const { sentryWebpackPlugin } = require("@sentry/webpack-plugin");
 const nodeExternals = require('webpack-node-externals');
 const { RunScriptWebpackPlugin } = require('run-script-webpack-plugin');
 
@@ -13,6 +13,11 @@ module.exports = function (options, webpack) {
     ],
     plugins: [
       ...options.plugins,
+      sentryWebpackPlugin({
+      authToken: process.env.SENTRY_AUTH_TOKEN,
+        org: "oan-phuong-nam",
+        project: "node-nestjs",
+      }),
       new webpack.HotModuleReplacementPlugin(),
       new webpack.WatchIgnorePlugin({
         paths: [/\.js$/, /\.d\.ts$/],
