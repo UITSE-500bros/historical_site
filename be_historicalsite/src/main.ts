@@ -1,3 +1,4 @@
+import "./instrument";
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
@@ -7,15 +8,13 @@ import { PersonArticle } from './modules/articles/entities/personArticle.entity'
 import { EventArticle } from './modules/articles/entities/eventArticle.entity';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-
+  const app = await NestFactory.create(AppModule);  
   // Enable CORS
   app.enableCors({
     origin: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });
-
   // Add cache control headers to prevent caching issues
   app.use((req, res, next) => {
     res.header('Cache-Control', 'no-store, no-cache, must-revalidate');
