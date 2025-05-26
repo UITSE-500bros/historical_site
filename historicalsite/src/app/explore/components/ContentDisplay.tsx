@@ -2,7 +2,7 @@ import React from "react";
 import type { JSX } from "react";
 import "./style.css";
 
-type ContentNode = {
+export type ContentNode = {
   contentId: string;
   contentName: string;
   articleId: string;
@@ -30,20 +30,25 @@ export function ContentDisplay({
   const HeadingTag = ({
     level,
     children,
+    id,
   }: {
     level?: number;
     children: React.ReactNode;
+    id?: string;
   }) => {
     const Tag = `h${Math.min(level || 1, 6)}` as keyof JSX.IntrinsicElements;
-    return <Tag>{children}</Tag>;
+    return <Tag id={id}>{children}</Tag>;
   };
 
   return (
     <div className="ContentDisplay space-y-8">
       {contents.map((content) => (
         <div key={content.contentId} className="space-y-4">
+          {" "}
           {/* heading section */}
-          <HeadingTag level={level}>{content.contentName}</HeadingTag>
+          <HeadingTag level={level} id={content.contentId}>
+            {content.contentName}
+          </HeadingTag>
           {content.content && (
             <div
               className="text-lg"
