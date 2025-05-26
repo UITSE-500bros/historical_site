@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post,Get } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { AdminLoginDto } from './dto/admin-login.dto';
@@ -44,5 +44,13 @@ export class AuthController {
   @ApiResponse({ status: 409, description: 'Conflict - Admin with this email already exists' })
   createAdmin(@Body() createAdminDto: CreateAdminDto) {
     return this.authService.createAdmin(createAdminDto);
+  }
+
+  @Get('admin/analyze')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Analyze admin accounts' })
+  @ApiResponse({ status: 200, description: 'Return the analysis of admin accounts.' })
+  analyze() {
+    return this.authService.analyze();
   }
 }

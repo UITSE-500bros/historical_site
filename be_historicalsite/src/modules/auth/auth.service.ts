@@ -102,4 +102,19 @@ export class AuthService {
     
     return adminData;
   }
+
+  async analyze() {
+    const numberOfArticles = await this.prisma.article.count();
+    const numberOfTickets = await this.prisma.payment.count();
+    const revenue = await this.prisma.payment.aggregate({
+      _sum: {
+        totalPrice: true,
+      },
+    });
+    return {
+      numberOfArticles,
+      numberOfTickets,
+      revenue: revenue._sum?.totalPrice || 0,
+    };
+  }
 }
