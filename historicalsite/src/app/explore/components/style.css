@@ -1,0 +1,43 @@
+/* Phân cấp heading tối giản - chỉ cần thay đổi kích thước và màu sắc */
+
+.ContentDisplay h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 0.5em;
+}
+
+.ContentDisplay h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.4em;
+}
+
+.ContentDisplay h3 {
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: #4b5563;
+  margin-bottom: 0.3em;
+}
+
+.ContentDisplay h4 {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #6b7280;
+  margin-bottom: 0.2em;
+}
+
+.ContentDisplay h5 {
+  font-size: 1rem;
+  font-weight: 400;
+  color: #9ca3af;
+  margin-bottom: 0.15em;
+}
+
+.ContentDisplay h6 {
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: #d1d5db;
+  margin-bottom: 0.1em;
+}
