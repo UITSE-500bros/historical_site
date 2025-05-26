@@ -69,29 +69,8 @@ export default function Home() {
         </section>
 
         <section>
-          <TitleSection title="Khám Phá" url="/explore" />
+          <TitleSection title="Explore" url="/explore" />
           <div className="flex-col mt-[40px] flex px-8 justify-center">
-            <div className="flex gap-4 flex-wrap justify-center items-center">
-              <Link
-                href="/explore"
-                className="text-[color:var(--Black,#1F1F1F)] [leading-trim:both] [text-edge:cap] [font-family:Actor] text-base font-normal leading-[26px] uppercase"
-              >
-                Nhan vat tieu bieu
-              </Link>
-              <Link
-                href="/"
-                className="text-[color:var(--Black,#1F1F1F)] [leading-trim:both] [text-edge:cap] [font-family:Actor] text-base font-normal leading-[26px] uppercase"
-              >
-                Su kien lich su
-              </Link>
-              <Link
-                href="/"
-                className="text-[color:var(--Black,#1F1F1F)] [leading-trim:both] [text-edge:cap] [font-family:Actor] text-base font-normal leading-[26px] uppercase"
-              >
-                Tham quan online
-              </Link>
-            </div>
-
             <div className="grid grid-cols-3">
               {HistoricalFigures.map((figure, index) => (
                 <ProfileCard

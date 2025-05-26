@@ -41,11 +41,6 @@ const items = [
     url: "/admin/tickets",
     icon: Ticket,
   },
-  {
-    title: "Feedbacks",
-    url: "/admin/feedbacks",
-    icon: MessageCircle,
-  },
 ];
 
 export default function AppSidebar() {

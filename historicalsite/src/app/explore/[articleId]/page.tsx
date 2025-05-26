@@ -22,6 +22,7 @@ export default async function ArticleDetail({
       fetchError = true;
     } else {
       article = await res.json();
+      console.log(article);
       articleContentList = article.articleContentList;
     }
   } catch (e) {
@@ -30,7 +31,7 @@ export default async function ArticleDetail({
 
   return (
     <div className="flex h-full px-6 py-4">
-      {/* Sidebar cây mục lục */}
+      Sidebar cây mục lục
       <aside className="w-1/4 h-screen overflow-y-auto sticky top-0  pr-4 border-r ">
         <h2 className="text-xl  font-bold mb-4">
           {fetchError ? "Không thể tải bài viết" : article.articleName}
@@ -38,7 +39,7 @@ export default async function ArticleDetail({
         {!fetchError && <ContentTree contents={article.contents} />}
       </aside>
 
-      {/* Khu vực nội dung hiển thị */}
+
       <main className="w-3/4 pl-4 overflow-y-auto">
         {fetchError ? (
           <div className="text-red-500">Không thể tải nội dung bài viết.</div>
@@ -48,6 +49,9 @@ export default async function ArticleDetail({
          
         )}
       </main>
+      
+
+  
     </div>
   );
 }

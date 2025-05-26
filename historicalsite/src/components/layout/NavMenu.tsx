@@ -6,6 +6,7 @@ export const NavMenu: React.FC = () => {
     { label: "HOME", url: "/" },
     { label: "ABOUT", url: "/about" },
     { label: "EXPLORE", url: "/explore" },
+    { label: "TICKETS", url: "/tickets" },
     { label: "ADMIN", url: "/admin" },
   ];
   return (
