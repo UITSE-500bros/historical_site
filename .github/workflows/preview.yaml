@@ -6,9 +6,6 @@ on:
   push:
     branches:
       - frontend
-      - main
-    branches-ignore:
-      - backend
 jobs:
   Deploy-Preview:
     runs-on: ubuntu-latest
