@@ -1,9 +1,7 @@
 import Image from "next/image";
-import { TitleSection } from "../components/section";
-import { BANNER_TEXT } from "./content";
-import Link from "next/link";
 import ProfileCard from "../components/cards/ProfileCard";
-import { HistoricalFigures } from "./content";
+import { TitleSection } from "../components/section";
+import { BANNER_TEXT, HistoricalFigures } from "./content";
 export default function Home() {
   return (
     <div className="flex flex-col min-h-screen">

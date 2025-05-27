@@ -1,6 +1,7 @@
 import React from "react";
 import type { JSX } from "react";
 import "./style.css";
+import Image from "next/image";
 
 export type ContentNode = {
   contentId: string;
@@ -61,10 +62,13 @@ export function ContentDisplay({
               {content.images.map((image) => (
                 <figure key={image.imageId} className="space-y-2">
                   {image.src && (
-                    <img
+                    <Image
+                      key={image.imageId}
                       src={image.src}
                       alt={image.alt}
                       className="mx-auto rounded-xl shadow-md max-w-full h-auto"
+                      width={image.width}
+                      height={image.height}
                     />
                   )}
                   {image.caption && (

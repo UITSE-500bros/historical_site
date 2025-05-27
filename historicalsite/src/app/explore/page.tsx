@@ -2,8 +2,6 @@ import ArticleCard from "@/src/components/cards/ArticleCard";
 import { MyPagination } from "@/src/components/section/MyPagination";
 
 export default async function Explore() {
-  const url = process.env.API_URL;
-
   const res = await fetch("http://localhost:8888/articles/names");
   const articles = await res.json();
 
