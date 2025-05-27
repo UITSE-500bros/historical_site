@@ -119,17 +119,17 @@ export class ArticlesController {
   }
 
   // Content endpoints
-  @Post('content')
-  @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Create a new content' })
-  @ApiResponse({
-    status: 201,
-    description: 'The content has been successfully created.',
-  })
-  @ApiResponse({ status: 400, description: 'Bad Request.' })
-  createContent(@Body() createContentDto: CreateContentDto) {
-    return this.articlesService.createContent(createContentDto);
-  }
+  // @Post('content')
+  // @HttpCode(HttpStatus.CREATED)
+  // @ApiOperation({ summary: 'Create a new content' })
+  // @ApiResponse({
+  //   status: 201,
+  //   description: 'The content has been successfully created.',
+  // })
+  // @ApiResponse({ status: 400, description: 'Bad Request.' })
+  // createContent(@Body() createContentDto: CreateContentDto) {
+  //   return this.articlesService.createContentRecursive(createContentDto);
+  // }
 
   @Patch('content/:id')
   @ApiOperation({ summary: 'Update a content' })

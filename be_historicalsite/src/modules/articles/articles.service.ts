@@ -23,61 +23,27 @@ export class ArticlesService {
 
   // Article CRUD
   async create(createArticleDto: CreateArticleDto) {
-    // Generate a UUID for the article
-    const articleId = uuidv4();
-    
-    // Create the base article first
-    return this.prisma.article.create({
+    const newArticle = await this.prisma.article.create({
       data: {
         articleId,
         articleType: createArticleDto.articleType,
         articleName: createArticleDto.articleName,
-        articleContentList: createArticleDto.articleContentList || {}
+        articleContentList:{}
       },
     });
-  }
-  
-  // Create a person article with its base article
-  async createPersonArticle(createPersonArticleDto: CreatePersonArticleDto) {
-    // First create the base article
-    const article = await this.create(createPersonArticleDto.article);
-    
-    // Then create the person article using the articleId from the base article
-    const personArticle = await this.prisma.personArticle.create({
-      data: {
-        articleId: article.articleId,
-        personName: createPersonArticleDto.personName,
-        personAvatar: createPersonArticleDto.personAvatar,
-        birthYear: createPersonArticleDto.birthYear,
-        deathYear: createPersonArticleDto.deathYear,
-        nationality: createPersonArticleDto.nationality,
-      },
-    });
-    
-    return {
-      ...article,
-      personArticle,
-    };
-  }
-  
-  // Create an event article with its base article
-  async createEventArticle(createEventArticleDto: CreateEventArticleDto) {
-    // First create the base article
-    const article = await this.create(createEventArticleDto.article);
-    
-    // Then create the event article using the articleId from the base article
-    const eventArticle = await this.prisma.eventArticle.create({
-      data: {
-        articleId: article.articleId,
-        periodId: createEventArticleDto.periodId,
-        topicId: createEventArticleDto.topicId,
-      },
-    });
-    
-    return {
-      ...article,
-      eventArticle,
-    };
+
+    // Nếu có nội dung thì đệ quy tạo cây content
+    if (createArticleDto.contents && createArticleDto.contents.length > 0) {
+      for (const contentDto of createArticleDto.contents) {
+        await this.createContentRecursive(
+          contentDto,
+          newArticle.articleId,
+          null,
+        );
+      }
+    }
+
+    return newArticle;
   }
 
   async findAll(paginationDto: PaginationDto) {
@@ -118,11 +84,10 @@ export class ArticlesService {
       this.prisma.article.findMany({
         where,
         skip,
-        take: limitNum
+        take: limitNum,
       }),
       this.prisma.article.count({ where }),
     ]);
-    
 
     return {
       data: articles,
@@ -152,7 +117,7 @@ export class ArticlesService {
     if (!article) {
       throw new NotFoundException(`Article with ID ${id} not found`);
     }
-    
+
     // Get all contents for this article to build the hierarchy
     const allContents = await this.prisma.content.findMany({
       where: { articleId: id },
@@ -160,40 +125,42 @@ export class ArticlesService {
         images: true,
       },
     });
-    
+
     // Build content hierarchy
     const contentMap = new Map();
-    allContents.forEach(content => {
+    allContents.forEach((content) => {
       contentMap.set(content.contentId, {
         ...content,
         children: [],
       });
     });
-    
+
     // Organize contents into parent-child relationships
-    allContents.forEach(content => {
+    allContents.forEach((content) => {
       if (content.parentId && contentMap.has(content.parentId)) {
         const parent = contentMap.get(content.parentId);
         parent.children.push(contentMap.get(content.contentId));
       }
     });
-    
+
     // Replace the flat contents with the hierarchical structure
-    article.contents = article.contents.map(content => {
+    article.contents = article.contents.map((content) => {
       return contentMap.get(content.contentId);
     });
-    
+
     // Helper function to clean empty arrays and null values
     const cleanEmptyValues = (obj) => {
       if (obj === null || typeof obj !== 'object') return obj;
-      
+
       // Handle arrays
       if (Array.isArray(obj)) {
         // Clean each item in the array
-        const cleanedArray = obj.map(item => cleanEmptyValues(item)).filter(Boolean);
+        const cleanedArray = obj
+          .map((item) => cleanEmptyValues(item))
+          .filter(Boolean);
         return cleanedArray.length ? cleanedArray : undefined;
       }
-      
+
       // Handle objects
       const result = {};
       for (const key in obj) {
@@ -207,10 +174,10 @@ export class ArticlesService {
       }
       return Object.keys(result).length ? result : undefined;
     };
-    
+
     // Clean the article object
     const cleanedArticle = cleanEmptyValues(article);
-    
+
     // Get additional data based on article type
     if (article.articleType === 'EVENT') {
       const eventArticle = await this.prisma.eventArticle.findUnique({
@@ -244,10 +211,7 @@ export class ArticlesService {
         updateData.articleName = updateArticleDto.article.articleName;
       }
 
-      if (updateArticleDto.article?.articleContentList) {
-        updateData.articleContentList =
-          updateArticleDto.article.articleContentList;
-      }
+      
 
       return await this.prisma.article.update({
         where: { articleId: id },
@@ -572,68 +536,9 @@ export class ArticlesService {
   async getAllArticleNames() {
     const articles = await this.prisma.article.findMany({
       select: { articleId: true, articleName: true },
-      
     });
     return articles;
   }
-
-  // Content CRUD
-  async createContent(createContentDto: CreateContentDto) {
-    // Create content with a new UUID
-    return this.prisma.content.create({
-      data: {
-        contentId: uuidv4(),
-        contentName: createContentDto.contentName,
-        articleId: createContentDto.articleId,
-        parentId: createContentDto.parentId,
-        content: createContentDto.content,
-        imagesId: createContentDto.imagesId || {}
-      },
-    });
-  }
-  
-  // Create an image associated with a content
-  async createImage(file: any, createImageDto: CreateImageDto) {
-    if (!file) {
-      throw new BadRequestException('Image file is required');
-    }
-
-    if (!createImageDto.contentId) {
-      throw new BadRequestException('Content ID is required for image upload');
-    }
-
-    try {
-      // Upload the file to Supabase storage
-      const fileName = file.originalname || `image_${Date.now()}`;
-      const fileBuffer = file.buffer;
-      
-      // Upload to Supabase storage - using 'images' bucket and organizing by contentId
-      const imageUrl = await this.supabaseService.uploadFile(
-        fileBuffer,
-        'images', // bucket name
-        `content/${createImageDto.contentId}`, // path
-        fileName
-      );
-
-      // Create image record in the database with the URL from Supabase
-      const image = await this.prisma.image.create({
-        data: {
-          imageId: uuidv4(),
-          contentId: createImageDto.contentId,
-          src: imageUrl, // Use the URL returned from Supabase
-          alt: createImageDto.alt || fileName,
-          caption: createImageDto.caption,
-          width: createImageDto.width,
-          height: createImageDto.height,
-        },
-      });
-
-      return image;
-    } catch (error) {
-      throw new BadRequestException(`Failed to upload image: ${error.message}`);
-    }
-  }
-
 
   async updateContent(id: string, updateContentDto: UpdateContentDto) {
     try {
@@ -655,5 +560,46 @@ export class ArticlesService {
       throw new NotFoundException(`Content with ID ${id} not found`);
     }
   }
+  private async createContentRecursive(
+    dto: CreateContentDto,
+    articleId: string,
+    parentId: string | null,
+  ) {
+    const newContent = await this.prisma.content.create({
+      data: {
+        contentId: uuidv4(),
+        contentName: dto.contentName,
+        content: dto.content,
+        articleId,
+        parentId,
+        imagesId:{},
+        images: dto.images
+          ? {
+              createMany: {
+                data: dto.images.map((img) => ({
+                  imageId: img.imageId || uuidv4(),
+                  src: img.src,
+                  alt: img.alt,
+                  caption: img.caption,
+                  width: img.width,
+                  height: img.height,
+                })),
+              },
+            }
+          : undefined,
+      },
+    });
 
+    if (dto.children && dto.children.length > 0) {
+      for (const child of dto.children) {
+        await this.createContentRecursive(
+          child,
+          articleId,
+          newContent.contentId,
+        );
+      }
+    }
+
+    return newContent;
+  }
 }
