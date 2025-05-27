@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState } from 'react';
-import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { CheckCircle, XCircle, Loader2, AlertTriangle } from 'lucide-react';
-import { useIsMobile } from '../../../../hooks/use-mobile';
+import React, { useEffect, useState } from "react";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { CheckCircle, XCircle, Loader2, AlertTriangle } from "lucide-react";
+import { useIsMobile } from "../../../../hooks/use-mobile";
 
 enum PaymentStatus {
-  PENDING = 'PENDING',
-  COMPLETED = 'COMPLETED',
-  FAILED = 'FAILED',
-  CANCELED = 'CANCELED'
+  PENDING = "PENDING",
+  COMPLETED = "COMPLETED",
+  FAILED = "FAILED",
+  CANCELED = "CANCELED",
 }
 
 export function PaymentStatusClient() {
@@ -21,16 +21,16 @@ export function PaymentStatusClient() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const statusParam = searchParams.get('status');
-    const redirectStatus = searchParams.get('redirect_status');
+    const statusParam = searchParams.get("status");
+    const redirectStatus = searchParams.get("redirect_status");
 
-    if (redirectStatus === 'succeeded' || statusParam === 'success') {
+    if (redirectStatus === "succeeded" || statusParam === "success") {
       setStatus(PaymentStatus.COMPLETED);
-    } else if (redirectStatus === 'failed' || statusParam === 'failed') {
+    } else if (redirectStatus === "failed" || statusParam === "failed") {
       setStatus(PaymentStatus.FAILED);
-    } else if (redirectStatus === 'processing') {
+    } else if (redirectStatus === "processing") {
       setStatus(PaymentStatus.PENDING);
-    } else if (statusParam === 'canceled') {
+    } else if (statusParam === "canceled") {
       setStatus(PaymentStatus.CANCELED);
     } else {
       setStatus(PaymentStatus.FAILED);
@@ -46,24 +46,41 @@ export function PaymentStatusClient() {
         return (
           <>
             <div className="flex justify-center">
-              <CheckCircle className={`${isMobile ? 'h-12 w-12' : 'h-16 w-16'} text-green-500`} />
+              <CheckCircle
+                className={`${
+                  isMobile ? "h-12 w-12" : "h-16 w-16"
+                } text-green-500`}
+              />
             </div>
-            <h1 className="text-xl sm:text-2xl font-bold text-card-foreground">Payment Successful!</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-card-foreground">
+              Payment Successful!
+            </h1>{" "}
             <p className="text-sm sm:text-base text-muted-foreground">
-              Thank you for your payment. Your transaction has been completed successfully.
-              We've sent a confirmation email with your receipt and transaction details.
+              Thank you for your payment. Your transaction has been completed
+              successfully. We&apos;ve sent a confirmation email with your
+              receipt and transaction details.
             </p>
             <div className="pt-4 border-t border-border">
-              <div className={`flex ${isMobile ? 'flex-col space-y-2' : 'flex-row space-x-2 justify-center'}`}>
-                <Link 
-                  href="/" 
-                  className={`inline-flex items-center justify-center px-4 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors ${isMobile ? 'text-sm' : ''}`}
+              <div
+                className={`flex ${
+                  isMobile
+                    ? "flex-col space-y-2"
+                    : "flex-row space-x-2 justify-center"
+                }`}
+              >
+                <Link
+                  href="/"
+                  className={`inline-flex items-center justify-center px-4 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors ${
+                    isMobile ? "text-sm" : ""
+                  }`}
                 >
                   Return to Home
                 </Link>
-                <Link 
-                  href="/explore" 
-                  className={`inline-flex items-center justify-center px-4 py-2 rounded-md bg-secondary text-secondary-foreground hover:bg-secondary/90 transition-colors ${isMobile ? 'text-sm' : ''}`}
+                <Link
+                  href="/explore"
+                  className={`inline-flex items-center justify-center px-4 py-2 rounded-md bg-secondary text-secondary-foreground hover:bg-secondary/90 transition-colors ${
+                    isMobile ? "text-sm" : ""
+                  }`}
                 >
                   Explore More Sites
                 </Link>
@@ -71,47 +88,71 @@ export function PaymentStatusClient() {
             </div>
           </>
         );
-      
+
       case PaymentStatus.FAILED:
         return (
           <>
             <div className="flex justify-center">
-              <XCircle className={`${isMobile ? 'h-12 w-12' : 'h-16 w-16'} text-destructive`} />
+              <XCircle
+                className={`${
+                  isMobile ? "h-12 w-12" : "h-16 w-16"
+                } text-destructive`}
+              />
             </div>
-            <h1 className="text-xl sm:text-2xl font-bold text-card-foreground">Payment Failed</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-card-foreground">
+              Payment Failed
+            </h1>{" "}
             <p className="text-sm sm:text-base text-muted-foreground">
-              We're sorry, but your payment could not be processed. This could be due to insufficient funds, 
-              an expired card, or other payment issues. No charges have been made to your account.
+              We&apos;re sorry, but your payment could not be processed. This
+              could be due to insufficient funds, an expired card, or other
+              payment issues. No charges have been made to your account.
             </p>
             <div className="pt-4 border-t border-border">
-              <div className={`flex ${isMobile ? 'flex-col space-y-2' : 'flex-row space-x-2 justify-center'}`}>
-                <button 
+              <div
+                className={`flex ${
+                  isMobile
+                    ? "flex-col space-y-2"
+                    : "flex-row space-x-2 justify-center"
+                }`}
+              >
+                <button
                   onClick={() => router.back()}
-                  className={`inline-flex items-center justify-center px-4 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors ${isMobile ? 'text-sm' : ''}`}
+                  className={`inline-flex items-center justify-center px-4 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors ${
+                    isMobile ? "text-sm" : ""
+                  }`}
                 >
                   Try Again
                 </button>
-                <Link 
-                  href="/" 
-                  className={`inline-flex items-center justify-center px-4 py-2 rounded-md bg-secondary text-secondary-foreground hover:bg-secondary/90 transition-colors ${isMobile ? 'text-sm' : ''}`}
+                <Link
+                  href="/"
+                  className={`inline-flex items-center justify-center px-4 py-2 rounded-md bg-secondary text-secondary-foreground hover:bg-secondary/90 transition-colors ${
+                    isMobile ? "text-sm" : ""
+                  }`}
                 >
                   Return to Home
                 </Link>
               </div>
             </div>
             <div className="text-xs sm:text-sm text-muted-foreground mt-4">
-              If you continue to experience issues, please contact our support team for assistance.
+              If you continue to experience issues, please contact our support
+              team for assistance.
             </div>
           </>
         );
-      
+
       case PaymentStatus.PENDING:
         return (
           <>
             <div className="flex justify-center">
-              <Loader2 className={`${isMobile ? 'h-12 w-12' : 'h-16 w-16'} text-primary animate-spin`} />
+              <Loader2
+                className={`${
+                  isMobile ? "h-12 w-12" : "h-16 w-16"
+                } text-primary animate-spin`}
+              />
             </div>
-            <h1 className="text-xl sm:text-2xl font-bold text-card-foreground">Processing Payment</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-card-foreground">
+              Processing Payment
+            </h1>
             <p className="text-sm sm:text-base text-muted-foreground">
               Your payment is currently being processed. This may take a moment.
               Please do not close this page or refresh your browser.
@@ -121,28 +162,45 @@ export function PaymentStatusClient() {
             </div>
           </>
         );
-      
+
       case PaymentStatus.CANCELED:
         return (
           <>
             <div className="flex justify-center">
-              <AlertTriangle className={`${isMobile ? 'h-12 w-12' : 'h-16 w-16'} text-yellow-500`} />
+              <AlertTriangle
+                className={`${
+                  isMobile ? "h-12 w-12" : "h-16 w-16"
+                } text-yellow-500`}
+              />
             </div>
-            <h1 className="text-xl sm:text-2xl font-bold text-card-foreground">Payment Canceled</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-card-foreground">
+              Payment Canceled
+            </h1>
             <p className="text-sm sm:text-base text-muted-foreground">
-              Your payment has been canceled. No charges have been made to your account.
+              Your payment has been canceled. No charges have been made to your
+              account.
             </p>
             <div className="pt-4 border-t border-border">
-              <div className={`flex ${isMobile ? 'flex-col space-y-2' : 'flex-row space-x-2 justify-center'}`}>
-                <button 
+              <div
+                className={`flex ${
+                  isMobile
+                    ? "flex-col space-y-2"
+                    : "flex-row space-x-2 justify-center"
+                }`}
+              >
+                <button
                   onClick={() => router.back()}
-                  className={`inline-flex items-center justify-center px-4 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors ${isMobile ? 'text-sm' : ''}`}
+                  className={`inline-flex items-center justify-center px-4 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors ${
+                    isMobile ? "text-sm" : ""
+                  }`}
                 >
                   Try Again
                 </button>
-                <Link 
-                  href="/" 
-                  className={`inline-flex items-center justify-center px-4 py-2 rounded-md bg-secondary text-secondary-foreground hover:bg-secondary/90 transition-colors ${isMobile ? 'text-sm' : ''}`}
+                <Link
+                  href="/"
+                  className={`inline-flex items-center justify-center px-4 py-2 rounded-md bg-secondary text-secondary-foreground hover:bg-secondary/90 transition-colors ${
+                    isMobile ? "text-sm" : ""
+                  }`}
                 >
                   Return to Home
                 </Link>
@@ -150,23 +208,38 @@ export function PaymentStatusClient() {
             </div>
           </>
         );
-      
+
       default:
         return (
           <>
             <div className="flex justify-center">
-              <AlertTriangle className={`${isMobile ? 'h-12 w-12' : 'h-16 w-16'} text-yellow-500`} />
+              <AlertTriangle
+                className={`${
+                  isMobile ? "h-12 w-12" : "h-16 w-16"
+                } text-yellow-500`}
+              />
             </div>
-            <h1 className="text-xl sm:text-2xl font-bold text-card-foreground">Unknown Payment Status</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-card-foreground">
+              Unknown Payment Status
+            </h1>{" "}
             <p className="text-sm sm:text-base text-muted-foreground">
-              We couldn't determine the status of your payment. Please check your email for confirmation
-              or contact our support team for assistance.
+              We couldn&apos;t determine the status of your payment. Please
+              check your email for confirmation or contact our support team for
+              assistance.
             </p>
             <div className="pt-4 border-t border-border">
-              <div className={`flex ${isMobile ? 'flex-col space-y-2' : 'flex-row space-x-2 justify-center'}`}>
-                <Link 
-                  href="/" 
-                  className={`inline-flex items-center justify-center px-4 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors ${isMobile ? 'text-sm' : ''}`}
+              <div
+                className={`flex ${
+                  isMobile
+                    ? "flex-col space-y-2"
+                    : "flex-row space-x-2 justify-center"
+                }`}
+              >
+                <Link
+                  href="/"
+                  className={`inline-flex items-center justify-center px-4 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors ${
+                    isMobile ? "text-sm" : ""
+                  }`}
                 >
                   Return to Home
                 </Link>
@@ -183,9 +256,15 @@ export function PaymentStatusClient() {
         {loading ? (
           <>
             <div className="flex justify-center">
-              <Loader2 className={`${isMobile ? 'h-12 w-12' : 'h-16 w-16'} text-primary animate-spin`} />
+              <Loader2
+                className={`${
+                  isMobile ? "h-12 w-12" : "h-16 w-16"
+                } text-primary animate-spin`}
+              />
             </div>
-            <h1 className="text-xl sm:text-2xl font-bold text-card-foreground">Verifying Payment</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-card-foreground">
+              Verifying Payment
+            </h1>
             <p className="text-sm sm:text-base text-muted-foreground">
               Please wait while we verify your payment status...
             </p>

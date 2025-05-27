@@ -1,6 +1,12 @@
-"use client"
+"use client";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -13,14 +19,12 @@ import { MyPagination } from "@/src/components/section/MyPagination";
 import { useRouter } from "next/navigation";
 import React from "react";
 
-export default function page() {
-  const [editingPostId,setEditingPostId] = React.useState<number | null>(null);
+export default function Page() {
   const router = useRouter();
   const handleOnEdit = (postId: number) => {
-    setEditingPostId(postId);
     // Logic to handle editing the post
     router.push(`/admin/posts/${postId}/edit`);
-  }
+  };
   const posts = [
     {
       id: 1,
@@ -78,7 +82,9 @@ export default function page() {
                 <TableCell className="w-48">{post.category}</TableCell>
                 <TableCell className="w-40">{post.date}</TableCell>
                 <TableCell className="w-48 flex gap-2">
-                  <Button onClick={()=>handleOnEdit(post.id)} className="p-2">Edit</Button>
+                  <Button onClick={() => handleOnEdit(post.id)} className="p-2">
+                    Edit
+                  </Button>
                   <Button className="p-2 ml-2" variant="destructive">
                     Delete
                   </Button>

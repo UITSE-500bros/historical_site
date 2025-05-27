@@ -1,6 +1,7 @@
-import { MyPagination } from './MyPagination';
-import TitleSection from './TitleSection';
+import { MyPagination } from "./MyPagination";
+import TitleSection from "./TitleSection";
 
-export { TitleSection }
+export { TitleSection };
 
-export default {MyPagination}
+const sectionComponents = { MyPagination };
+export default sectionComponents;

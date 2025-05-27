@@ -1,16 +1,20 @@
 import Link from "next/link";
+import Image from "next/image";
 import React from "react";
 
 export default function Footer() {
   return (
     <footer className="w-full bg-stone-900 text-stone-50 px-6 md:px-16 py-12 md:py-20 border-t border-stone-800">
       <div className="max-w-6xl mx-auto flex flex-col md:flex-row gap-10 md:gap-20 items-start justify-between">
+        {" "}
         {/* Logo & Description */}
         <div className="flex flex-col gap-4 md:w-1/4 w-full items-start">
-          <img
+          <Image
             className="w-40 h-28 object-contain mb-2"
             src="/home/MainImageAbout.jpg"
             alt="Logo"
+            width={160}
+            height={112}
           />
           <p className="text-zinc-400 text-base leading-snug">
             Historical Site - Preserving history, connecting generations.
@@ -32,7 +36,10 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link  href="/explore" className="hover:text-blue-400 transition">
+                <Link
+                  href="/explore"
+                  className="hover:text-blue-400 transition"
+                >
                   Explore
                 </Link>
               </li>
@@ -42,7 +49,10 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="hover:text-blue-400 transition">
+                <Link
+                  href="/contact"
+                  className="hover:text-blue-400 transition"
+                >
                   Contact
                 </Link>
               </li>

@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 
 export default function Events() {
   return (
@@ -11,15 +12,19 @@ border-2  rounded-full"
           Sự Kiện
         </h1>
       </div>
-
       <div className="self-stretch inline-flex flex-col justify-start items-start my-15 gap-4">
         <div className="text-center justify-start text-stone-900 text-6xl font-normal font-['Actor'] uppercase leading-10">
           sự kiện tiêu biểu
         </div>
-      </div>
+      </div>{" "}
       <div className="w-full flex flex-row h-[800px] gap-4 items-center justify-center">
         <div className="w-1/2 flex flex-col ">
-          <img src="/home/image 15.png" alt="Mona Lisa" />
+          <Image
+            src="/home/image 15.png"
+            alt="Mona Lisa"
+            width={500}
+            height={400}
+          />
         </div>
         <div className="w-1/2 flex flex-col items-start justify-start">
           <h1 className="text-4xl font-bold">Chi tiết</h1>

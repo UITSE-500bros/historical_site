@@ -1,20 +1,24 @@
-'use client'
+import React, { Suspense } from "react";
+import { MapClient } from "./client";
 
-import { useSearchParams } from "next/navigation";
+function MapFallback() {
+  return (
+    <div className="w-full h-[800px] flex items-center justify-center bg-gray-100">
+      <div className="text-center">
+        <div className="h-16 w-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+        <h2 className="text-xl font-semibold text-gray-700">Loading Map</h2>
+        <p className="text-gray-500">
+          Please wait while we load the interactive map...
+        </p>
+      </div>
+    </div>
+  );
+}
 
 export default function Map() {
-  const searchParams = useSearchParams();
-
-  let topicRaw = searchParams.get('topic') || 'default-topic';
-  let periodRaw = searchParams.get("period")|| 'default-period';
-  const topic = topicRaw.toLowerCase().replace(/\s+/g, '');
-  const period = periodRaw.toLowerCase().replace(/\s+/g, '');
-  const iframeSrc=`https://uploads.knightlab.com/storymapjs/52f7a0c6c1e675dbfdfaa167a3485e49/${topic}in${period}/index.html`;
-  console.log(iframeSrc)
   return (
-
-    <div className="w-full h-[800px]">
-          <iframe src={iframeSrc} frameBorder="0" width="100%" height="800"></iframe>
-        </div>
+    <Suspense fallback={<MapFallback />}>
+      <MapClient />
+    </Suspense>
   );
 }

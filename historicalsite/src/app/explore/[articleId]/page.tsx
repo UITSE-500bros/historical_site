@@ -6,25 +6,21 @@ import ContentTree from "@/src/app/explore/components/ContentTree";
 export default async function ArticleDetail({
   params,
 }: {
-  params: { articleId: string };
+  params: Promise<{ articleId: string }>;
 }) {
-  const { articleId } = params;
+  const { articleId } = await params;
   let article = null;
   let fetchError = false;
-  let articleContentList = [];
 
   try {
-    const res = await fetch(
-      `http://localhost:8888/articles/${params.articleId}`
-    );
+    const res = await fetch(`http://localhost:8888/articles/${articleId}`);
     if (!res.ok) {
       fetchError = true;
     } else {
       article = await res.json();
       console.log(article);
-      articleContentList = article.articleContentList;
     }
-  } catch (e) {
+  } catch {
     fetchError = true;
   }
 

@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import ProfileCard from "../components/cards/ProfileCard";
 import { TitleSection } from "../components/section";
 import { BANNER_TEXT, HistoricalFigures } from "./content";
@@ -27,16 +28,16 @@ export default function Home() {
               className="mt-10 mx-5 font-[Actor] font-normal text-2xl md:text-3xl leading-8 md:leading-10 tracking-normal text-center bg-white/40 backdrop-blur-md rounded-lg px-6 py-4 shadow-lg text-black"
               style={{ lineHeight: "32px" }}
             >
-              {BANNER_TEXT}
+              {BANNER_TEXT}{" "}
             </p>
-            <button className="flex h-14 justify-center items-center gap-1 [background:var(--Background,#FFFEF8)] px-12 py-5 mt-8">
-              <a
-                href="/explore"
-                className="text-[color:var(--Black,#1F1F1F)] text-center [leading-trim:both] [text-edge:cap] [font-family:Actor] text-base font-normal leading-[26px] uppercase"
-              >
+            <Link
+              href="/explore"
+              className="flex h-14 justify-center items-center gap-1 [background:var(--Background,#FFFEF8)] px-12 py-5 mt-8"
+            >
+              <span className="text-[color:var(--Black,#1F1F1F)] text-center [leading-trim:both] [text-edge:cap] [font-family:Actor] text-base font-normal leading-[26px] uppercase">
                 Explore Now
-              </a>
-            </button>
+              </span>
+            </Link>
           </div>
         </header>
 
@@ -51,13 +52,14 @@ export default function Home() {
               of Leonardo da Vinci to the architectural wonders of the era, the
               Renaissance continues to inspire generations and connect the past
               with the present.
-            </article>
-
+            </article>{" "}
             <figure className="flex-1 flex flex-col items-center">
-              <img
+              <Image
                 className="w-[320px] h-[400px] md:w-[400px] md:h-[500px] rounded-xl shadow-lg object-cover"
                 src="/home/monalisa.png"
                 alt="Mona Lisa"
+                width={400}
+                height={500}
               />
               <figcaption className="text-sm text-gray-500 mt-2">
                 Mona Lisa
