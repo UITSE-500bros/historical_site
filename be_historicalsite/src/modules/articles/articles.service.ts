@@ -1,18 +1,15 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
-import { v4 as uuidv4 } from 'uuid';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { $Enums } from '@prisma/client';
+import { v4 as uuidv4 } from 'uuid';
 import { PrismaService } from '../../prisma/prisma.service';
+import { SupabaseService } from '../../supabase/supabase.service';
 import { CreateArticleDto } from './dto/article-dto/create-article.dto';
 import { PaginationDto } from './dto/article-dto/pagination.dto';
 import { UpdateArticleDto } from './dto/article-dto/update-article.dto';
 import { CreateContentDto } from './dto/content-dto/create-content.dto';
 import { UpdateContentDto } from './dto/content-dto/update-content.dto';
-import { CreatePersonArticleDto } from './dto/create-person-article.dto';
-import { CreateEventArticleDto } from './dto/create-event-article.dto';
-import { CreateImageDto } from './dto/image-dto/create-image.dto';
-import { UpdatePersonArticleDto } from './dto/update-person-article.dto';
 import { UpdateEventArticleDto } from './dto/update-event-article.dto';
-import { SupabaseService } from '../../supabase/supabase.service';
+import { UpdatePersonArticleDto } from './dto/update-person-article.dto';
 
 @Injectable()
 export class ArticlesService {
@@ -25,7 +22,7 @@ export class ArticlesService {
   async create(createArticleDto: CreateArticleDto) {
     const newArticle = await this.prisma.article.create({
       data: {
-        articleId,
+        articleId:uuidv4(),
         articleType: createArticleDto.articleType,
         articleName: createArticleDto.articleName,
         articleContentList:{}
@@ -248,9 +245,9 @@ export class ArticlesService {
             updateData.articleName = updatePersonArticleDto.article.article.articleName;
           }
 
-          if (updatePersonArticleDto.article.article?.articleContentList) {
-            updateData.articleContentList = updatePersonArticleDto.article.article.articleContentList;
-          }
+          // if (updatePersonArticleDto.article.article?.articleContentList) {
+          //   updateData.articleContentList = updatePersonArticleDto.article.article.articleContentList;
+          // }
 
           await prisma.article.update({
             where: { articleId: id },
@@ -338,9 +335,9 @@ export class ArticlesService {
             updateData.articleName = updateEventArticleDto.article.article.articleName;
           }
 
-          if (updateEventArticleDto.article.article?.articleContentList) {
-            updateData.articleContentList = updateEventArticleDto.article.article.articleContentList;
-          }
+          // if (updateEventArticleDto.article.article?.articleContentList) {
+          //   updateData.articleContentList = updateEventArticleDto.article.article.articleContentList;
+          // }
 
           await prisma.article.update({
             where: { articleId: id },
