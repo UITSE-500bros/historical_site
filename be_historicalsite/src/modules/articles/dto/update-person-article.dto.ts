@@ -9,6 +9,11 @@ export class UpdatePersonArticleDto {
   @IsOptional()
   personName?: string;
 
+  @ApiProperty({ description: 'The avatar URL of the person', example: 'https://example.com/avatar.jpg', required: false })
+  @IsString()
+  @IsOptional()
+  personAvatar?: string;
+
   @ApiProperty({ description: 'The birth year of the person', example: 100, required: false })
   @IsInt()
   @IsOptional()

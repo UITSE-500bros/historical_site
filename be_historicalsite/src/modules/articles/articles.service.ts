@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 import { $Enums } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
@@ -7,21 +7,77 @@ import { PaginationDto } from './dto/article-dto/pagination.dto';
 import { UpdateArticleDto } from './dto/article-dto/update-article.dto';
 import { CreateContentDto } from './dto/content-dto/create-content.dto';
 import { UpdateContentDto } from './dto/content-dto/update-content.dto';
+import { CreatePersonArticleDto } from './dto/create-person-article.dto';
+import { CreateEventArticleDto } from './dto/create-event-article.dto';
+import { CreateImageDto } from './dto/image-dto/create-image.dto';
+import { UpdatePersonArticleDto } from './dto/update-person-article.dto';
+import { UpdateEventArticleDto } from './dto/update-event-article.dto';
+import { SupabaseService } from '../../supabase/supabase.service';
 
 @Injectable()
 export class ArticlesService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private supabaseService: SupabaseService
+  ) {}
 
   // Article CRUD
   async create(createArticleDto: CreateArticleDto) {
+    // Generate a UUID for the article
+    const articleId = uuidv4();
+    
+    // Create the base article first
     return this.prisma.article.create({
       data: {
-        articleId: uuidv4(),
+        articleId,
         articleType: createArticleDto.articleType,
         articleName: createArticleDto.articleName,
         articleContentList: createArticleDto.articleContentList || {}
       },
     });
+  }
+  
+  // Create a person article with its base article
+  async createPersonArticle(createPersonArticleDto: CreatePersonArticleDto) {
+    // First create the base article
+    const article = await this.create(createPersonArticleDto.article);
+    
+    // Then create the person article using the articleId from the base article
+    const personArticle = await this.prisma.personArticle.create({
+      data: {
+        articleId: article.articleId,
+        personName: createPersonArticleDto.personName,
+        personAvatar: createPersonArticleDto.personAvatar,
+        birthYear: createPersonArticleDto.birthYear,
+        deathYear: createPersonArticleDto.deathYear,
+        nationality: createPersonArticleDto.nationality,
+      },
+    });
+    
+    return {
+      ...article,
+      personArticle,
+    };
+  }
+  
+  // Create an event article with its base article
+  async createEventArticle(createEventArticleDto: CreateEventArticleDto) {
+    // First create the base article
+    const article = await this.create(createEventArticleDto.article);
+    
+    // Then create the event article using the articleId from the base article
+    const eventArticle = await this.prisma.eventArticle.create({
+      data: {
+        articleId: article.articleId,
+        periodId: createEventArticleDto.periodId,
+        topicId: createEventArticleDto.topicId,
+      },
+    });
+    
+    return {
+      ...article,
+      eventArticle,
+    };
   }
 
   async findAll(paginationDto: PaginationDto) {
@@ -202,13 +258,258 @@ export class ArticlesService {
     }
   }
 
-  async remove(id: string) {
+  // Update a person article and its base article
+  async updatePersonArticle(id: string, updatePersonArticleDto: UpdatePersonArticleDto) {
     try {
-      return await this.prisma.article.delete({
+      // First check if the article exists and is a PERSON type
+      const article = await this.prisma.article.findUnique({
         where: { articleId: id },
       });
+
+      if (!article) {
+        throw new NotFoundException(`Article with ID ${id} not found`);
+      }
+
+      if (article.articleType !== 'PERSON') {
+        throw new BadRequestException(`Article with ID ${id} is not a PERSON article`);
+      }
+
+      // Start a transaction to update both the article and person article
+      const result = await this.prisma.$transaction(async (prisma) => {
+        // Update the base article if provided
+        if (updatePersonArticleDto.article) {
+          const updateData: any = {};
+
+          if (updatePersonArticleDto.article.article?.articleName) {
+            updateData.articleName = updatePersonArticleDto.article.article.articleName;
+          }
+
+          if (updatePersonArticleDto.article.article?.articleContentList) {
+            updateData.articleContentList = updatePersonArticleDto.article.article.articleContentList;
+          }
+
+          await prisma.article.update({
+            where: { articleId: id },
+            data: updateData,
+          });
+        }
+
+        // Update the person article
+        const personUpdateData: any = {};
+        let hasPersonUpdates = false;
+
+        if (updatePersonArticleDto.personName !== undefined) {
+          personUpdateData.personName = updatePersonArticleDto.personName;
+          hasPersonUpdates = true;
+        }
+
+        if (updatePersonArticleDto.personAvatar !== undefined) {
+          personUpdateData.personAvatar = updatePersonArticleDto.personAvatar;
+          hasPersonUpdates = true;
+        }
+
+        if (updatePersonArticleDto.birthYear !== undefined) {
+          personUpdateData.birthYear = updatePersonArticleDto.birthYear;
+          hasPersonUpdates = true;
+        }
+
+        if (updatePersonArticleDto.deathYear !== undefined) {
+          personUpdateData.deathYear = updatePersonArticleDto.deathYear;
+          hasPersonUpdates = true;
+        }
+
+        if (updatePersonArticleDto.nationality !== undefined) {
+          personUpdateData.nationality = updatePersonArticleDto.nationality;
+          hasPersonUpdates = true;
+        }
+
+        if (hasPersonUpdates) {
+          await prisma.personArticle.update({
+            where: { articleId: id },
+            data: personUpdateData,
+          });
+        }
+
+        // Get the updated article with person details
+        return await prisma.article.findUnique({
+          where: { articleId: id },
+          include: {
+            personArticle: true,
+          },
+        });
+      });
+
+      return result;
     } catch (error) {
-      throw new NotFoundException(`Article with ID ${id} not found`);
+      if (error instanceof NotFoundException || error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new NotFoundException(`Failed to update person article: ${error.message}`);
+    }
+  }
+
+  // Update an event article and its base article
+  async updateEventArticle(id: string, updateEventArticleDto: UpdateEventArticleDto) {
+    try {
+      // First check if the article exists and is an EVENT type
+      const article = await this.prisma.article.findUnique({
+        where: { articleId: id },
+      });
+
+      if (!article) {
+        throw new NotFoundException(`Article with ID ${id} not found`);
+      }
+
+      if (article.articleType !== 'EVENT') {
+        throw new BadRequestException(`Article with ID ${id} is not an EVENT article`);
+      }
+
+      // Start a transaction to update both the article and event article
+      const result = await this.prisma.$transaction(async (prisma) => {
+        // Update the base article if provided
+        if (updateEventArticleDto.article) {
+          const updateData: any = {};
+
+          if (updateEventArticleDto.article.article?.articleName) {
+            updateData.articleName = updateEventArticleDto.article.article.articleName;
+          }
+
+          if (updateEventArticleDto.article.article?.articleContentList) {
+            updateData.articleContentList = updateEventArticleDto.article.article.articleContentList;
+          }
+
+          await prisma.article.update({
+            where: { articleId: id },
+            data: updateData,
+          });
+        }
+
+        // Update the event article
+        const eventUpdateData: any = {};
+        let hasEventUpdates = false;
+
+        if (updateEventArticleDto.periodId !== undefined) {
+          eventUpdateData.periodId = updateEventArticleDto.periodId;
+          hasEventUpdates = true;
+        }
+
+        if (updateEventArticleDto.topicId !== undefined) {
+          eventUpdateData.topicId = updateEventArticleDto.topicId;
+          hasEventUpdates = true;
+        }
+
+        if (hasEventUpdates) {
+          await prisma.eventArticle.update({
+            where: { articleId: id },
+            data: eventUpdateData,
+          });
+        }
+
+        // Get the updated article with event details
+        return await prisma.article.findUnique({
+          where: { articleId: id },
+          include: {
+            eventArticle: {
+              include: {
+                period: true,
+                topic: true,
+              },
+            },
+          },
+        });
+      });
+
+      return result;
+    } catch (error) {
+      if (error instanceof NotFoundException || error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new NotFoundException(`Failed to update event article: ${error.message}`);
+    }
+  }
+
+  async remove(id: string) {
+    try {
+      // First check if the article exists and get its type
+      const article = await this.prisma.article.findUnique({
+        where: { articleId: id },
+        include: {
+          contents: {
+            include: {
+              images: true,
+            },
+          },
+        },
+      });
+
+      if (!article) {
+        throw new NotFoundException(`Article with ID ${id} not found`);
+      }
+
+      // Start a transaction to delete all related data
+      await this.prisma.$transaction(async (prisma) => {
+        // 1. Delete all images from Supabase storage
+        for (const content of article.contents) {
+          for (const image of content.images) {
+            try {
+              // Extract the path from the URL
+              const url = new URL(image.src);
+              const pathParts = url.pathname.split('/');
+              const bucket = 'images';
+              const path = pathParts.slice(pathParts.indexOf(bucket) + 1).join('/');
+              
+              // Delete from Supabase storage
+              await this.supabaseService.deleteFile(bucket, path);
+            } catch (error) {
+              console.error(`Failed to delete image from storage: ${error.message}`);
+              // Continue with deletion even if storage deletion fails
+            }
+          }
+        }
+
+        // 2. Delete all images from the database
+        for (const content of article.contents) {
+          if (content.images.length > 0) {
+            await prisma.image.deleteMany({
+              where: {
+                contentId: {
+                  in: content.images.map(image => image.imageId),
+                },
+              },
+            });
+          }
+        }
+
+        // 3. Delete all contents
+        await prisma.content.deleteMany({
+          where: {
+            articleId: id,
+          },
+        });
+
+        // 4. Delete the specific article type (person or event)
+        if (article.articleType === 'PERSON') {
+          await prisma.personArticle.delete({
+            where: { articleId: id },
+          });
+        } else if (article.articleType === 'EVENT') {
+          await prisma.eventArticle.delete({
+            where: { articleId: id },
+          });
+        }
+
+        // 5. Finally delete the base article
+        await prisma.article.delete({
+          where: { articleId: id },
+        });
+      });
+
+      return { message: `Article with ID ${id} and all related data successfully deleted` };
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new NotFoundException(`Failed to delete article: ${error.message}`);
     }
   }
 
@@ -222,6 +523,7 @@ export class ArticlesService {
 
   // Content CRUD
   async createContent(createContentDto: CreateContentDto) {
+    // Create content with a new UUID
     return this.prisma.content.create({
       data: {
         contentId: uuidv4(),
@@ -232,6 +534,48 @@ export class ArticlesService {
         imagesId: createContentDto.imagesId || {}
       },
     });
+  }
+  
+  // Create an image associated with a content
+  async createImage(file: any, createImageDto: CreateImageDto) {
+    if (!file) {
+      throw new BadRequestException('Image file is required');
+    }
+
+    if (!createImageDto.contentId) {
+      throw new BadRequestException('Content ID is required for image upload');
+    }
+
+    try {
+      // Upload the file to Supabase storage
+      const fileName = file.originalname || `image_${Date.now()}`;
+      const fileBuffer = file.buffer;
+      
+      // Upload to Supabase storage - using 'images' bucket and organizing by contentId
+      const imageUrl = await this.supabaseService.uploadFile(
+        fileBuffer,
+        'images', // bucket name
+        `content/${createImageDto.contentId}`, // path
+        fileName
+      );
+
+      // Create image record in the database with the URL from Supabase
+      const image = await this.prisma.image.create({
+        data: {
+          imageId: uuidv4(),
+          contentId: createImageDto.contentId,
+          src: imageUrl, // Use the URL returned from Supabase
+          alt: createImageDto.alt || fileName,
+          caption: createImageDto.caption,
+          width: createImageDto.width,
+          height: createImageDto.height,
+        },
+      });
+
+      return image;
+    } catch (error) {
+      throw new BadRequestException(`Failed to upload image: ${error.message}`);
+    }
   }
 
 

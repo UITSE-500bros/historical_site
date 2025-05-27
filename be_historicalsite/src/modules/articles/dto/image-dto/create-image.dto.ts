@@ -11,10 +11,14 @@ export class CreateImageDto {
   @IsOptional()
   contentId?: string;
 
-  @ApiProperty({ description: 'The source URL of the image', example: 'https://example.com/images/colosseum.jpg' })
+  @ApiProperty({ 
+    description: 'The source URL of the image (automatically generated after file upload)', 
+    example: 'https://example.com/images/colosseum.jpg',
+    required: false
+  })
   @IsString()
-  @IsNotEmpty()
-  src: string;
+  @IsOptional()
+  src?: string;
 
   @ApiProperty({ 
     description: 'The alt text for the image', 

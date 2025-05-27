@@ -11,12 +11,14 @@ import { FeedbacksModule } from './modules/feedbacks/feedbacks.module';
 import { PaymentsModule } from './modules/payments/payments.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { SentryModule } from '@sentry/nestjs/setup';
+import { SupabaseModule } from './supabase/supabase.module';
 
 @Module({
   imports: [
     SentryModule.forRoot(),
     ConfigModule.forRoot(),
     PrismaModule,
+    SupabaseModule,
     PeriodsModule,
     TopicsModule,
     ArticlesModule,

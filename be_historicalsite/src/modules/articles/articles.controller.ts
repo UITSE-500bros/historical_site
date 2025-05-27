@@ -1,4 +1,5 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ArticlesService } from './articles.service';
 import { CreateArticleDto } from './dto/article-dto/create-article.dto';
@@ -6,6 +7,11 @@ import { PaginationDto } from './dto/article-dto/pagination.dto';
 import { UpdateArticleDto } from './dto/article-dto/update-article.dto';
 import { CreateContentDto } from './dto/content-dto/create-content.dto';
 import { UpdateContentDto } from './dto/content-dto/update-content.dto';
+import { CreatePersonArticleDto } from './dto/create-person-article.dto';
+import { CreateEventArticleDto } from './dto/create-event-article.dto';
+import { UpdatePersonArticleDto } from './dto/update-person-article.dto';
+import { UpdateEventArticleDto } from './dto/update-event-article.dto';
+import { CreateImageDto } from './dto/image-dto/create-image.dto';
 
 @ApiTags('articles')
 @Controller('articles')
@@ -151,6 +157,74 @@ export class ArticlesController {
     return this.articlesService.removeContent(id);
   }
 
+  // Person Article endpoints
+  @Post('person')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Create a new person article' })
+  @ApiResponse({
+    status: 201,
+    description: 'The person article has been successfully created.',
+  })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  createPersonArticle(@Body() createPersonArticleDto: CreatePersonArticleDto) {
+    return this.articlesService.createPersonArticle(createPersonArticleDto);
+  }
+  
+  @Patch('person/:id')
+  @ApiOperation({ summary: 'Update a person article' })
+  @ApiResponse({
+    status: 200,
+    description: 'The person article has been successfully updated.',
+  })
+  @ApiResponse({ status: 404, description: 'Person article not found.' })
+  updatePersonArticle(
+    @Param('id') id: string,
+    @Body() updatePersonArticleDto: UpdatePersonArticleDto
+  ) {
+    return this.articlesService.updatePersonArticle(id, updatePersonArticleDto);
+  }
 
+  // Event Article endpoints
+  @Post('event')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Create a new event article' })
+  @ApiResponse({
+    status: 201,
+    description: 'The event article has been successfully created.',
+  })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  createEventArticle(@Body() createEventArticleDto: CreateEventArticleDto) {
+    return this.articlesService.createEventArticle(createEventArticleDto);
+  }
+  
+  @Patch('event/:id')
+  @ApiOperation({ summary: 'Update an event article' })
+  @ApiResponse({
+    status: 200,
+    description: 'The event article has been successfully updated.',
+  })
+  @ApiResponse({ status: 404, description: 'Event article not found.' })
+  updateEventArticle(
+    @Param('id') id: string,
+    @Body() updateEventArticleDto: UpdateEventArticleDto
+  ) {
+    return this.articlesService.updateEventArticle(id, updateEventArticleDto);
+  }
 
+  // Image endpoint
+  @Post('image')
+  @HttpCode(HttpStatus.CREATED)
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiOperation({ summary: 'Create a new image' })
+  @ApiResponse({
+    status: 201,
+    description: 'The image has been successfully created.',
+  })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  createImage(
+    @UploadedFile() file: any,
+    @Body() createImageDto: CreateImageDto
+  ) {
+    return this.articlesService.createImage(file, createImageDto);
+  }
 }
