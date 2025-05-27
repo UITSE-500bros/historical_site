@@ -428,6 +428,62 @@ export class ArticlesService {
     }
   }
 
+  // Remove a person article and its base article
+  async removePersonArticle(id: string) {
+    try {
+      // First check if the article exists and is a PERSON type
+      const article = await this.prisma.article.findUnique({
+        where: { articleId: id },
+      });
+
+      if (!article) {
+        throw new NotFoundException(`Article with ID ${id} not found`);
+      }
+
+      if (article.articleType !== 'PERSON') {
+        throw new BadRequestException(`Article with ID ${id} is not a PERSON article`);
+      }
+
+      // Use the general remove method to handle the deletion
+      // This will delete the base article and all related content
+      // The person article will be deleted by cascade
+      return this.remove(id);
+    } catch (error) {
+      if (error instanceof NotFoundException || error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new NotFoundException(`Failed to delete person article: ${error.message}`);
+    }
+  }
+
+  // Remove an event article and its base article
+  async removeEventArticle(id: string) {
+    try {
+      // First check if the article exists and is an EVENT type
+      const article = await this.prisma.article.findUnique({
+        where: { articleId: id },
+      });
+
+      if (!article) {
+        throw new NotFoundException(`Article with ID ${id} not found`);
+      }
+
+      if (article.articleType !== 'EVENT') {
+        throw new BadRequestException(`Article with ID ${id} is not an EVENT article`);
+      }
+
+      // Use the general remove method to handle the deletion
+      // This will delete the base article and all related content
+      // The event article will be deleted by cascade
+      return this.remove(id);
+    } catch (error) {
+      if (error instanceof NotFoundException || error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new NotFoundException(`Failed to delete event article: ${error.message}`);
+    }
+  }
+
   async remove(id: string) {
     try {
       // First check if the article exists and get its type

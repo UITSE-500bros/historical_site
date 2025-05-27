@@ -231,7 +231,11 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
-## Run tests
+## Test Suite Overview
+
+The application includes comprehensive unit tests for all modules. Below is a breakdown of the test cases by module.
+
+### Running Tests
 
 ```bash
 # unit tests
@@ -243,6 +247,136 @@ $ npm run test:e2e
 # test coverage
 $ npm run test:cov
 ```
+
+### Test Cases by Module
+
+#### Articles Module
+
+**ArticlesService Tests:**
+- Should be defined
+- Should create an article
+- Should find all articles
+- Should find one article by ID
+- Should find one article with contents
+- Should update an article
+- Should remove an article and all related data
+- Should create a content
+- Should update a content
+- Should remove a content
+- Should upload an image
+- Should create a person article
+- Should update a person article
+- Should create an event article
+- Should update an event article
+- Should remove a person article
+- Should remove an event article
+- Should throw NotFoundException when article not found
+- Should throw BadRequestException when article type doesn't match
+
+**ArticlesController Tests:**
+- Should be defined
+- Should create an article
+- Should find all articles
+- Should find one article
+- Should update an article
+- Should remove an article
+- Should create a content
+- Should update a content
+- Should remove a content
+- Should upload an image
+- Should create a person article
+- Should update a person article
+- Should create an event article
+- Should update an event article
+- Should remove a person article
+- Should remove an event article
+
+#### Auth Module
+
+**AuthService Tests:**
+- Should be defined
+- Should register a new user
+- Should login a user
+- Should verify JWT token
+- Should throw UnauthorizedException for invalid credentials
+
+**AuthController Tests:**
+- Should be defined
+- Should register a new user
+- Should login a user
+- Should get current user profile
+
+#### Periods Module
+
+**PeriodsService Tests:**
+- Should be defined
+- Should create a period
+- Should find all periods
+- Should find one period
+- Should update a period
+- Should remove a period
+
+**PeriodsController Tests:**
+- Should be defined
+- Should create a period
+- Should find all periods
+- Should find one period
+- Should update a period
+- Should remove a period
+
+#### Topics Module
+
+**TopicsService Tests:**
+- Should be defined
+- Should create a topic
+- Should find all topics
+- Should find one topic
+- Should update a topic
+- Should remove a topic
+
+**TopicsController Tests:**
+- Should be defined
+- Should create a topic
+- Should find all topics
+- Should find one topic
+- Should update a topic
+- Should remove a topic
+
+#### Feedbacks Module
+
+**FeedbacksService Tests:**
+- Should be defined
+- Should create a feedback
+- Should find all feedbacks
+- Should find one feedback
+- Should update a feedback
+- Should remove a feedback
+
+**FeedbacksController Tests:**
+- Should be defined
+- Should create a feedback
+- Should find all feedbacks
+- Should find one feedback
+- Should update a feedback
+- Should remove a feedback
+
+#### Payments Module
+
+**PaymentsService Tests:**
+- Should be defined
+- Should create a payment
+- Should find all payments
+- Should find one payment
+- Should update a payment
+- Should remove a payment
+
+**PaymentsController Tests:**
+- Should be defined
+- Should create a payment
+- Should find all payments
+- Should find one payment by ID
+- Should update a payment
+- Should remove a payment
 
 ## Deployment
 

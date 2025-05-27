@@ -184,6 +184,18 @@ export class ArticlesController {
     return this.articlesService.updatePersonArticle(id, updatePersonArticleDto);
   }
 
+  @Delete('person/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Delete a person article' })
+  @ApiResponse({
+    status: 204,
+    description: 'The person article has been successfully deleted.',
+  })
+  @ApiResponse({ status: 404, description: 'Person article not found.' })
+  removePersonArticle(@Param('id') id: string) {
+    return this.articlesService.removePersonArticle(id);
+  }
+
   // Event Article endpoints
   @Post('event')
   @HttpCode(HttpStatus.CREATED)
@@ -209,6 +221,18 @@ export class ArticlesController {
     @Body() updateEventArticleDto: UpdateEventArticleDto
   ) {
     return this.articlesService.updateEventArticle(id, updateEventArticleDto);
+  }
+
+  @Delete('event/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Delete an event article' })
+  @ApiResponse({
+    status: 204,
+    description: 'The event article has been successfully deleted.',
+  })
+  @ApiResponse({ status: 404, description: 'Event article not found.' })
+  removeEventArticle(@Param('id') id: string) {
+    return this.articlesService.removeEventArticle(id);
   }
 
   // Image endpoint
