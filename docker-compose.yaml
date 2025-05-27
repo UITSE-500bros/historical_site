@@ -1,4 +1,13 @@
 services:
+  ngrok:
+    image: wernight/ngrok
+    container_name: ngrok
+    ports:
+      - "4040:4040"
+    environment:
+      - NGROK_AUTH={NGROK_AUTH_TOKEN}
+      - NGROK_PORT=backend:8888
+    restart: unless-stopped
   backend:
     build:
       context: ./be_historicalsite
@@ -7,7 +16,18 @@ services:
     ports:
       - "8888:8888"
     environment:
-      - NODE_ENV=production
+      API_URL: ${API_URL}
+      PORT: 8888
+      DATABASE_URL: ${DATABASE_URL}
+      SMTP_FROM: ${SMTP_FROM}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+      SUPABASE_URL: ${SUPABASE_URL}
+      SUPABASE_ANON_ROLE_KEY: ${SUPABASE_ANON_ROLE_KEY}
+      S3_BUCKET_NAME: ${S3_BUCKET_NAME}
+      JWT_SECRET: ${JWT_SECRET}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+      FRONTEND_URL: ${FRONTEND_URL}
     restart: unless-stopped
 
   frontend:
@@ -20,7 +40,9 @@ services:
     depends_on:
       - backend
     environment:
-      - NODE_ENV=production
+      PORT: 3000
+      API_URL: ${API_URL}
+    volumes:
     restart: unless-stopped
   terraform:
     image: hashicorp/terraform:1.12.1
