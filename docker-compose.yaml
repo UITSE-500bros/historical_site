@@ -1,0 +1,33 @@
+services:
+  backend:
+    build:
+      context: ./be_historicalsite
+      dockerfile: Dockerfile
+    container_name: nestjs-backend
+    ports:
+      - "8888:8888"
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./historicalsite
+      dockerfile: Dockerfile
+    container_name: nextjs-frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
+  terraform:
+    image: hashicorp/terraform:1.12.1
+    container_name: terraform
+    working_dir: /workspace
+    volumes:
+      - ./Terraform:/workspace
+    entrypoint: /bin/sh
+    stdin_open: true
+    tty: true
