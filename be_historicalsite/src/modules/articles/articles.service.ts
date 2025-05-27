@@ -14,14 +14,18 @@ export class ArticlesService {
 
   // Article CRUD
   async create(createArticleDto: CreateArticleDto) {
-    return this.prisma.article.create({
+    const newArticle =  this.prisma.article.create({
       data: {
         articleId: uuidv4(),
         articleType: createArticleDto.articleType,
         articleName: createArticleDto.articleName,
-        articleContentList: createArticleDto.articleContentList || {}
       },
     });
+    if( createArticleDto.contents && createArticleDto.contents.length > 0) {
+     for (const contentDto of createArticleDto.contents) {
+      await this.createContent(contentDto, newArticle.articleId);
+    }
+    }
   }
 
   async findAll(paginationDto: PaginationDto) {

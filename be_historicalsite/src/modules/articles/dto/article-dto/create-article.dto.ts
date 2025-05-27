@@ -1,6 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { ArticleType } from '../../../../../generated/prisma/client';
+import { Content } from '../../entities/content.entity';
+import { CreateContentDto } from '../content-dto/create-content.dto';
 
 export class CreateArticleDto {
   @ApiProperty({ 
@@ -23,5 +25,5 @@ export class CreateArticleDto {
     required: false
   })
   @IsOptional()
-  articleContentList?: any;
+  contents: CreateContentDto[];
 }
