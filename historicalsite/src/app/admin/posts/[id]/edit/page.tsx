@@ -1,11 +1,10 @@
 "use client";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import React, { useRef, useState } from "react";
-import JoditEditor from "jodit-react";
 import { TreeNode } from "@/components/TreeNode";
+import { Button } from "@/components/ui/button";
+import JoditEditor from "jodit-react";
+import Image from "next/image";
+import React, { useRef, useState } from "react";
 
-// Dummy data for content tree
 const initialSections = [
 	{
 		id: 1,
@@ -69,7 +68,7 @@ export default function Page() {
 	const [gallery, setGallery] = useState<GalleryImage[]>([]);
 	const editor = useRef(null);
 	const fileInputRef = useRef<HTMLInputElement>(null);
-	const [previewMode, setPreviewMode] = useState(false);
+
 
 	// Select section and load its data
 	const handleSelectSection = (section: Section) => {
@@ -277,7 +276,7 @@ export default function Page() {
 												key={idx}
 												className="border rounded-lg p-2 bg-gray-50 flex flex-col items-center w-40"
 											>
-												<img
+												<Image
 													src={img.url}
 													alt=""
 													className="w-full h-24 object-cover rounded mb-2"

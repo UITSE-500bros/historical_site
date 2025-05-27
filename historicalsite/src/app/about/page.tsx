@@ -1,7 +1,5 @@
-import React from 'react'
-import { content1, title1 } from './content'
-import Image from "next/image";
 import MapCard from '@/src/components/cards/MapCard';
+import Image from "next/image";
 import { MapFigures } from './content';
 export default function About() {
   return (
