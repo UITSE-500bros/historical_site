@@ -26,7 +26,7 @@ describe('MuseumsService', () => {
   };
 
   const mockSupabaseService = {
-    uploadFile: jest.fn().mockResolvedValue('https://supabase.example.com/storage/museums/images/test-image.jpg'),
+    uploadFile: jest.fn().mockResolvedValue('https://supabase.example.com/storage/images/images/test-image.jpg'),
   };
 
   const mockMuseum = {
@@ -98,7 +98,7 @@ describe('MuseumsService', () => {
       // Verify Supabase upload was called
       expect(mockSupabaseService.uploadFile).toHaveBeenCalledWith(
         mockFile.buffer,
-        'museums',
+        'images',
         'images',
         mockFile.originalname
       );
@@ -108,7 +108,7 @@ describe('MuseumsService', () => {
         data: {
           museumId: 'test-uuid',
           ...createMuseumDto,
-          museumImage: 'https://supabase.example.com/storage/museums/images/test-image.jpg',
+          museumImage: 'https://supabase.example.com/storage/images/images/test-image.jpg',
         },
       });
       expect(result).toEqual(mockMuseum);
@@ -179,7 +179,7 @@ describe('MuseumsService', () => {
       mockPrismaService.museum.update.mockResolvedValue({
         ...mockMuseum,
         ...updateMuseumDto,
-        museumImage: 'https://supabase.example.com/storage/museums/images/test-image.jpg',
+        museumImage: 'https://supabase.example.com/storage/images/images/test-image.jpg',
       });
 
       // Mock file for testing
@@ -197,7 +197,7 @@ describe('MuseumsService', () => {
       // Verify Supabase upload was called
       expect(mockSupabaseService.uploadFile).toHaveBeenCalledWith(
         mockFile.buffer,
-        'museums',
+        'images',
         'images',
         mockFile.originalname
       );
@@ -207,13 +207,13 @@ describe('MuseumsService', () => {
         where: { museumId: 'test-uuid' },
         data: {
           ...updateMuseumDto,
-          museumImage: 'https://supabase.example.com/storage/museums/images/test-image.jpg',
+          museumImage: 'https://supabase.example.com/storage/images/images/test-image.jpg',
         },
       });
       expect(result).toEqual({
         ...mockMuseum,
         ...updateMuseumDto,
-        museumImage: 'https://supabase.example.com/storage/museums/images/test-image.jpg',
+        museumImage: 'https://supabase.example.com/storage/images/images/test-image.jpg',
       });
     });
 

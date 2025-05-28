@@ -38,7 +38,7 @@ export class MuseumsService {
         const imageUrl = await this.supabaseService.uploadFile(
           imageFile.buffer,
           'images', // bucket name
-          'museums',  // path within bucket
+          'images',  // path within bucket
           imageFile.originalname
         );
         
@@ -91,7 +91,7 @@ export class MuseumsService {
         // Upload the image to Supabase
         const imageUrl = await this.supabaseService.uploadFile(
           imageFile.buffer,
-          'museums', // bucket name
+          'images', // bucket name
           'images',  // path within bucket
           imageFile.originalname
         );
