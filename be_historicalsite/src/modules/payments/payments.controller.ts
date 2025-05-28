@@ -1,8 +1,7 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post } from '@nestjs/common';
+import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { CreatePaymentDto, PaymentStatus } from './dto/create-payment.dto';
 import { PaymentsService } from './payments.service';
-import { CreatePaymentDto } from './dto/create-payment.dto';
-import { UpdatePaymentDto } from './dto/update-payment.dto';
 
 @ApiTags('payments')
 @Controller('payments')
@@ -34,12 +33,31 @@ export class PaymentsController {
     return this.paymentsService.findOne(id);
   }
 
-  @Patch(':id')
-  @ApiOperation({ summary: 'Update a payment' })
-  @ApiResponse({ status: 200, description: 'The payment has been successfully updated.' })
+  @Patch(':id/:status')
+  @ApiOperation({
+    summary: 'Update a payment status',
+    description: 'Updates the status of a payment using the payment ID and the new status provided in the URL path.'
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'The ID of the payment to update',
+    type: 'string',
+    example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890'
+  })
+  @ApiParam({
+    name: 'status',
+    description: 'The new status of the payment',
+    enum: PaymentStatus,
+    example: PaymentStatus.COMPLETED
+  })
+  @ApiResponse({ status: 200, description: 'The payment status has been successfully updated.' })
+  @ApiResponse({ status: 400, description: 'Bad request - Invalid status or payment already completed.' })
   @ApiResponse({ status: 404, description: 'Payment not found.' })
-  update(@Param('id') id: string, @Body() updatePaymentDto: UpdatePaymentDto) {
-    return this.paymentsService.update(id, updatePaymentDto);
+  update(
+    @Param('id') id: string, 
+    @Param('status') status: string
+  ) {
+    return this.paymentsService.updatePaymentStatus(id, status);
   }
 
   @Delete(':id')

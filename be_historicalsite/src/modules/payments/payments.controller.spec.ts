@@ -6,7 +6,8 @@ import { NotFoundException } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 import { PaymentType, PaymentStatus, CreatePaymentDto } from './dto/create-payment.dto';
 import { MailerService } from '@nestjs-modules/mailer';
-import { UpdatePaymentDto } from './dto/update-payment.dto';
+// UpdatePaymentDto is no longer needed for the tests
+// import { UpdatePaymentDto } from './dto/update-payment.dto';
 
 describe('PaymentsController', () => {
   let controller: PaymentsController;
@@ -18,6 +19,7 @@ describe('PaymentsController', () => {
     findAll: jest.fn(),
     findOne: jest.fn(),
     update: jest.fn(),
+    updatePaymentStatus: jest.fn(),
     remove: jest.fn(),
   };
 
@@ -132,11 +134,9 @@ describe('PaymentsController', () => {
   });
   
   describe('update', () => {
-    it('should update a payment', async () => {
+    it('should update a payment status', async () => {
       const paymentId = 'test-id-1';
-      const updatePaymentDto: UpdatePaymentDto = {
-        status: PaymentStatus.COMPLETED,
-      };
+      const status = PaymentStatus.COMPLETED;
       const updatedPayment = {
         paymentId,
         userEmail: 'test@example.com',
@@ -149,22 +149,20 @@ describe('PaymentsController', () => {
         updatedAt: new Date(),
       };
       
-      mockPaymentsService.update.mockResolvedValue(updatedPayment);
+      mockPaymentsService.updatePaymentStatus.mockResolvedValue(updatedPayment);
       
-      expect(await controller.update(paymentId, updatePaymentDto)).toEqual(updatedPayment);
-      expect(service.update).toHaveBeenCalledWith(paymentId, updatePaymentDto);
+      expect(await controller.update(paymentId, status)).toEqual(updatedPayment);
+      expect(service.updatePaymentStatus).toHaveBeenCalledWith(paymentId, status);
     });
     
     it('should throw NotFoundException when payment to update is not found', async () => {
       const paymentId = 'non-existent-id';
-      const updatePaymentDto: UpdatePaymentDto = {
-        status: PaymentStatus.COMPLETED,
-      };
+      const status = PaymentStatus.COMPLETED;
       
-      mockPaymentsService.update.mockRejectedValue(new NotFoundException(`Payment with ID ${paymentId} not found`));
+      mockPaymentsService.updatePaymentStatus.mockRejectedValue(new NotFoundException(`Payment with ID ${paymentId} not found`));
       
-      await expect(controller.update(paymentId, updatePaymentDto)).rejects.toThrow(NotFoundException);
-      expect(service.update).toHaveBeenCalledWith(paymentId, updatePaymentDto);
+      await expect(controller.update(paymentId, status)).rejects.toThrow(NotFoundException);
+      expect(service.updatePaymentStatus).toHaveBeenCalledWith(paymentId, status);
     });
   });
   
