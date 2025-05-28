@@ -40,8 +40,8 @@ export class PaymentsService {
         },
       ],
       mode: 'payment',
-      success_url: `${process.env.FRONTEND_URL}/payments/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.FRONTEND_URL}/payments/cancel`,
+      success_url: `${process.env.FRONTEND_URL}/payment/status?status=success`,
+      cancel_url: `${process.env.FRONTEND_URL}/payment/status?status=cancel`,
     });
     
     const result = await this.prisma.payment.create({
