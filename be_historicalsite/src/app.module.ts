@@ -10,7 +10,6 @@ import { AuthModule } from './modules/auth/auth.module';
 import { FeedbacksModule } from './modules/feedbacks/feedbacks.module';
 import { PaymentsModule } from './modules/payments/payments.module';
 import { MuseumsModule } from './modules/museums/museums.module';
-import { MailerModule } from '@nestjs-modules/mailer';
 import { SentryModule } from '@sentry/nestjs/setup';
 import { SupabaseModule } from './supabase/supabase.module';
 
@@ -27,18 +26,6 @@ import { SupabaseModule } from './supabase/supabase.module';
     FeedbacksModule,
     PaymentsModule,
     MuseumsModule,
-    MailerModule.forRoot({
-      transport: {
-        service: 'gmail',
-        auth: {
-          user: process.env.SMTP_USER,
-          pass: process.env.SMTP_PASSWORD,
-        },
-      },
-      defaults: {
-        from: process.env.SMTP_FROM,
-      },
-    }),
   ],
   providers: [
     AppService
