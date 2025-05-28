@@ -89,47 +89,62 @@ export class ArticlesService {
     const where = articleType ? { articleType } : {};
 
     // Conditionally build include object based on articleType
-    let include: any = {
-      contents: {
-        include: {
-          images: true,
-        },
-      },
-    };
+    let include: any = {};
 
+    // We're excluding contents to reduce response size,
     // Only include the relevant article type data
     if (!articleType || articleType === 'EVENT') {
       include.eventArticle = {
-        include: {
-          article: true,
-        },
+        select: {
+          articleId: true,
+          periodId: true,
+          topicId: true,
+        }
       };
     }
 
     if (!articleType || articleType === 'PERSON') {
       include.personArticle = {
-        include: {
-          article: true,
-        },
+        select: {
+          articleId: true,
+          personName: true,
+          personAvatar: true,
+          birthYear: true,
+          deathYear: true,
+          nationality: true
+        }
       };
     }
-    const [articles, total] = await Promise.all([
-      this.prisma.article.findMany({
-        where,
-        skip,
-        take: limitNum
-      }),
-      this.prisma.article.count({ where }),
-    ]);
+    // Use a single database call to get the articles with related period and topic information
+    const articles = await this.prisma.article.findMany({
+      where,
+      skip,
+      take: limitNum,
+      include,
+    });
 
+
+    // Transform the results to include only essential data and avoid redundancy
+    const transformedArticles = articles.map(article => {
+      // Create a base result with only essential article fields
+      const result: any = {
+        articleId: article.articleId,
+        articleName: article.articleName,
+        articleType: article.articleType,
+      };
+
+      return result;
+    });
+
+    const articlesCount = articles.length;
 
     return {
-      data: articles,
+      data: transformedArticles,
       meta: {
-        total,
+        total: articlesCount, // Using the count of returned articles
         page: pageNum,
         limit: limitNum,
-        totalPages: Math.ceil(total / limitNum),
+        totalPages: Math.ceil(articlesCount / limitNum),
       },
     };
   }
@@ -580,7 +595,7 @@ export class ArticlesService {
 
   async getAllArticleNames() {
     const articles = await this.prisma.article.findMany({
-      select: { articleId: true, articleName: true,articleContentList:true },
+      select: { articleId: true, articleName: true, articleContentList: true },
 
     });
     return articles;
