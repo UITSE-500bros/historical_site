@@ -136,6 +136,7 @@ model Payment {
   status      PaymentStatus
   bookingDate DateTime       @db.Timestamp(3)
   totalPrice  Int
+  museumId  String @db.Uuid
   createdAt DateTime @db.Timestamp(3) @default(now())
   updatedAt DateTime @db.Timestamp(3) @updatedAt 
 }
@@ -149,4 +150,15 @@ enum PaymentStatus {
   COMPLETED
   FAILED
   CANCELLED
+}
+
+model Museum {
+  museumId   String   @id @db.Uuid
+  museumName String
+  museumImage String
+  museumAddress String
+  museumPhone String
+  museumEmail String
+  createdAt DateTime @db.Timestamp(3) @default(now())
+  updatedAt DateTime @db.Timestamp(3) @updatedAt 
 }

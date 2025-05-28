@@ -16,6 +16,15 @@ export class PaymentsService {
   }
 
   async create(createPaymentDto: CreatePaymentDto) {
+    // Verify that museumId exists
+    const museum = await this.prisma.museum.findUnique({
+      where: { museumId: createPaymentDto.museumId },
+    });
+    
+    if (!museum) {
+      throw new NotFoundException(`Museum with ID ${createPaymentDto.museumId} not found`);
+    }
+
     const session = await this.stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [
@@ -23,7 +32,7 @@ export class PaymentsService {
           price_data: {
             currency: 'vnd', 
             product_data: {
-              name: 'Your Product Name', 
+              name: museum.museumName || 'Museum Visit', 
             },
             unit_amount: createPaymentDto.totalPrice * 100, 
           },
@@ -34,6 +43,7 @@ export class PaymentsService {
       success_url: `${process.env.FRONTEND_URL}/payments/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.FRONTEND_URL}/payments/cancel`,
     });
+    
     const result = await this.prisma.payment.create({
       data: {
         paymentId: uuidv4(),

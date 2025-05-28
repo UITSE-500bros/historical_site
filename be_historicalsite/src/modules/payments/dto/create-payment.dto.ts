@@ -69,6 +69,15 @@ export class CreatePaymentDto {
     required: true
   })
   @IsNotEmpty()
-  @IsString()
+  @IsNumber()
   totalPrice: number;
+
+  @ApiProperty({
+    description: 'The ID of the museum associated with this payment',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+    required: true
+  })
+  @IsNotEmpty()
+  @IsString()
+  museumId: string;
 }

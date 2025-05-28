@@ -13,6 +13,7 @@ describe('PaymentsService', () => {
         userEmail: 'test@example.com',
         quantity: 1,
         totalPrice: 100,
+        museumId: 'test-museum-id',
         createdAt: new Date(),
         updatedAt: new Date(),
       }),
@@ -20,6 +21,18 @@ describe('PaymentsService', () => {
       findUnique: jest.fn(),
       update: jest.fn(),
       delete: jest.fn(),
+    },
+    museum: {
+      findUnique: jest.fn().mockResolvedValue({
+        museumId: 'test-museum-id',
+        museumName: 'Test Museum',
+        museumAddress: 'Test Address',
+        museumPhone: '123456789',
+        museumEmail: 'museum@example.com',
+        museumImage: 'test-image.jpg',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }),
     }
   };
   
@@ -82,6 +95,7 @@ describe('PaymentsService', () => {
         paymentType: PaymentType.DEBIT_CARD,
         status: PaymentStatus.PENDING,
         bookingDate: new Date(),
+        museumId: 'test-museum-id',
       };
       
       const result = await service.create(createPaymentDto);

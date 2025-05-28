@@ -9,6 +9,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { FeedbacksModule } from './modules/feedbacks/feedbacks.module';
 import { PaymentsModule } from './modules/payments/payments.module';
+import { MuseumsModule } from './modules/museums/museums.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { SentryModule } from '@sentry/nestjs/setup';
 import { SupabaseModule } from './supabase/supabase.module';
@@ -25,6 +26,7 @@ import { SupabaseModule } from './supabase/supabase.module';
     AuthModule,
     FeedbacksModule,
     PaymentsModule,
+    MuseumsModule,
     MailerModule.forRoot({
       transport: {
         service: 'gmail',

@@ -8,11 +8,11 @@ export class SupabaseService {
   constructor() {
     const supabaseUrl = process.env.SUPABASE_URL;
     const supabaseKey = process.env.SUPABASE_KEY;
-    
+
     if (!supabaseUrl || !supabaseKey) {
       throw new Error('Supabase credentials are not properly configured');
     }
-    
+
     this.supabase = createClient(supabaseUrl, supabaseKey);
   }
 
@@ -30,27 +30,46 @@ export class SupabaseService {
     path: string,
     fileName: string,
   ): Promise<string> {
-    // Generate a unique file name to avoid collisions
-    const uniqueFileName = `${Date.now()}_${fileName}`;
-    const fullPath = path ? `${path}/${uniqueFileName}` : uniqueFileName;
+    try {
+      // Generate a unique file name to avoid collisions
+      const uniqueFileName = `${Date.now()}_${fileName}`;
+      const fullPath = path ? `${path}/${uniqueFileName}` : uniqueFileName;
 
-    const { data, error } = await this.supabase.storage
-      .from(bucket)
-      .upload(fullPath, file, {
-        cacheControl: '3600',
-        upsert: false,
-      });
+      // First, check if the bucket exists and is accessible
+      const { data: buckets, error: bucketsError } = await this.supabase.storage.listBuckets();
 
-    if (error) {
+      if (bucketsError) {
+        throw new Error(`Error accessing storage: ${bucketsError.message}`);
+      }
+
+      const bucketExists = buckets.some(b => b.name === bucket);
+      if (!bucketExists) {
+        throw new Error(`Bucket '${bucket}' does not exist or is not accessible`);
+      }
+
+      // Try to upload with upsert:true to override RLS policies if needed
+      const { data, error } = await this.supabase.storage
+        .from(bucket)
+        .upload(fullPath, file, {
+          cacheControl: '3600',
+          upsert: true
+        });
+
+      if (error) {
+        console.error('Supabase upload error:', error);
+        throw new Error(`Error uploading file: ${error.message}`);
+      }
+
+      // Get the public URL for the uploaded file
+      const { data: urlData } = this.supabase.storage
+        .from(bucket)
+        .getPublicUrl(fullPath);
+
+      return urlData.publicUrl;
+    } catch (error) {
+      console.error('Supabase upload error:', error);
       throw new Error(`Error uploading file: ${error.message}`);
     }
-
-    // Get the public URL for the uploaded file
-    const { data: urlData } = this.supabase.storage
-      .from(bucket)
-      .getPublicUrl(fullPath);
-
-    return urlData.publicUrl;
   }
 
   /**
