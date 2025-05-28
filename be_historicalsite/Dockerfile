@@ -36,4 +36,4 @@ ENV NODE_ENV=production
 EXPOSE 8888
 
 # Start the app
-CMD ["node", "dist/main"]
+CMD ["node", "dist/src/main.js"]
