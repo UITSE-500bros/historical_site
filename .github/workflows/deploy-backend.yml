@@ -119,7 +119,7 @@ jobs:
           EOF
       
       - name: Start backend
-        run: docker-compose up -d
+        run: docker compose up -d
       
       - name: Wait for backend to be up
         run: |
@@ -140,7 +140,7 @@ jobs:
           
           if [ "$backend_status" != "success" ]; then
             echo "❌ Backend failed to start within the expected time"
-            docker-compose logs
+            docker compose logs
             exit 1
           fi
       
