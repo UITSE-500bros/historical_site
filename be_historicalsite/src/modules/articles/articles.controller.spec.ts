@@ -1,19 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { $Enums } from '@prisma/client';
+import { v4 as uuidv4 } from 'uuid';
 import { ArticlesController } from './articles.controller';
 import { ArticlesService } from './articles.service';
-import { v4 as uuidv4 } from 'uuid';
-import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { $Enums } from '@prisma/client';
 import { CreateArticleDto } from './dto/article-dto/create-article.dto';
-import { UpdateArticleDto } from './dto/article-dto/update-article.dto';
-import { CreateContentDto } from './dto/content-dto/create-content.dto';
-import { UpdateContentDto } from './dto/content-dto/update-content.dto';
-import { CreateImageDto } from './dto/image-dto/create-image.dto';
-import { CreatePersonArticleDto } from './dto/create-person-article.dto';
-import { CreateEventArticleDto } from './dto/create-event-article.dto';
-import { UpdatePersonArticleDto } from './dto/update-person-article.dto';
-import { UpdateEventArticleDto } from './dto/update-event-article.dto';
 import { PaginationDto } from './dto/article-dto/pagination.dto';
+import { UpdateArticleDto } from './dto/article-dto/update-article.dto';
+import { UpdateContentDto } from './dto/content-dto/update-content.dto';
+import { CreateEventArticleDto } from './dto/create-event-article.dto';
+import { CreatePersonArticleDto } from './dto/create-person-article.dto';
+import { CreateImageDto } from './dto/image-dto/create-image.dto';
+import { UpdateEventArticleDto } from './dto/update-event-article.dto';
+import { UpdatePersonArticleDto } from './dto/update-person-article.dto';
 
 // Add Express type for Multer file
 type MulterFile = {
@@ -72,7 +70,7 @@ describe('ArticlesController', () => {
       const createArticleDto: CreateArticleDto = {
         articleType: $Enums.ArticleType.PERSON,
         articleName: 'Test Article',
-        articleContentList: {},
+        articleContentList: [],
       };
 
       const expectedArticle = {
@@ -195,11 +193,12 @@ describe('ArticlesController', () => {
   // Content tests
   describe('createContent', () => {
     it('should create a content', async () => {
-      const createContentDto: CreateContentDto = {
+      const createContentDto = {
         contentName: 'Test Content',
         articleId: uuidv4(),
         content: 'Test content text',
-        imagesId: {},
+        images: [],
+        children: [],
       };
 
       const expectedContent = {
@@ -296,7 +295,7 @@ describe('ArticlesController', () => {
         article: {
           articleType: $Enums.ArticleType.PERSON,
           articleName: 'Test Person Article',
-          articleContentList: {},
+          articleContentList: [],
         },
         personName: 'Test Person',
         personAvatar: 'avatar.jpg',
@@ -363,7 +362,7 @@ describe('ArticlesController', () => {
         article: {
           articleType: $Enums.ArticleType.EVENT,
           articleName: 'Test Event Article',
-          articleContentList: {},
+          articleContentList: [],
         },
         periodId: uuidv4(),
         topicId: uuidv4(),
