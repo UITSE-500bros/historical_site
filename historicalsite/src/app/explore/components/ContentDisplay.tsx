@@ -14,10 +14,10 @@ export type ContentNode = {
     imageId: string;
     contentId: string;
     src: string;
-    alt: string;
-    caption: string;
-    width: number;
-    height: number;
+    alt?: string;
+    caption?: string;
+    width?: number;
+    height?: number;
   }[];
 };
 
@@ -55,29 +55,33 @@ export function ContentDisplay({
               className="text-lg"
               dangerouslySetInnerHTML={{ __html: content.content }}
             />
-          )}{" "}
-          {/* image section */}
+          )}{" "}          {/* image section */}
           {content.images && content.images.length > 0 && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-              {content.images.map((image) => (
-                <figure key={image.imageId} className="space-y-2">
-                  {image.src && (
-                    <Image
-                      key={image.imageId}
-                      src={image.src}
-                      alt={image.alt}
-                      className="mx-auto rounded-xl shadow-md max-w-full h-auto"
-                      width={image.width}
-                      height={image.height}
-                    />
-                  )}
-                  {image.caption && (
-                    <figcaption className="text-center text-sm text-gray-600">
-                      {image.caption}
-                    </figcaption>
-                  )}
-                </figure>
-              ))}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">              {content.images.map((image) => {
+                // Ensure we have valid dimensions
+                const imageWidth = typeof image.width === 'number' && image.width > 0 ? image.width : 400;
+                const imageHeight = typeof image.height === 'number' && image.height > 0 ? image.height : 300;
+                
+                return (
+                  <figure key={image.imageId} className="space-y-2">
+                    {image.src && (
+                      <Image
+                        key={image.imageId}
+                        src={image.src}
+                        alt={image.alt || "Historical image"}
+                        className="mx-auto rounded-xl shadow-md max-w-full h-auto"
+                        width={imageWidth}
+                        height={imageHeight}
+                      />
+                    )}
+                    {image.caption && (
+                      <figcaption className="text-center text-sm text-gray-600">
+                        {image.caption}
+                      </figcaption>
+                    )}
+                  </figure>
+                );
+              })}
             </div>
           )}
           {/* children contents */}
