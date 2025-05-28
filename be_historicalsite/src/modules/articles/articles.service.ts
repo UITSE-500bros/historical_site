@@ -543,13 +543,25 @@ export class ArticlesService {
 
         // 4. Delete the specific article type (person or event)
         if (article.articleType === 'PERSON') {
-          await prisma.personArticle.delete({
+          // Check if the person article exists before attempting to delete
+          const personArticle = await prisma.personArticle.findUnique({
             where: { articleId: id },
           });
+          if (personArticle) {
+            await prisma.personArticle.delete({
+              where: { articleId: id },
+            });
+          }
         } else if (article.articleType === 'EVENT') {
-          await prisma.eventArticle.delete({
+          // Check if the event article exists before attempting to delete
+          const eventArticle = await prisma.eventArticle.findUnique({
             where: { articleId: id },
           });
+          if (eventArticle) {
+            await prisma.eventArticle.delete({
+              where: { articleId: id },
+            });
+          }
         }
 
         // 5. Finally delete the base article
