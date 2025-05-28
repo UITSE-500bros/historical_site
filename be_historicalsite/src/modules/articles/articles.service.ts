@@ -18,13 +18,13 @@ export class ArticlesService {
   constructor(
     private prisma: PrismaService,
     private supabaseService: SupabaseService
-  ) {}
+  ) { }
 
   // Article CRUD
   async create(createArticleDto: CreateArticleDto) {
     // Generate a UUID for the article
     const articleId = uuidv4();
-    
+
     // Create the base article first
     return this.prisma.article.create({
       data: {
@@ -35,12 +35,12 @@ export class ArticlesService {
       },
     });
   }
-  
+
   // Create a person article with its base article
   async createPersonArticle(createPersonArticleDto: CreatePersonArticleDto) {
     // First create the base article
     const article = await this.create(createPersonArticleDto.article);
-    
+
     // Then create the person article using the articleId from the base article
     const personArticle = await this.prisma.personArticle.create({
       data: {
@@ -52,18 +52,18 @@ export class ArticlesService {
         nationality: createPersonArticleDto.nationality,
       },
     });
-    
+
     return {
       ...article,
       personArticle,
     };
   }
-  
+
   // Create an event article with its base article
   async createEventArticle(createEventArticleDto: CreateEventArticleDto) {
     // First create the base article
     const article = await this.create(createEventArticleDto.article);
-    
+
     // Then create the event article using the articleId from the base article
     const eventArticle = await this.prisma.eventArticle.create({
       data: {
@@ -72,7 +72,7 @@ export class ArticlesService {
         topicId: createEventArticleDto.topicId,
       },
     });
-    
+
     return {
       ...article,
       eventArticle,
@@ -121,7 +121,7 @@ export class ArticlesService {
       }),
       this.prisma.article.count({ where }),
     ]);
-    
+
 
     return {
       data: articles,
@@ -151,7 +151,7 @@ export class ArticlesService {
     if (!article) {
       throw new NotFoundException(`Article with ID ${id} not found`);
     }
-    
+
     // Get all contents for this article to build the hierarchy
     const allContents = await this.prisma.content.findMany({
       where: { articleId: id },
@@ -159,7 +159,6 @@ export class ArticlesService {
         images: true,
       },
     });
-    
     // Build content hierarchy
     const contentMap = new Map();
     allContents.forEach(content => {
@@ -168,7 +167,7 @@ export class ArticlesService {
         children: [],
       });
     });
-    
+
     // Organize contents into parent-child relationships
     allContents.forEach(content => {
       if (content.parentId && contentMap.has(content.parentId)) {
@@ -176,23 +175,23 @@ export class ArticlesService {
         parent.children.push(contentMap.get(content.contentId));
       }
     });
-    
+
     // Replace the flat contents with the hierarchical structure
     article.contents = article.contents.map(content => {
       return contentMap.get(content.contentId);
     });
-    
+
     // Helper function to clean empty arrays and null values
     const cleanEmptyValues = (obj) => {
       if (obj === null || typeof obj !== 'object') return obj;
-      
+
       // Handle arrays
       if (Array.isArray(obj)) {
         // Clean each item in the array
         const cleanedArray = obj.map(item => cleanEmptyValues(item)).filter(Boolean);
         return cleanedArray.length ? cleanedArray : undefined;
       }
-      
+
       // Handle objects
       const result = {};
       for (const key in obj) {
@@ -206,10 +205,10 @@ export class ArticlesService {
       }
       return Object.keys(result).length ? result : undefined;
     };
-    
+
     // Clean the article object
     const cleanedArticle = cleanEmptyValues(article);
-    
+
     // Get additional data based on article type
     if (article.articleType === 'EVENT') {
       const eventArticle = await this.prisma.eventArticle.findUnique({
@@ -511,7 +510,7 @@ export class ArticlesService {
               const pathParts = url.pathname.split('/');
               const bucket = 'images';
               const path = pathParts.slice(pathParts.indexOf(bucket) + 1).join('/');
-              
+
               // Delete from Supabase storage
               await this.supabaseService.deleteFile(bucket, path);
             } catch (error) {
@@ -581,8 +580,8 @@ export class ArticlesService {
 
   async getAllArticleNames() {
     const articles = await this.prisma.article.findMany({
-      select: { articleId: true, articleName: true },
-      
+      select: { articleId: true, articleName: true,articleContentList:true },
+
     });
     return articles;
   }
@@ -601,7 +600,7 @@ export class ArticlesService {
       },
     });
   }
-  
+
   // Create an image associated with a content
   async createImage(file: any, createImageDto: CreateImageDto) {
     if (!file) {
@@ -616,7 +615,7 @@ export class ArticlesService {
       // Upload the file to Supabase storage
       const fileName = file.originalname || `image_${Date.now()}`;
       const fileBuffer = file.buffer;
-      
+
       // Upload to Supabase storage - using 'images' bucket and organizing by contentId
       const imageUrl = await this.supabaseService.uploadFile(
         fileBuffer,
