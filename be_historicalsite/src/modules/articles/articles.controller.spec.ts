@@ -1,6 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { $Enums } from '@prisma/client';
 import { v4 as uuidv4 } from 'uuid';
+
+// Define the enum directly instead of importing from Prisma
+enum ArticleType {
+  EVENT = 'EVENT',
+  PERSON = 'PERSON'
+}
 import { ArticlesController } from './articles.controller';
 import { ArticlesService } from './articles.service';
 import { CreateArticleDto } from './dto/article-dto/create-article.dto';
@@ -68,7 +73,7 @@ describe('ArticlesController', () => {
   describe('create', () => {
     it('should create an article', async () => {
       const createArticleDto: CreateArticleDto = {
-        articleType: $Enums.ArticleType.PERSON,
+        articleType: ArticleType.PERSON,
         articleName: 'Test Article',
         articleContentList: [],
       };
@@ -97,7 +102,7 @@ describe('ArticlesController', () => {
         data: [
           {
             articleId: uuidv4(),
-            articleType: $Enums.ArticleType.PERSON,
+            articleType: ArticleType.PERSON,
             articleName: 'Test Article',
           },
         ],
@@ -139,7 +144,7 @@ describe('ArticlesController', () => {
       const articleId = uuidv4();
       const expectedArticle = {
         articleId,
-        articleType: $Enums.ArticleType.PERSON,
+        articleType: ArticleType.PERSON,
         articleName: 'Test Article',
       };
 
@@ -163,7 +168,7 @@ describe('ArticlesController', () => {
 
       const expectedArticle = {
         articleId,
-        articleType: $Enums.ArticleType.PERSON,
+        articleType: ArticleType.PERSON,
         articleName: 'Updated Article',
       };
 
@@ -293,7 +298,7 @@ describe('ArticlesController', () => {
     it('should create a person article', async () => {
       const createPersonArticleDto: CreatePersonArticleDto = {
         article: {
-          articleType: $Enums.ArticleType.PERSON,
+          articleType: ArticleType.PERSON,
           articleName: 'Test Person Article',
           articleContentList: [],
         },
@@ -336,7 +341,7 @@ describe('ArticlesController', () => {
       
       const expectedResult = {
         articleId,
-        articleType: $Enums.ArticleType.PERSON,
+        articleType: ArticleType.PERSON,
         articleName: 'Updated Article Name',
         personArticle: {
           articleId,
@@ -360,7 +365,7 @@ describe('ArticlesController', () => {
     it('should create an event article', async () => {
       const createEventArticleDto: CreateEventArticleDto = {
         article: {
-          articleType: $Enums.ArticleType.EVENT,
+          articleType: ArticleType.EVENT,
           articleName: 'Test Event Article',
           articleContentList: [],
         },
@@ -399,7 +404,7 @@ describe('ArticlesController', () => {
       
       const expectedResult = {
         articleId,
-        articleType: $Enums.ArticleType.EVENT,
+        articleType: ArticleType.EVENT,
         articleName: 'Updated Event Name',
         eventArticle: {
           articleId,

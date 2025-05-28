@@ -3,8 +3,13 @@ import { ArticlesService } from './articles.service';
 import { PrismaService } from '../../prisma/prisma.service';
 import { SupabaseService } from '../../supabase/supabase.service';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { $Enums } from '@prisma/client';
 import { v4 as uuidv4 } from 'uuid';
+
+// Define the enum directly instead of importing from Prisma
+enum ArticleType {
+  EVENT = 'EVENT',
+  PERSON = 'PERSON'
+}
 import { PaginationDto } from './dto/article-dto/pagination.dto';
 import { UpdateArticleDto } from './dto/article-dto/update-article.dto';
 import { UpdatePersonArticleDto } from './dto/update-person-article.dto';
@@ -92,7 +97,7 @@ describe('ArticlesService', () => {
   describe('create', () => {
     it('should create an article', async () => {
       const createArticleDto = {
-        articleType: $Enums.ArticleType.EVENT,
+        articleType: ArticleType.EVENT,
         articleName: 'Test Article',
         articleContentList: {},
       };
@@ -123,7 +128,7 @@ describe('ArticlesService', () => {
       const expectedArticles = [
         {
           articleId: uuidv4(),
-          articleType: $Enums.ArticleType.EVENT,
+          articleType: ArticleType.EVENT,
           articleName: 'Test Article',
           articleContentList: {},
           createdAt: new Date(),
@@ -151,7 +156,7 @@ describe('ArticlesService', () => {
       const articleId = uuidv4();
       const mockArticle = {
         articleId,
-        articleType: $Enums.ArticleType.EVENT,
+        articleType: ArticleType.EVENT,
         articleName: 'Test Article',
         articleContentList: {},
         contents: [],
@@ -161,7 +166,7 @@ describe('ArticlesService', () => {
 
       const expectedArticle = {
         articleId,
-        articleType: $Enums.ArticleType.EVENT,
+        articleType: ArticleType.EVENT,
         articleName: 'Test Article',
       };
 
@@ -196,7 +201,7 @@ describe('ArticlesService', () => {
 
       const expectedArticle = {
         articleId,
-        articleType: $Enums.ArticleType.EVENT,
+        articleType: ArticleType.EVENT,
         articleName: 'Updated Article',
         articleContentList: {},
         createdAt: new Date(),
@@ -233,7 +238,7 @@ describe('ArticlesService', () => {
       const articleId = uuidv4();
       const article = {
         articleId,
-        articleType: $Enums.ArticleType.EVENT,
+        articleType: ArticleType.EVENT,
         articleName: 'Test Article',
         articleContentList: {},
         contents: [
@@ -446,7 +451,7 @@ describe('ArticlesService', () => {
     it('should create a person article', async () => {
       const createPersonArticleDto = {
         article: {
-          articleType: $Enums.ArticleType.PERSON,
+          articleType: ArticleType.PERSON,
           articleName: 'Test Person Article',
           articleContentList: {},
         },
@@ -475,7 +480,7 @@ describe('ArticlesService', () => {
       // It includes the article and personArticle nested
       const expectedResult = {
         articleId: expect.any(String),
-        articleType: $Enums.ArticleType.PERSON,
+        articleType: ArticleType.PERSON,
         articleName: 'Test Person Article',
         articleContentList: {},
         createdAt: expect.any(Date),
@@ -521,13 +526,13 @@ describe('ArticlesService', () => {
       
       const article = {
         articleId,
-        articleType: $Enums.ArticleType.PERSON,
+        articleType: ArticleType.PERSON,
         articleName: 'Test Person Article',
       };
       
       const updatedArticle = {
         articleId,
-        articleType: $Enums.ArticleType.PERSON,
+        articleType: ArticleType.PERSON,
         articleName: 'Updated Article Name',
       };
       
@@ -544,7 +549,7 @@ describe('ArticlesService', () => {
       // due to how the service is implemented
       const expectedResult = {
         articleId,
-        articleType: $Enums.ArticleType.PERSON,
+        articleType: ArticleType.PERSON,
         articleName: 'Test Person Article',
       };
       
@@ -574,7 +579,7 @@ describe('ArticlesService', () => {
       const articleId = uuidv4();
       const article = {
         articleId,
-        articleType: $Enums.ArticleType.EVENT,
+        articleType: ArticleType.EVENT,
       };
       
       mockPrismaService.article.findUnique.mockResolvedValue(article);
@@ -588,7 +593,7 @@ describe('ArticlesService', () => {
     it('should create an event article', async () => {
       const createEventArticleDto = {
         article: {
-          articleType: $Enums.ArticleType.EVENT,
+          articleType: ArticleType.EVENT,
           articleName: 'Test Event Article',
           articleContentList: {},
         },
@@ -614,7 +619,7 @@ describe('ArticlesService', () => {
       // It includes the article and eventArticle nested
       const expectedResult = {
         articleId: expect.any(String),
-        articleType: $Enums.ArticleType.EVENT,
+        articleType: ArticleType.EVENT,
         articleName: 'Test Event Article',
         articleContentList: {},
         createdAt: expect.any(Date),
@@ -656,13 +661,13 @@ describe('ArticlesService', () => {
       
       const article = {
         articleId,
-        articleType: $Enums.ArticleType.EVENT,
+        articleType: ArticleType.EVENT,
         articleName: 'Test Event Article',
       };
       
       const updatedArticle = {
         articleId,
-        articleType: $Enums.ArticleType.EVENT,
+        articleType: ArticleType.EVENT,
         articleName: 'Updated Event Name',
       };
       
@@ -676,7 +681,7 @@ describe('ArticlesService', () => {
       // due to how the service is implemented
       const expectedResult = {
         articleId,
-        articleType: $Enums.ArticleType.EVENT,
+        articleType: ArticleType.EVENT,
         articleName: 'Test Event Article',
       };
       
@@ -706,7 +711,7 @@ describe('ArticlesService', () => {
       const articleId = uuidv4();
       const article = {
         articleId,
-        articleType: $Enums.ArticleType.PERSON,
+        articleType: ArticleType.PERSON,
       };
       
       mockPrismaService.article.findUnique.mockResolvedValue(article);

@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
-import { $Enums } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateArticleDto } from './dto/article-dto/create-article.dto';
 import { PaginationDto } from './dto/article-dto/pagination.dto';
@@ -236,8 +235,7 @@ export class ArticlesService {
       const updateData: any = {};
 
       if (updateArticleDto.article?.articleType) {
-        updateData.articleType = updateArticleDto.article
-          .articleType as $Enums.ArticleType;
+        updateData.articleType = updateArticleDto.article.articleType;
       }
 
       if (updateArticleDto.article?.articleName) {
