@@ -16,13 +16,20 @@ export function middleware(req: NextRequest) {
   console.log("🔍 Middleware check:", {
     path: pathname,
     hasToken: !!token,
+    tokenValue: token ? "***EXISTS***" : "NO_TOKEN",
     isAdminRoute: pathname.startsWith("/admin"),
+    cookies: req.cookies.getAll().map((c) => c.name),
   });
 
   // Nếu không có token và đang truy cập admin routes (trừ login)
   if (!token && pathname.startsWith("/admin")) {
     console.log("❌ No token found, redirecting to login");
-    return NextResponse.redirect(new URL("/admin/login", req.url));
+    const loginUrl = new URL("/admin/login", req.url);
+
+    // Add the attempted URL as a query parameter for redirect after login
+    loginUrl.searchParams.set("redirect", pathname);
+
+    return NextResponse.redirect(loginUrl);
   }
 
   console.log("✅ Access granted");
@@ -30,5 +37,10 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: [
+    // Match all admin routes except login
+    "/admin/((?!login).*)",
+    // Also match the admin root path
+    "/admin",
+  ],
 };
