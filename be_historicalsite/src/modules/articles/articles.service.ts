@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
-import { ArticleType } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateArticleDto } from './dto/article-dto/create-article.dto';
 import { PaginationDto } from './dto/article-dto/pagination.dto';
@@ -181,7 +180,7 @@ export class ArticlesService {
 
       if (updateArticleDto.article?.articleType) {
         updateData.articleType = updateArticleDto.article
-          .articleType as ArticleType;
+          .articleType;
       }
 
       if (updateArticleDto.article?.articleName) {
