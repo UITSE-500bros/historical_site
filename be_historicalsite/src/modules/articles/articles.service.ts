@@ -201,7 +201,7 @@ export class ArticlesService {
 
       if (updateArticleDto.article?.articleType) {
         updateData.articleType = updateArticleDto.article
-          .articleType as $Enums.ArticleType;
+          .articleType;
       }
 
       if (updateArticleDto.article?.articleName) {
