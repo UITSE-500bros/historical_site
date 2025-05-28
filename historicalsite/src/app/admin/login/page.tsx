@@ -2,7 +2,7 @@ import { LoginForm } from "./components/LoginForm";
 
 export default function LoginPage() {
   return (
-    <div className="w-full h-full bg-gradient-to-br from-blue-50 via-white to-blue-100 flex items-center justify-center p-4">
+    <div className="w-full min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">

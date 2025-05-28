@@ -65,9 +65,9 @@ export function LoginForm() {
         setSuccess("Đăng nhập thành công! Đang chuyển hướng...");
         Cookies.set("accessToken", dataResponse.accessToken, {
           expires: 7,
-          secure: process.env.NODE_ENV === "production",
-          sameSite: "strict",
         });
+        console.log("Token sau khi set:", Cookies.get("accessToken"));
+
         // Redirect after success
         setTimeout(() => {
           router.push("/admin/dashboard");
