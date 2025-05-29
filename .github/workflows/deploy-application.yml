@@ -103,7 +103,7 @@ jobs:
         run: |
           echo "Waiting for frontend to start..."
           max_retries=12
-          retry_interval=10
+          retry_interval=30
           for i in $(seq 1 $max_retries); do
             if curl -s http://localhost:3000/health | grep -q 'ok'; then
               echo "✅ Frontend is up!"
