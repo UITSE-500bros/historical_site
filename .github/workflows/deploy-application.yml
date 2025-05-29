@@ -80,7 +80,7 @@ jobs:
       - name: Wait for backend to be up
         run: |
           echo "Waiting for backend to start..."
-          max_retries=12
+          max_retries=2
           retry_interval=30
           for i in $(seq 1 $max_retries); do
             if curl -s http://localhost:8888/health | grep -q 'ok'; then
@@ -102,8 +102,8 @@ jobs:
       - name: Wait for frontend to be up
         run: |
           echo "Waiting for frontend to start..."
-          max_retries=12
-          retry_interval=30
+          max_retries=2
+          retry_interval=10
           for i in $(seq 1 $max_retries); do
             if curl -s http://localhost:3000/health | grep -q 'ok'; then
               echo "✅ Frontend is up!"

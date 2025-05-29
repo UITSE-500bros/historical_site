@@ -41,6 +41,7 @@ services:
       timeout: 5s
       retries: 3
       start_period: 5s
+    entrypoint: ["/bin/sh", "-c", "sleep 30 && npm start"]
 networks:
   default:
     name: historicalsite
