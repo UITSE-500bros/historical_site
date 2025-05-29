@@ -54,9 +54,9 @@ export default function BookingForm({
       };
 
       await onSubmit(paymentData);
-    } catch (error: any) {
+    } catch (error: Error | unknown) {
       console.error('Error creating payment:', error);
-      setError(error.message || 'Failed to process payment. Please try again later.');
+      setError(error instanceof Error ? error.message : 'Failed to process payment. Please try again later.');
     } finally {
       setLoading(false);
     }
