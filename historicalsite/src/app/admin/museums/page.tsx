@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/table";
 import Link from "next/link";
 import DeleteDialog from "@/src/components/DeleteDialog";
+import Image from "next/image";
 
 interface Museum {
   museumId: string;
@@ -40,8 +41,12 @@ export default function MuseumsPage() {
         if (!res.ok) throw new Error("Failed to fetch museums");
         const data = await res.json();
         setMuseums(data);
-      } catch (err: any) {
-        setError(err.message || "An error occurred");
+      } catch (err) {
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError("An error occurred");
+        }
       } finally {
         setLoading(false);
       }
@@ -58,8 +63,12 @@ export default function MuseumsPage() {
       if (!res.ok) throw new Error("Failed to delete museum");
       setMuseums((prev) => prev.filter((m) => m.museumId !== museumId));
       setDeleteId(null);
-    } catch (err: any) {
-      alert(err.message || "Delete failed");
+    } catch (err) {
+      if (err instanceof Error) {
+        alert(err.message);
+      } else {
+        alert("Delete failed");
+      }
     } finally {
       setDeleteLoading(false);
     }
@@ -101,7 +110,7 @@ export default function MuseumsPage() {
                 {museums.map((museum) => (
                   <TableRow key={museum.museumId}>
                     <TableCell>
-                      <img
+                      <Image
                         src={museum.museumImage}
                         alt={museum.museumName}
                         className="w-16 h-16 object-cover rounded"

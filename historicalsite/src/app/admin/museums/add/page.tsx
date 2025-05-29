@@ -41,8 +41,12 @@ export default function AddMuseumPage() {
       console.log(await res.json());
       
   
-    } catch (err: any) {
-      setMessage(err.message || "An error occurred.");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setMessage(err.message);
+      } else {
+        setMessage("An error occurred.");
+      }
     } finally {
       setLoading(false);
     }

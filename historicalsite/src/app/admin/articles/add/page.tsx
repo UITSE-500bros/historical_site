@@ -1,6 +1,5 @@
 "use client";
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
 import { v4 as uuidv4 } from "uuid";
 
 
@@ -69,8 +68,12 @@ export default function AddEventArticlePage() {
       setArticleName("");
       setArticleContentList([{ contentId: uuidv4(), content: "" }]);
      
-    } catch (err: any) {
-      setMessage(err.message || "An error occurred.");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setMessage(err.message || "An error occurred.");
+      } else {
+        setMessage("An error occurred.");
+      }
     } finally {
       setLoading(false);
     }

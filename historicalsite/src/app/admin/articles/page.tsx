@@ -22,7 +22,7 @@ import React, { useEffect, useState } from "react";
 import { Person, Event } from "./type";
 import DeleteDialog from "@/src/components/DeleteDialog";
 
-export default function page() {
+export default function Page() {
   const [articles, setArticles] = useState<(Person | Event)[]>([]);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
@@ -68,8 +68,14 @@ export default function page() {
       setArticles((prev) => prev.filter((a) => a.articleId !== articleId));
       setDeleteId(null);
       alert("Delete successful");
-    } catch (err: any) {
-      alert(err.message || "Delete failed");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        alert(err.message || "Delete failed");
+      } else if (typeof err === "string") {
+        alert(err);
+      } else {
+        alert("An unknown error occurred");
+      }
     } finally {
       setDeleteLoading(false);
     }
