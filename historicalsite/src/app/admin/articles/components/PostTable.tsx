@@ -17,16 +17,27 @@ import {
 import { MyPagination } from "@/src/components/section/MyPagination";
 
 export type Column<T> = {
-    header: string;
-    width?: string;
-    render:(row: T, index: number) => React.ReactNode;
+  header: string;
+  width?: string;
+  render: (row: T, index: number) => React.ReactNode;
 };
 export type Props<T> = {
-    columns: Column<T>[];
-    data: T[];
+  columns: Column<T>[];
+  data: T[];
+  totalItems?: number;
+  currentPage?: number;
+  itemsPerPage?: number;
+  onPageChange?: (page: number) => void;
 };
 
-export default function PostTable<T>({ columns, data }: Props<T>) {
+export default function PostTable<T>({
+  columns,
+  data,
+  totalItems,
+  currentPage,
+  itemsPerPage,
+  onPageChange,
+}: Props<T>) {
   return (
     <div className="space-y-4">
       <Card>
@@ -34,10 +45,10 @@ export default function PostTable<T>({ columns, data }: Props<T>) {
           <Table className="w-full">
             <TableHeader>
               <TableRow>
-                {columns.map((column,index)=>(
-                    <TableHead key={index} className="text-left">
-                        {column.header}
-                    </TableHead>
+                {columns.map((column, index) => (
+                  <TableHead key={index} className="text-left">
+                    {column.header}
+                  </TableHead>
                 ))}
               </TableRow>
             </TableHeader>
@@ -52,14 +63,14 @@ export default function PostTable<T>({ columns, data }: Props<T>) {
                 </TableRow>
               ))}
             </TableBody>
-          </Table>
+          </Table>{" "}
         </CardContent>
-        <CardFooter>
-          <MyPagination />
-        </CardFooter>
+        {totalItems && totalItems > 0 && (
+          <CardFooter>
+            <MyPagination />
+          </CardFooter>
+        )}
       </Card>
     </div>
   );
 }
-
-                 
