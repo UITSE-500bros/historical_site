@@ -73,3 +73,4 @@ pnpm-lock.yaml
 .idea/workspace.xml
 .idea/tasks.xml
 .idea/dictionaries
+historicalsite/doppler.env

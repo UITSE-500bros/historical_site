@@ -20,7 +20,7 @@ export default function BookingPage() {
   const museumIdFromUrl = searchParams.get('museumId');
   
   const [museums, setMuseums] = useState<Museum[]>([]);
-  const [selectedMuseum, setSelectedMuseum] = useState<string>(museumIdFromUrl || '');
+  const [selectedMuseum, setSelectedMuseum] = useState<string>(museumIdFromUrl ?? '');
   const [isLoadingMuseums, setIsLoadingMuseums] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -68,7 +68,7 @@ export default function BookingPage() {
       }
     } catch (error: any) {
       console.error('Error creating payment:', error);
-      setError(error.message || 'Failed to process payment. Please try again later.');
+      setError(error.message ?? 'Failed to process payment. Please try again later.');
       throw error; // Re-throw to let the form component handle the error state
     }
   };

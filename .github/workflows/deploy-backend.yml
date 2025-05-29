@@ -125,7 +125,7 @@ jobs:
         run: |
           echo "Waiting for backend to start..."
           max_retries=12
-          retry_interval=10
+          retry_interval=50
           
           for i in $(seq 1 $max_retries); do
             if curl -s http://localhost:8888/health | grep -q 'ok'; then

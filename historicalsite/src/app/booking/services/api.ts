@@ -1,11 +1,11 @@
-import { Museum, PaymentData, PaymentStatus, PaymentType } from '../types';
+import { Museum, PaymentData } from '../types';
 
 /**
  * Fetch all museums from the API
  */
 
 // API base URL
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8888';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8888';
 
 // Define additional types for payment handling
 export interface PaymentResponse {
@@ -127,7 +127,7 @@ export async function handlePaymentCancel(sessionId: string): Promise<void> {
 export function extractSessionIdFromUrl(url: string): string | null {
   try {
     // Stripe URLs contain cs_test_* or cs_live_* as the session ID
-    const match = url.match(/cs_(test|live)_[a-zA-Z0-9]+/);
+    const match = RegExp(/cs_(test|live)_[a-zA-Z0-9]+/).exec(url);
     return match ? match[0] : null;
   } catch (error) {
     console.error('Error extracting session ID from URL:', error);
