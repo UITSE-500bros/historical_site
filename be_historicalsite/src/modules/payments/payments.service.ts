@@ -34,7 +34,7 @@ export class PaymentsService {
             product_data: {
               name: museum.museumName || 'Museum Visit', 
             },
-            unit_amount: createPaymentDto.totalPrice * 100, 
+            unit_amount: createPaymentDto.totalPrice * 1, 
           },
           quantity: createPaymentDto.quantity || 1,
         },
