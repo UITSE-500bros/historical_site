@@ -20,9 +20,12 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import React, { useEffect } from "react";
 import { Person, Event } from "./type";
+import DeleteDialog from "@/src/components/DeleteDialog";
 
 export default function page() {
   const [articles, setArticles] = React.useState<(Person | Event)[]>([]);
+  const [deleteId, setDeleteId] = React.useState<string | null>(null);
+  const [deleteLoading, setDeleteLoading] = React.useState(false);
 
   const searchParams = useSearchParams();
   const page = Number(searchParams.get("page") || "1");
@@ -55,15 +58,30 @@ export default function page() {
     fetchArticles();
   }, [url]);
 
+  const handleDelete = async (articleId: string) => {
+    setDeleteLoading(true);
+    try {
+      const res = await fetch(`http://localhost:8888/articles/${articleId}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) throw new Error("Failed to delete article");
+      setArticles((prev) => prev.filter((a) => a.articleId !== articleId));
+      setDeleteId(null);
+      alert("Delete successful");
+    } catch (err: any) {
+      alert(err.message || "Delete failed");
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
+
   return (
     <div className="flex items-center justify-center h-screen">
       <Card className="w-full max-w-6xl mx-auto h-full flex items-center justify-start min-h-screen">
         <CardHeader className="flex w-full justify-between items-center">
           <CardTitle className="text-2xl font-semibold">Article</CardTitle>
           <Link href={`/admin/articles/add`}>
-            <Button >
-              New Article
-            </Button>
+            <Button>New Article</Button>
           </Link>
         </CardHeader>
         <CardContent className="w-full overflow-x-auto">
@@ -101,7 +119,11 @@ export default function page() {
                     <Link href={`/admin/articles/${article.articleId}/edit`}>
                       <Button className="p-2">Edit</Button>
                     </Link>
-                    <Button className="p-2 ml-2" variant="destructive">
+                    <Button
+                      className="p-2 ml-2"
+                      variant="destructive"
+                      onClick={() => setDeleteId(String(article.articleId))}
+                    >
                       Delete
                     </Button>
                   </TableCell>
@@ -119,6 +141,16 @@ export default function page() {
           />
         </CardFooter>
       </Card>
+      <DeleteDialog
+        open={!!deleteId}
+        onOpenChange={(open) => {
+          if (!open) setDeleteId(null);
+        }}
+        onConfirm={() => deleteId && handleDelete(deleteId)}
+        title="Delete Article"
+        description="Are you sure you want to delete this article? This action cannot be undone."
+        loading={deleteLoading}
+      />
     </div>
   );
 }
