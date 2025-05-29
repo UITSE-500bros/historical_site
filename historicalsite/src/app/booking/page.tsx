@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 // Import components
@@ -14,7 +14,8 @@ import { fetchMuseums, createPayment } from './services/api';
 // Constants
 const TICKET_PRICE = 150000; // 150,000 VND per ticket
 
-export default function BookingPage() {
+// Component that uses searchParams - must be wrapped in Suspense
+function BookingContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const museumIdFromUrl = searchParams.get('museumId');
@@ -101,5 +102,26 @@ export default function BookingPage() {
         />
       </div>
     </div>
+  );
+}
+
+// Loading fallback for Suspense
+function BookingFallback() {
+  return (
+    <div className="container mx-auto py-10">
+      <h1 className="text-3xl font-bold mb-8 text-center">Book Museum Tickets</h1>
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+      </div>
+    </div>
+  );
+}
+
+// Main page component that wraps BookingContent in Suspense
+export default function BookingPage() {
+  return (
+    <Suspense fallback={<BookingFallback />}>
+      <BookingContent />
+    </Suspense>
   );
 }
