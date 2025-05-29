@@ -65,7 +65,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   // Các trang admin khác sẽ có sidebar và full screen
   return (
-    <div className="fixed inset-0 w-screen h-screen bg-[#F0F1F3] overflow-hidden py-10">
+    <div className=" w-screen h-screen bg-[#F0F1F3] overflow-hidden py-10">
       <SidebarProvider>
         <div className="flex w-full h-full">
           <AppSidebar />
