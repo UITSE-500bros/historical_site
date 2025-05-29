@@ -68,4 +68,11 @@ export class PaymentsController {
   remove(@Param('id') id: string) {
     return this.paymentsService.remove(id);
   }
+
+  @Get('admin/analytic')
+  @ApiOperation({ summary: 'Get payment analytics' })
+  @ApiResponse({ status: 200, description: 'Return payment analytics.' })
+  getPaymentAnalytics() {
+    return this.paymentsService.getPaymentAnalytics();
+  }
 }

@@ -209,4 +209,101 @@ export class PaymentsService {
       throw new NotFoundException(`Payment with ID ${id} not found`);
     }
   }
+
+  async getPaymentAnalytics() {
+    // Get all payments
+    const payments = await this.prisma.payment.findMany();
+    
+    // Get all museums for reference
+    const museums = await this.prisma.museum.findMany();
+    
+    // Create a map of museum data by ID for quick lookup
+    const museumMap = new Map();
+    museums.forEach(museum => {
+      museumMap.set(museum.museumId, museum);
+    });
+    
+    // Initialize analytics object
+    const analytics = {
+      byMonth: {},
+      byYear: {},
+      byStatus: {
+        PENDING: 0,
+        COMPLETED: 0,
+        FAILED: 0,
+        CANCELLED: 0
+      },
+      byMuseumName: {},
+      totalPayments: payments.length,
+      totalRevenue: 0
+    };
+    
+    // Process each payment
+    payments.forEach(payment => {
+      // Extract date components
+      const date = new Date(payment.createdAt);
+      const year = date.getFullYear();
+      const month = date.getMonth() + 1; // JavaScript months are 0-indexed
+      const monthYear = `${year}-${month.toString().padStart(2, '0')}`;
+      
+      // Get museum information if available
+      const museum = payment.museumId ? museumMap.get(payment.museumId) : null;
+      const museumName = museum ? museum.museumName : 'UNKNOWN';
+      
+      // Update monthly stats
+      if (!analytics.byMonth[monthYear]) {
+        analytics.byMonth[monthYear] = {
+          count: 0,
+          revenue: 0,
+        };
+      }
+      analytics.byMonth[monthYear].count++;
+      analytics.byMonth[monthYear].revenue += payment.totalPrice;
+      
+      // Update yearly stats
+      if (!analytics.byYear[year]) {
+        analytics.byYear[year] = {
+          count: 0,
+          revenue: 0
+        };
+      }
+      analytics.byYear[year].count++;
+      analytics.byYear[year].revenue += payment.totalPrice;
+      
+      // Update status stats
+      analytics.byStatus[payment.status]++;
+      
+      // Update museum name stats
+      if (!analytics.byMuseumName[museumName]) {
+        analytics.byMuseumName[museumName] = {
+          count: 0,
+          revenue: 0
+        };
+      }
+      analytics.byMuseumName[museumName].count++;
+      analytics.byMuseumName[museumName].revenue += payment.totalPrice;
+      
+      // Update total revenue
+      if (payment.status === PaymentStatus.COMPLETED) {
+        analytics.totalRevenue += payment.totalPrice;
+      }
+    });
+    
+    // Sort months and years chronologically
+    analytics.byMonth = Object.entries(analytics.byMonth)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .reduce((obj, [key, value]) => {
+        obj[key] = value;
+        return obj;
+      }, {});
+      
+    analytics.byYear = Object.entries(analytics.byYear)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .reduce((obj, [key, value]) => {
+        obj[key] = value;
+        return obj;
+      }, {});
+    
+    return analytics;
+  }
 }
