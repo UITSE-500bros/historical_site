@@ -1,6 +1,5 @@
 "use client";
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
 
 export default function AddMuseumPage() {
   const [museumName, setMuseumName] = useState("");
@@ -10,7 +9,6 @@ export default function AddMuseumPage() {
   const [museumEmail, setMuseumEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
-  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

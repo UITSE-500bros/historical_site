@@ -1,9 +1,20 @@
 import Image from "next/image";
 import Link from "next/link";
-import ProfileCard from "../components/cards/ProfileCard";
 import { TitleSection } from "../components/section";
-import { BANNER_TEXT, HistoricalFigures } from "./content";
-export default function Home() {
+import { BANNER_TEXT } from "./content";
+export default async function Home() {
+  const url = "http://localhost:8888/articles?page=1&limit=4";
+  const res = await fetch(url);
+  const { data } = await res.json();
+
+  console.log("Fetched articles:", data);
+
+  type Article = {
+    articleId: string;
+    articleName: string;
+    articleType: string;
+  };
+
   return (
     <div className="flex flex-col min-h-screen">
       {/* Banner section */}
@@ -68,18 +79,38 @@ export default function Home() {
           </div>
         </section>
 
-        <section>
+        <section className=" py-12">
           <TitleSection title="Explore" url="/explore" />
-          <div className="flex-col mt-[40px] flex px-8 justify-center">
-            <div className="grid grid-cols-3">
-              {HistoricalFigures.map((figure, index) => (
-                <ProfileCard
-                  key={index}
-                  name={figure.name}
-                  content={figure.content}
-                  image={figure.image}
-                />
-              ))}
+
+          <div className="mt-[40px] w-full px-8">
+            <div className="flex flex-row justify-center  gap-4 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 pb-4">
+              {Array.isArray(data) && data.length > 0 ? (
+                data.map((article: Article) => (
+                  <div
+                    key={article.articleId}
+                    className="flex-shrink-0 overflow-auto w-[240px] md:w-[260px] lg:w-[280px] xl:w-[300px] bg-white rounded-2xl shadow-md border border-gray-100 hover:shadow-xl transition-shadow duration-200 flex flex-col items-start justify-between p-6 mx-2 cursor-pointer group"
+                  >
+                    <div className="font-bold text-lg mb-2 group-hover:text-blue-700 transition-colors duration-200 truncate w-full">
+                      {article.articleName}
+                    </div>
+                    <div className="text-gray-500 text-sm mb-4 truncate w-full">
+                      {article.articleType || "Unknown type"}
+                    </div>
+                    <div className="mt-auto w-full flex justify-end">
+                      <Link
+                        href={`/admin/articles/${article.articleId}/edit`}
+                        className="text-blue-600 hover:underline text-sm font-medium"
+                      >
+                        View Details →
+                      </Link>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="text-gray-400 italic">
+                  No articles found or API error
+                </div>
+              )}
             </div>
           </div>
         </section>

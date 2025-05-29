@@ -18,18 +18,18 @@ import {
 import { MyPagination } from "@/src/components/section/MyPagination";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Person, Event } from "./type";
 import DeleteDialog from "@/src/components/DeleteDialog";
 
 export default function page() {
-  const [articles, setArticles] = React.useState<(Person | Event)[]>([]);
-  const [deleteId, setDeleteId] = React.useState<string | null>(null);
-  const [deleteLoading, setDeleteLoading] = React.useState(false);
+  const [articles, setArticles] = useState<(Person | Event)[]>([]);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const searchParams = useSearchParams();
   const page = Number(searchParams.get("page") || "1");
-  const [currentPage, setCurrentPage] = React.useState<number>(page);
+  const [currentPage, setCurrentPage] = useState<number>(page);
   useEffect(() => {
     setCurrentPage(page);
   }, [page]);

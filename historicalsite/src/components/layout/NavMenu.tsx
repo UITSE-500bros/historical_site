@@ -7,7 +7,6 @@ export const NavMenu: React.FC = () => {
     { label: "ABOUT", url: "/about" },
     { label: "EXPLORE", url: "/explore" },
     { label: "TICKETS", url: "/booking" },
-    { label: "ADMIN", url: "/admin" },
   ];
   return (
     <div className="flex gap-6 items-center self-stretch my-auto min-w-60 text-stone-900">

@@ -1,10 +1,9 @@
 "use client";
 import React, { useState } from "react";
-// Nếu bạn chưa cài uuid, hãy chạy: npm install uuid
-import { v4 as uuidv4 } from "uuid";
 import { useRouter } from "next/navigation";
+import { v4 as uuidv4 } from "uuid";
 
-// Kiểu dữ liệu cho nội dung bài viết
+
 interface ArticleContent {
   contentId: string;
   content: string;
@@ -17,7 +16,6 @@ export default function AddEventArticlePage() {
   >([{ contentId: uuidv4(), content: "" }]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
-  const router = useRouter();
   const url = "http://localhost:8888/articles";
 
   // Xử lý thay đổi nội dung

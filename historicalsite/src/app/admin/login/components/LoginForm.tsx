@@ -1,8 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Card,
   CardContent,
@@ -19,13 +17,15 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { zodResolver } from "@hookform/resolvers/zod";
+import Cookies from "js-cookie";
+import { AlertCircle, CheckCircle, Mail } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { loginSchema, type LoginFormData } from "../schemas/loginSchema";
 import { PasswordInput } from "./PasswordInput";
 import { SubmitButton } from "./SubmitButton";
-import { loginSchema, type LoginFormData } from "../schemas/loginSchema";
-import { Mail, AlertCircle, CheckCircle } from "lucide-react";
-import { useRouter } from "next/navigation";
-import Cookies from "js-cookie";
 
 
 export function LoginForm() {
@@ -77,6 +77,7 @@ export function LoginForm() {
       }
     } catch (err) {
       setError("Đã có lỗi xảy ra. Vui lòng thử lại sau.");
+      console.error("Login error:", err);
     } finally {
       setIsLoading(false);
     }

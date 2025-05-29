@@ -1,5 +1,4 @@
 import ArticleCard from "@/src/components/cards/ArticleCard";
-import { MyPagination } from "@/src/components/section/MyPagination";
 
 export default async function Explore() {
   const url = "http://localhost:8888/articles/names";
@@ -20,18 +19,17 @@ export default async function Explore() {
       <div className="w-full mt-[80px] px-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {Array.isArray(articles) &&
-            articles.filter((item)=>item.articleContentList.length > 0)
-            .map((item) => (
-              <ArticleCard
-                key={item.articleId}
-                id={item.articleId}
-                title={item.articleName}
-              />
-            ))}
+            articles
+              .filter((item) => item.articleContentList.length > 0)
+              .map((item) => (
+                <ArticleCard
+                  key={item.articleId}
+                  id={item.articleId}
+                  title={item.articleName}
+                />
+              ))}
         </div>
       </div>
-
-      <MyPagination />
     </div>
   );
 }
