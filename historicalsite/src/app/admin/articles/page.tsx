@@ -1,34 +1,30 @@
 "use client";
-import React, { use, useEffect } from "react";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  CardFooter,
-} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
   Table,
-  TableHeader,
-  TableRow,
-  TableHead,
   TableBody,
   TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 import { MyPagination } from "@/src/components/section/MyPagination";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import { useSearchParams } from "next/navigation";
+import React, { useEffect } from "react";
+import { Person, Event } from "./type"
 
-const posts = [
-  { id: 1, title: "First Post", category: "History", date: "2024-06-01" },
-  { id: 2, title: "Second Post", category: "Culture", date: "2024-06-02" },
-  // Add more posts as needed
-];
+
 
 export default function page() {
-  const [articles, setArticles] = React.useState([]);
+  const [articles, setArticles] = React.useState<(Person | Event)[]>([]);
 
   const searchParams = useSearchParams();
   const page = Number(searchParams.get("page") || "1");
@@ -61,23 +57,7 @@ export default function page() {
     fetchArticles();
   }, [url]);
 
-  type Person = {
-    articleId: string;
-    articleName: string;
-    articleType: string;
-    personName: string;
-    personAvatar: string;
-    birthYear: number;
-    deathYear: number | null;
-    nationality: string;
-  };
-  type Event = {
-    articleId: string;
-    articleName: string;
-    articleType: string;
-    periodName: string;
-    topicName: string;
-  };
+  
 
   return (
     <div className="flex items-center justify-center h-screen">
