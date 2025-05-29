@@ -95,10 +95,9 @@ export class ArticlesService {
     // Only include the relevant article type data
     if (!articleType || articleType === 'EVENT') {
       include.eventArticle = {
-        select: {
-          articleId: true,
-          periodId: true,
-          topicId: true,
+        include: {
+          period: { select: { periodName: true } },
+          topic: { select: { topicName: true } },
         }
       };
     }
@@ -132,6 +131,21 @@ export class ArticlesService {
         articleName: article.articleName,
         articleType: article.articleType,
       };
+
+      if (article.eventArticle) {
+        const eventArticle: any = article.eventArticle;
+        result.periodName = eventArticle.period?.periodName || null;
+        result.topicName = eventArticle.topic?.topicName || null;
+      }
+
+      if (article.personArticle) {
+        const personArticle: any = article.personArticle;
+        result.personName = personArticle.personName || null;
+        result.personAvatar = personArticle.personAvatar || null;
+        result.birthYear = personArticle.birthYear || null;
+        result.deathYear = personArticle.deathYear || null;
+        result.nationality = personArticle.nationality || null;
+      }
 
       return result;
     });

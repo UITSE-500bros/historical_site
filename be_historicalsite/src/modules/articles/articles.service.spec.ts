@@ -125,14 +125,29 @@ describe('ArticlesService', () => {
 
   describe('findAll', () => {
     it('should return all articles', async () => {
+      const eventArticleId = uuidv4();
+      const personArticleId = uuidv4();
       const expectedArticles = [
         {
-          articleId: uuidv4(),
+          articleId: eventArticleId,
           articleType: ArticleType.EVENT,
-          articleName: 'Test Article',
-          articleContentList: {},
-          createdAt: new Date(),
-          updatedAt: new Date(),
+          articleName: 'Test Event Article',
+          eventArticle: {
+            period: { periodName: 'Ancient Era' },
+            topic: { topicName: 'War' },
+          },
+        },
+        {
+          articleId: personArticleId,
+          articleType: ArticleType.PERSON,
+          articleName: 'Test Person Article',
+          personArticle: {
+            personName: 'John Doe',
+            personAvatar: 'avatar.jpg',
+            birthYear: 1900,
+            deathYear: 1980,
+            nationality: 'Testland',
+          },
         },
       ];
 
@@ -146,7 +161,25 @@ describe('ArticlesService', () => {
 
       const result = await service.findAll(paginationDto);
 
-      expect(result.data).toEqual(expectedArticles);
+      expect(result.data).toEqual([
+        {
+          articleId: eventArticleId,
+          articleName: 'Test Event Article',
+          articleType: ArticleType.EVENT,
+          periodName: 'Ancient Era',
+          topicName: 'War',
+        },
+        {
+          articleId: personArticleId,
+          articleName: 'Test Person Article',
+          articleType: ArticleType.PERSON,
+          personName: 'John Doe',
+          personAvatar: 'avatar.jpg',
+          birthYear: 1900,
+          deathYear: 1980,
+          nationality: 'Testland',
+        },
+      ]);
       expect(mockPrismaService.article.findMany).toHaveBeenCalled();
     });
   });
