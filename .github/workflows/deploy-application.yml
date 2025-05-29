@@ -58,7 +58,7 @@ jobs:
       - name: Set up Docker Compose
         run: |
           docker --version
-          docker-compose --version
+          docker compose --version
 
       - name: Create .env file
         run: |
@@ -75,7 +75,7 @@ jobs:
           EOF
 
       - name: Build and start both services
-        run: docker-compose up -d --build
+        run: docker compose up -d --build
 
       - name: Wait for backend to be up
         run: |
@@ -95,7 +95,7 @@ jobs:
 
           if [ "$backend_status" != "success" ]; then
             echo "❌ Backend failed to start."
-            docker-compose logs backend
+            docker compose logs backend
             exit 1
           fi
 
@@ -117,7 +117,7 @@ jobs:
 
           if [ "$frontend_status" != "success" ]; then
             echo "❌ Frontend failed to start."
-            docker-compose logs frontend
+             logs frontend
             exit 1
           fi
 
