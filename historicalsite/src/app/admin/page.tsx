@@ -1,73 +1,188 @@
-"use client";
-
 import React from "react";
-import BarChartClient from '../../components/charts/BarChartClient';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
-export default function Admin() {
+// Define types for analytics API response
+interface AnalyticsData {
+  totalPayments: number;
+  totalRevenue: number;
+  byMonth: Record<string, { count: number; revenue: number }>;
+  byYear: Record<string, { count: number; revenue: number }>;
+  byStatus: Record<string, number>;
+  byMuseumName: Record<string, { count: number, revenue: number }>;
+}
+
+// Fetch analytics data from the API
+async function getAnalytics(): Promise<AnalyticsData | null> {
+  try {
+    const res = await fetch("http://localhost:8888/payments/admin/analytic", {
+      cache: "no-store",
+    });
+    if (!res.ok) throw new Error("Failed to fetch analytics");
+    return await res.json();
+  } catch (e) {
+    return null;
+  }
+}
+
+export default async function AdminDashboard() {
+  const analytics = await getAnalytics();
+
   return (
-    <div className="flex h-screen font-sans overflow-hidden">
-      {/* Sidebar */}
-      {/* <aside className="w-64 bg-[#FAF9F6] p-6 text-sm border-r border-gray-200 overflow-y-auto">
-        <h1 className="text-xl font-bold mb-8">History Admin</h1>
-        <nav className="space-y-5 text-gray-700">
-          <a href="#" className="flex items-center">🏠 <span className="ml-2">Dashboard</span></a>
-          <a href="#" className="flex items-center">📄 <span className="ml-2">Posts</span></a>
-          <a href="#" className="flex items-center">🏛️ <span className="ml-2">Museums</span></a>
-          <a href="#" className="flex items-center">🎟️ <span className="ml-2">Tickets</span></a>
-          <a href="#" className="flex items-center">💬 <span className="ml-2">Feedback</span></a>
-        </nav>
-      </aside> */}
-
-      {/* Main content */}
-      <main className="flex-1 h-full overflow-y-auto  p-8">
-        {/* Header */}
-        <div className="flex bg-white p-3 rounded-xl shadow-xl  justify-between items-center mb-8">
-          <h2 className="text-2xl  font-bold">Dashboard Overview</h2>
-          <div className="space-x-2">
-            <button className="border px-3 py-1 rounded bg-blue-600 text-white">7 Days</button>
-            <button className="border px-3 py-1 rounded">30 Days</button>
-            <button className="border px-3 py-1 rounded">90 Days</button>
-          </div>
+    <div className="h-full w-full bg-gray-50 p-8 overflow-auto">
+      <div className="w-full max-w-7xl mx-auto">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">
+            Admin Dashboard
+          </h1>
+          <p className="text-gray-600 mt-2">
+            Welcome to the Historical Site admin system
+          </p>
         </div>
 
-        {/* Stats boxes */}
-        <div className="grid grid-cols-3 gap-6 mb-8">
-          {[{ label: "Total Posts", value: "156", change: "↑ 12%", desc: "from last period" },
-            { label: "Total Tickets", value: "1289", change: "↑ 18%", desc: "from last period" },
-            { label: "Revenue", value: "$24,500", change: "↑ 15%", desc: "from last period" },
-          ].map((stat, i) => (
-            <div key={i} className="bg-white p-4 rounded shadow border border-gray-100">
-              <p>{stat.label}</p>
-              <h3 className="text-2xl font-bold text-blue-700">{stat.value}</h3>
-              <p className="text-green-600">{stat.change} <span className="text-gray-500">{stat.desc}</span></p>
+        {!analytics ? (
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle>Data Load Error</CardTitle>
+              <CardDescription>
+                Unable to load analytics data. Please try again later.
+              </CardDescription>
+            </CardHeader>
+          </Card>
+        ) : (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Total Transactions</CardTitle>
+                  <CardDescription>Total number of payments</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-2xl font-bold text-blue-600">
+                    {analytics.totalPayments ?? 0}
+                  </p>
+                  <p className="text-sm text-gray-500">Total transactions</p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Revenue</CardTitle>
+                  <CardDescription>Total revenue (VND)</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-2xl font-bold text-green-600">
+                    {analytics.totalRevenue?.toLocaleString("vi-VN") ?? 0}
+                  </p>
+                  <p className="text-sm text-gray-500">Total revenue</p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Transaction Status</CardTitle>
+                  <CardDescription>Status breakdown</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-1">
+                    {Object.entries(analytics.byStatus || {}).map(
+                      ([status, count]) => (
+                        <li key={status} className="flex justify-between">
+                          <span className="capitalize">
+                            {status.toLowerCase()}
+                          </span>
+                          <span className="font-semibold">
+                            {count as number}
+                          </span>
+                        </li>
+                      )
+                    )}
+                  </ul>
+                </CardContent>
+              </Card>
             </div>
-          ))}
-        </div>
 
-        {/* Visitors by Country */}
-        <div className="bg-white p-6 rounded shadow mb-8 border border-gray-100">
-          <h3 className="text-lg font-semibold mb-4">Visitors by Country</h3>
-          <BarChartClient />
-        </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Monthly Revenue</CardTitle>
+                  <CardDescription>Most recent months</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-1">
+                    {Object.entries(analytics.byMonth || {}).map(
+                      ([month, data]) => {
+                        const d = data as { count: number; revenue: number };
+                        return (
+                          <li key={month} className="flex justify-between">
+                            <span>{month}</span>
+                            <span>
+                              {d.count} transactions, {d.revenue.toLocaleString("vi-VN")} VND
+                            </span>
+                          </li>
+                        );
+                      }
+                    )}
+                  </ul>
+                </CardContent>
+              </Card>
 
-        {/* Bottom Panels */}
-        <div className="grid grid-cols-2 gap-6">
-          <div className="bg-white p-4 rounded shadow border border-gray-100">
-            <h4 className="mb-4 font-semibold">Popular Museums</h4>
-            <ul className="text-sm space-y-2">
-              <li className="flex justify-between">🏛️ Louvre Museum <span className="font-semibold">520 visits</span></li>
-              <li className="flex justify-between">🏛️ British Museum <span className="font-semibold">480 visits</span></li>
-            </ul>
-          </div>
-          <div className="bg-white p-4 rounded shadow border border-gray-100">
-            <h4 className="mb-4 font-semibold">Recent Activity</h4>
-            <ul className="text-sm space-y-2">
-              <li>🎟️ Ticket Purchase - British Museum - Adult Entry <span className="text-xs text-gray-500 ml-2">5 minutes ago</span></li>
-              <li>🆕 New Post</li>
-            </ul>
-          </div>
-        </div>
-      </main>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Yearly Revenue</CardTitle>
+                  <CardDescription>Most recent years</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-1">
+                    {Object.entries(analytics.byYear || {}).map(
+                      ([year, data]) => {
+                        const d = data as { count: number; revenue: number };
+                        return (
+                          <li key={year} className="flex justify-between">
+                            <span>{year}</span>
+                            <span>
+                              {d.count} transactions, {d.revenue.toLocaleString("vi-VN")} VND
+                            </span>
+                          </li>
+                        );
+                      }
+                    )}
+                  </ul>
+                </CardContent>
+              </Card>
+            </div>
+
+            <Card className="mt-6">
+              <CardHeader>
+                <CardTitle>Revenue by Museum</CardTitle>
+                <CardDescription>Breakdown by museum</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-1">
+                  {Object.entries(analytics.byMuseumName || {}).map(
+                    ([museum, data]) => {
+                      const d = data as { count: number; revenue: number };
+                      return (
+                        <li key={museum} className="flex justify-between">
+                          <span>{museum}</span>
+                          <span>
+                            {d.count} transactions, {d.revenue.toLocaleString("vi-VN")} VND
+                          </span>
+                        </li>
+                      );
+                    }
+                  )}
+                </ul>
+              </CardContent>
+            </Card>
+          </>
+        )}
+      </div>
     </div>
   );
 }

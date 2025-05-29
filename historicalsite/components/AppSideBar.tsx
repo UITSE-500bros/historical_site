@@ -1,9 +1,4 @@
-import {
-  FileText,
-  Home,
-  Landmark,
-  Ticket
-} from "lucide-react";
+import { FileText, Home, Landmark, Ticket } from "lucide-react";
 
 import {
   Sidebar,
@@ -35,27 +30,29 @@ const items = [
     url: "/admin/museums",
     icon: Landmark,
   },
-  {
-    title: "Tickets",
-    url: "/admin/tickets",
-    icon: Ticket,
-  },
 ];
 
 export default function AppSidebar() {
   return (
-    <Sidebar variant="floating" className="bg-transparent  ">
+    <Sidebar variant="floating" className="bg-transparent">
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Application</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-lg mb-4">
+            Historical Site Admin
+          </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <Link href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
+                <SidebarMenuItem key={item.title} className="mb-4">
+                  <SidebarMenuButton
+                    asChild
+                    className="py-3 px-5 text-lg gap-4 h-14 rounded-md hover:bg-gray-100 transition-all"
+                  >
+                    <Link href={item.url} className="flex items-center gap-4">
+                      <item.icon size={26} />
+                      <span className="font-semibold tracking-wide">
+                        {item.title}
+                      </span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

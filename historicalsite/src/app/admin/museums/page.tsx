@@ -111,6 +111,8 @@ export default function MuseumsPage() {
                   <TableRow key={museum.museumId}>
                     <TableCell>
                       <Image
+                        width={64}
+                        height={64}
                         src={museum.museumImage}
                         alt={museum.museumName}
                         className="w-16 h-16 object-cover rounded"
