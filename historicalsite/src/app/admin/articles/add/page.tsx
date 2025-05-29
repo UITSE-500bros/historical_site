@@ -18,7 +18,7 @@ export default function AddEventArticlePage() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const router = useRouter();
-  const url = "http://localhost:8888/articles"
+  const url = "http://localhost:8888/articles";
 
   // Xử lý thay đổi nội dung
   const handleContentChange = (index: number, value: string) => {
@@ -45,7 +45,7 @@ export default function AddEventArticlePage() {
     e.preventDefault();
     setMessage(null);
     if (!articleName.trim()) {
-      setMessage("Event name is required.");
+      setMessage("Article name is required.");
       return;
     }
     if (articleContentList.some((c) => !c.content.trim())) {
@@ -65,10 +65,12 @@ export default function AddEventArticlePage() {
       });
       if (!res.ok) throw new Error("Failed to add article");
       setMessage("Article added successfully!");
-      // Chuyển hướng về trang danh sách articles sau 1s
-      setTimeout(() => {
-        router.push("/admin/articles");
-      }, 1000);
+      console.log(await res.json());
+
+      // Reset form after successful submission
+      setArticleName("");
+      setArticleContentList([{ contentId: uuidv4(), content: "" }]);
+     
     } catch (err: any) {
       setMessage(err.message || "An error occurred.");
     } finally {
@@ -139,7 +141,7 @@ export default function AddEventArticlePage() {
           className="w-full py-2 bg-blue-600 text-white rounded font-semibold"
           disabled={loading}
         >
-          {loading ? "Saving..." : "Save Event"}
+          {loading ? "Saving..." : "Save Article"}
         </button>
       </form>
     </div>

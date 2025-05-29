@@ -19,9 +19,7 @@ import { MyPagination } from "@/src/components/section/MyPagination";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import React, { useEffect } from "react";
-import { Person, Event } from "./type"
-
-
+import { Person, Event } from "./type";
 
 export default function page() {
   const [articles, setArticles] = React.useState<(Person | Event)[]>([]);
@@ -57,14 +55,16 @@ export default function page() {
     fetchArticles();
   }, [url]);
 
-  
-
   return (
     <div className="flex items-center justify-center h-screen">
       <Card className="w-full max-w-6xl mx-auto h-full flex items-center justify-start min-h-screen">
         <CardHeader className="flex w-full justify-between items-center">
           <CardTitle className="text-2xl font-semibold">Article</CardTitle>
-          <Button className="p-4  "> New Article</Button>
+          <Link href={`/admin/articles/add`}>
+            <Button >
+              New Article
+            </Button>
+          </Link>
         </CardHeader>
         <CardContent className="w-full overflow-x-auto">
           <Table className="w-full">
