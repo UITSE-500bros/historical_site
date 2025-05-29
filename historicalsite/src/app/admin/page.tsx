@@ -6,6 +6,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
+// Mark this page as dynamically rendered to avoid static generation issues
+export const dynamic = 'force-dynamic';
+
 interface AnalyticsData {
   totalPayments: number;
   totalRevenue: number;
@@ -18,7 +21,7 @@ interface AnalyticsData {
 async function getAnalytics(): Promise<AnalyticsData | null> {
   try {
     const res = await fetch(`${process.env.API_BASE_URL}/payments/admin/analytic`, {
-      cache: "no-store",
+      next: { revalidate: 60 }, // Cache for 60 seconds instead of no-store
     });
     if (!res.ok) throw new Error("Failed to fetch analytics");
     return await res.json();
