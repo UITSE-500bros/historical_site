@@ -85,10 +85,14 @@ jobs:
 
       - name: Push images to Docker Hub
         run: |
+          # List all Docker images to debug
+          echo "Available Docker images:"
+          docker images
+          
           # Tag and push backend image
-          docker tag historicalsite_backend ${{ secrets.DOCKER_USERNAME }}/historicalsite-backend:latest
+          docker tag historical_site-backend:latest ${{ secrets.DOCKER_USERNAME }}/historicalsite-backend:latest
           docker push ${{ secrets.DOCKER_USERNAME }}/historicalsite-backend:latest
           
           # Tag and push frontend image
-          docker tag historicalsite_frontend ${{ secrets.DOCKER_USERNAME }}/historicalsite-frontend:latest
+          docker tag historical_site-frontend:latest ${{ secrets.DOCKER_USERNAME }}/historicalsite-frontend:latest
           docker push ${{ secrets.DOCKER_USERNAME }}/historicalsite-frontend:latest
