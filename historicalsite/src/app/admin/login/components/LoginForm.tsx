@@ -34,7 +34,7 @@ export function LoginForm() {
   const [success, setSuccess] = useState<string | null>(null);
   const router = useRouter();
 
-  const url = "http://localhost:8888/auth/admin/login";
+  const url = `${process.env.API_BASE_URL}/auth/admin/login`;
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),

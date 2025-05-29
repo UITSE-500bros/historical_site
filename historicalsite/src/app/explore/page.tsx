@@ -1,10 +1,24 @@
 import ArticleCard from "@/src/components/cards/ArticleCard";
 
+// Mark this page as dynamically rendered to avoid static generation issues
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export default async function Explore() {
-  const url = "http://localhost:8888/articles/names";
+  const url = `${process.env.API_BASE_URL}/articles/names`;
   let articles: any[] = [];
   try {
-    const res = await fetch(url);
+    // Add a timeout to the fetch to prevent hanging during build
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
+    
+    const res = await fetch(url, {
+      next: { revalidate: 60 }, // Cache for 60 seconds
+      signal: controller.signal
+    });
+    
+    clearTimeout(timeoutId);
+    
     const data = await res.json();
     // Đảm bảo data là mảng
     articles = Array.isArray(data) ? data : (Array.isArray(data?.data) ? data.data : []);

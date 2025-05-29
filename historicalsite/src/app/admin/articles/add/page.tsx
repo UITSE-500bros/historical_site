@@ -15,7 +15,7 @@ export default function AddEventArticlePage() {
   >([{ contentId: uuidv4(), content: "" }]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
-  const url = "http://localhost:8888/articles";
+  const url = `${process.env.API_BASE_URL}/articles`;
 
   // Xử lý thay đổi nội dung
   const handleContentChange = (index: number, value: string) => {
