@@ -14,7 +14,7 @@ interface AnalyticsData {
   byMonth: Record<string, { count: number; revenue: number }>;
   byYear: Record<string, { count: number; revenue: number }>;
   byStatus: Record<string, number>;
-  byMuseumName: Record<string, { count: number, revenue: number }>;
+  byMuseumName: Record<string, { count: number; revenue: number }>;
 }
 
 // Fetch analytics data from the API
@@ -37,9 +37,7 @@ export default async function AdminDashboard() {
     <div className="h-full w-full bg-gray-50 p-8 overflow-auto">
       <div className="w-full max-w-7xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">
-            Admin Dashboard
-          </h1>
+          <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
           <p className="text-gray-600 mt-2">
             Welcome to the Historical Site admin system
           </p>
@@ -122,7 +120,8 @@ export default async function AdminDashboard() {
                           <li key={month} className="flex justify-between">
                             <span>{month}</span>
                             <span>
-                              {d.count} transactions, {d.revenue.toLocaleString("vi-VN")} VND
+                              {d.count} transactions,{" "}
+                              {d.revenue.toLocaleString("vi-VN")} VND
                             </span>
                           </li>
                         );
@@ -146,7 +145,8 @@ export default async function AdminDashboard() {
                           <li key={year} className="flex justify-between">
                             <span>{year}</span>
                             <span>
-                              {d.count} transactions, {d.revenue.toLocaleString("vi-VN")} VND
+                              {d.count} transactions,{" "}
+                              {d.revenue.toLocaleString("vi-VN")} VND
                             </span>
                           </li>
                         );
@@ -171,7 +171,8 @@ export default async function AdminDashboard() {
                         <li key={museum} className="flex justify-between">
                           <span>{museum}</span>
                           <span>
-                            {d.count} transactions, {d.revenue.toLocaleString("vi-VN")} VND
+                            {d.count} transactions,{" "}
+                            {d.revenue.toLocaleString("vi-VN")} VND
                           </span>
                         </li>
                       );
