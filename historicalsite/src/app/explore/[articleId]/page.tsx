@@ -13,7 +13,7 @@ export default async function ArticleDetail({
   let fetchError = false;
 
   try {
-    const res = await fetch(`http://localhost:8888/articles/${articleId}`);
+    const res = await fetch(`${process.env.API_BASE_URL}/articles/${articleId}`);
     if (!res.ok) {
       fetchError = true;
     } else {

@@ -34,7 +34,7 @@ export default function Page() {
     setCurrentPage(page);
   }, [page]);
 
-  const url = `http://localhost:8888/articles?page=${currentPage}&limit=10`;
+  const url = `${process.env.API_BASE_URL}/articles?page=${currentPage}&limit=10`;
   useEffect(() => {
     const fetchArticles = async () => {
       try {
@@ -61,7 +61,7 @@ export default function Page() {
   const handleDelete = async (articleId: string) => {
     setDeleteLoading(true);
     try {
-      const res = await fetch(`http://localhost:8888/articles/${articleId}`, {
+      const res = await fetch(`${process.env.API_BASE_URL}/articles/${articleId}`, {
         method: "DELETE",
       });
       if (!res.ok) throw new Error("Failed to delete article");

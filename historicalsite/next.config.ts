@@ -19,6 +19,18 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  env: {
+    API_BASE_URL: process.env.API_BASE_URL || 'http://backend:8888',
+  },
+  
+  // This setting allows Next.js to build without requiring the API to be available
+  experimental: {
+    // Configure static generation settings
+    staticGenerationRetryCount: 3
+  },
+  
+  // Disable static generation for pages that fetch data
+  output: 'standalone',
 };
 
 export default nextConfig;

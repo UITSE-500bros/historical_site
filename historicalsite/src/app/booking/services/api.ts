@@ -5,7 +5,7 @@ import { Museum, PaymentData } from '../types';
  */
 
 // API base URL
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8888';
+const API_BASE_URL = process.env.API_BASE_URL;
 
 // Define additional types for payment handling
 export interface PaymentResponse {

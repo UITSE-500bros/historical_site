@@ -1,4 +1,4 @@
-import { FileText, Home, Landmark, Ticket } from "lucide-react";
+import { FileText, Home, Landmark } from "lucide-react";
 
 import {
   Sidebar,

@@ -37,7 +37,7 @@ export default function MuseumsPage() {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch("http://localhost:8888/museums");
+        const res = await fetch(`${process.env.API_BASE_URL}/museums`);
         if (!res.ok) throw new Error("Failed to fetch museums");
         const data = await res.json();
         setMuseums(data);
@@ -57,7 +57,7 @@ export default function MuseumsPage() {
   const handleDelete = async (museumId: string) => {
     setDeleteLoading(true);
     try {
-      const res = await fetch(`http://localhost:8888/museums/${museumId}`, {
+      const res = await fetch(`${process.env.API_BASE_URL}/museums/${museumId}`, {
         method: "DELETE",
       });
       if (!res.ok) throw new Error("Failed to delete museum");

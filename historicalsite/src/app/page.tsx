@@ -2,12 +2,34 @@ import Image from "next/image";
 import Link from "next/link";
 import { TitleSection } from "../components/section";
 import { BANNER_TEXT } from "./content";
-export default async function Home() {
-  const url = "http://localhost:8888/articles?page=1&limit=4";
-  const res = await fetch(url);
-  const { data } = await res.json();
+// Mark this page as dynamically rendered to avoid static generation issues
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
-  console.log("Fetched articles:", data);
+export default async function Home() {
+  let data = [];
+  try {
+    const url = `${process.env.API_BASE_URL}/articles?page=1&limit=4`;
+    
+    // Add a timeout to the fetch to prevent hanging during build
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
+    
+    const res = await fetch(url, {
+      next: { revalidate: 60 }, // Cache for 60 seconds
+      signal: controller.signal
+    });
+    
+    clearTimeout(timeoutId);
+    
+    const responseData = await res.json();
+    data = responseData?.data || [];
+    
+    console.log("Fetched articles:", data);
+  } catch (e) {
+    console.error("Failed to fetch articles:", e);
+    data = [];
+  }
 
   type Article = {
     articleId: string;
