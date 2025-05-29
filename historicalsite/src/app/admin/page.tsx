@@ -6,7 +6,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-// Define types for analytics API response
 interface AnalyticsData {
   totalPayments: number;
   totalRevenue: number;
@@ -16,15 +15,15 @@ interface AnalyticsData {
   byMuseumName: Record<string, { count: number; revenue: number }>;
 }
 
-// Fetch analytics data from the API
 async function getAnalytics(): Promise<AnalyticsData | null> {
   try {
-    const res = await fetch("http://localhost:8888/payments/admin/analytic", {
+    const res = await fetch(`${process.env.API_BASE_URL}/payments/admin/analytic`, {
       cache: "no-store",
     });
     if (!res.ok) throw new Error("Failed to fetch analytics");
     return await res.json();
-  } catch (e) {
+  } catch (e: unknown) {
+    console.error("Failed to fetch analytics:", e);
     return null;
   }
 }

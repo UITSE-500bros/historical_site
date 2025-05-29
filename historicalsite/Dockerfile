@@ -28,7 +28,7 @@ RUN npm ci --omit=dev
 # Copy built output and necessary files only
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/next.config.js ./
+COPY --from=builder /app/next.config.ts ./
 
 # Optional: if you use custom server (e.g., server.js)
 # COPY --from=builder /app/server.js ./server.js
