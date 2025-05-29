@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { Museum } from '../types';
 
 interface MuseumDetailsProps {
@@ -26,9 +27,11 @@ export default function MuseumDetails({
         <div className="space-y-4">
           <div className="aspect-video overflow-hidden rounded-lg relative">
             {museum.museumImage && (
-              <img
+              <Image
                 src={museum.museumImage}
                 alt={museum.museumName}
+                width={800}
+                height={400}
                 className="w-full h-48 object-cover"
               />
             )}
