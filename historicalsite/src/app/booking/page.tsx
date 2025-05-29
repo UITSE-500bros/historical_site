@@ -58,10 +58,11 @@ export default function BookingPage() {
     try {
       // Send payment request to the API
       const data = await createPayment(paymentData);
-      
+
+      console.log('Payment created successfully:', data);      
       // Redirect to Stripe checkout or success page
-      if (data.checkoutUrl) {
-        window.location.href = data.checkoutUrl;
+      if (data.url) {
+        window.location.href = data.url; // Redirect to Stripe checkout
       } else {
         router.push('/payment/status?status=success');
       }

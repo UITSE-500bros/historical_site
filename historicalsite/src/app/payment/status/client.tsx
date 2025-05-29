@@ -251,8 +251,8 @@ export function PaymentStatusClient() {
   };
 
   return (
-    <div className="min-h-screen w-full flex flex-col items-center justify-center p-4 sm:p-6 bg-black bg-gradient-to-b from-background to-muted/20">
-      <div className="w-full max-w-md mx-auto bg-card p-6 sm:p-10 rounded-xl shadow-xl border border-border/50 text-center space-y-4 sm:space-y-6 backdrop-blur-sm transform transition-all duration-300 hover:shadow-2xl hover:scale-[1.02]">
+    <div className="min-h-[70vh] w-full flex flex-col items-center justify-start pt-10 sm:pt-16 px-4 sm:p-6 bg-black bg-gradient-to-b from-background to-muted/20">
+      <div className="w-full max-w-md bg-card p-6 sm:p-10 rounded-xl shadow-xl border border-border/50 text-center space-y-4 sm:space-y-6 backdrop-blur-sm transform transition-all duration-300 hover:shadow-2xl hover:scale-[1.02]">
         {loading ? (
           <>
             <div className="flex justify-center">
