@@ -67,7 +67,7 @@ function BookingContent() {
       } else {
         router.push('/payment/status?status=success');
       }
-    } catch (error: Error | unknown) {
+    } catch (error :unknown) {
       console.error('Error creating payment:', error);
       setError(error instanceof Error ? error.message : 'Failed to process payment. Please try again later.');
       throw error; // Re-throw to let the form component handle the error state

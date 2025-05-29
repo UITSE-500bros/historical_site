@@ -4,11 +4,11 @@ import { useState } from 'react';
 import { Museum, PaymentData, PaymentStatus, PaymentType } from '../types';
 
 interface BookingFormProps {
-  museums: Museum[];
-  selectedMuseum: string;
-  isLoadingMuseums: boolean;
-  onSelectMuseum: (museumId: string) => void;
-  onSubmit: (paymentData: PaymentData) => Promise<void>;
+  readonly museums: Museum[];
+  readonly selectedMuseum: string;
+  readonly isLoadingMuseums: boolean;
+  readonly onSelectMuseum: (museumId: string) => void;
+  readonly onSubmit: (paymentData: PaymentData) => Promise<void>;
 }
 
 export default function BookingForm({
@@ -54,7 +54,7 @@ export default function BookingForm({
       };
 
       await onSubmit(paymentData);
-    } catch (error: Error | unknown) {
+    } catch (error: unknown) {
       console.error('Error creating payment:', error);
       setError(error instanceof Error ? error.message : 'Failed to process payment. Please try again later.');
     } finally {
