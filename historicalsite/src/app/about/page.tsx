@@ -67,7 +67,7 @@ export default function About() {
 
       <div className="grid grid-cols-4 gap-6 mt-10">
         {MapFigures.map((figure, index) => (
-          <MapCard key={index} topic={figure.topic} image={figure.image} period='Renaissance' />
+          <MapCard key={index} topic={figure.topic} image={figure.image} period='Middle Ages' />
         ))}
       </div>
     </div>
@@ -84,7 +84,7 @@ export default function About() {
         </div>
       <div className="grid grid-cols-4 gap-6 mt-10">
         {MapFigures.map((figure, index) => (
-          <MapCard key={index} topic={figure.topic} image={figure.image} period='Enlightenment' />
+          <MapCard key={index} topic={figure.topic} image={figure.image} period='Middle Ages' />
         ))}
       </div>
     </div>

@@ -1,8 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { TitleSection } from "../components/section";
-import { BANNER_TEXT } from "./content";
-// Mark this page as dynamically rendered to avoid static generation issues
+import { BANNER_TEXT } from "./content";// Mark this page as dynamically rendered to avoid static generation issues
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
@@ -10,7 +9,7 @@ export default async function Home() {
   let data = [];
   try {
     const url = `${process.env.API_BASE_URL}/articles?page=1&limit=4`;
-    
+    console.log("Fetching articles from:", url);
     // Add a timeout to the fetch to prevent hanging during build
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 5000);
@@ -19,7 +18,7 @@ export default async function Home() {
       next: { revalidate: 60 }, // Cache for 60 seconds
       signal: controller.signal
     });
-    
+
     clearTimeout(timeoutId);
     
     const responseData = await res.json();
